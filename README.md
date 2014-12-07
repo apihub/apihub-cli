@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/backstage/backstage-client.png?branch=master)](https://travis-ci.org/backstage/backstage-client)
+
 #backstage-client
 
 An open source command line solution for publishing APIs on [Backstage](https://github.com/backstage/backstage).
