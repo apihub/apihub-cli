@@ -1,0 +1,18 @@
+{
+	"ImportPath": "github.com/albertoleal/backstage-client",
+	"GoVersion": "go1.3.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-42-gfbda1ce",
+			"Rev": "fbda1ce02d5dabcee952040e5f4025753b6c9ce0"
+		},
+		{
+			"ImportPath": "gopkg.in/check.v1",
+			"Rev": "64131543e7896d5bcc6bd5a76287eb75ea96c673"
+		}
+	]
+}
