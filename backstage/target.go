@@ -3,9 +3,12 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
+	"os"
 	"syscall"
 
+	"github.com/codegangsta/cli"
 	"github.com/tsuru/tsuru/fs"
 	"gopkg.in/v1/yaml"
 )
@@ -31,6 +34,95 @@ func filesystem() fs.Fs {
 type Target struct {
 	Current string
 	Options map[string]string
+}
+
+func (t *Target) GetCommands() []cli.Command {
+	return []cli.Command{
+		{
+			Name:        "target-add",
+			Usage:       "target-add <label> <endpoint>",
+			Description: "Adds a new target in the list of targets.",
+			Action: func(c *cli.Context) {
+				defer RecoverStrategy("target-add")()
+				targets, err := LoadTargets()
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				args := c.Args()
+				label, endpoint := args[0], args[1]
+				err = targets.add(label, endpoint)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("Target added successfully!")
+			},
+		},
+		{
+			Name:        "target-list",
+			Usage:       "",
+			Description: "Adds a new target in the list of targets.",
+			Action: func(c *cli.Context) {
+				targets, err := LoadTargets()
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println(targets.list())
+			},
+		},
+		{
+			Name:        "target-remove",
+			Usage:       "target-remove <label>",
+			Description: "Remove a target from the list of targets.",
+			Before: func(c *cli.Context) error {
+				if c.Args().First() == "" {
+					return ErrCommandCancelled
+				}
+				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
+				if Confirm(context, "Are you sure you want to remove this target?") != true {
+					return ErrCommandCancelled
+				}
+				return nil
+			},
+			Action: func(c *cli.Context) {
+				defer RecoverStrategy("target-remove")()
+				targets, err := LoadTargets()
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				label := c.Args()[1]
+				err = targets.remove(label)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("Target removed successfully!")
+			},
+		},
+		{
+			Name:        "target-set",
+			Usage:       "target-set <label>",
+			Description: "Set a target as default to be used.",
+			Action: func(c *cli.Context) {
+				defer RecoverStrategy("target-set")()
+				targets, err := LoadTargets()
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				label := c.Args().First()
+				err = targets.setDefault(label)
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
+				fmt.Println("You have a new target as default!")
+			},
+		},
+	}
 }
 
 func (t *Target) add(label string, endpoint string) error {
