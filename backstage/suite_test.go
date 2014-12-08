@@ -11,7 +11,3 @@ func Test(t *testing.T) { TestingT(t) }
 type S struct{}
 
 var _ = Suite(&S{})
-
-func (s *S) TestSetUp(c *C) {
-	TargetFileName = "/tmp/.backstage_targets"
-}
