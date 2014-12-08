@@ -7,3 +7,5 @@ An open source command line solution for publishing APIs on [Backstage](https://
 ##reporting issues
 Please report issues to the
 [backstage/backstage](https://github.com/backstage/backstage/issues) repository.
+
+This project's inspired by [Tsuru](https://github.com/tsuru/tsuru).
