@@ -19,6 +19,20 @@ GLOBAL OPTIONS:
    {{end}}{{end}}
 `
 
+var CommandHelpTemplate = `NAME:
+   {{.Name}} - {{.Usage}}
+
+USAGE:
+   {{.Name}}{{if .Flags}} [command options]{{end}} [arguments...]{{if .Description}}
+
+DESCRIPTION:
+   {{.Description}}{{end}}{{if .Flags}}
+
+OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}{{ end }}
+`
+
 func Confirm(ctx *Context, question string) bool {
 	r, _ := regexp.Compile("[Y|y]")
 	fmt.Fprintf(ctx.Stdout, "%s (y/n)", question)
