@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"syscall"
 
 	"github.com/codegangsta/cli"
@@ -168,7 +169,8 @@ func (t *Target) save() error {
 	if err != nil {
 		return err
 	}
-	targetsFile, err := filesystem().OpenFile(TargetFileName, syscall.O_RDWR|syscall.O_CREAT, 0600)
+	targetsFile, err := filesystem().OpenFile(TargetFileName, syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, 0600)
+	defer targetsFile.Close()
 	if err != nil {
 		return err
 	}
@@ -181,10 +183,10 @@ func (t *Target) save() error {
 
 func LoadTargets() (*Target, error) {
 	targetsFile, err := filesystem().OpenFile(TargetFileName, syscall.O_RDWR|syscall.O_CREAT, 0600)
+	defer targetsFile.Close()
 	if err != nil {
 		return nil, err
 	}
-	defer targetsFile.Close()
 	data, err := ioutil.ReadAll(targetsFile)
 	if err == nil {
 		var t Target
