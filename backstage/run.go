@@ -12,7 +12,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "backstage"
 	app.Usage = "An open source solution for publishing APIs."
-	app.Version = "0.0.1"
+	app.Version = "0.0.2"
 	app.HideHelp = true
 
 	m := NewManager(app)
