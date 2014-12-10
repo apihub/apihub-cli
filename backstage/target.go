@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"syscall"
 
 	"github.com/codegangsta/cli"
@@ -20,6 +21,7 @@ var (
 	ErrBadFormattedFile  = errors.New("Bad formatted file. Please open an issue on or Github page: backstage/backstage")
 	ErrCommandCancelled  = errors.New("Command Cancelled.")
 	ErrFailedWritingFile = errors.New("Failed trying to write the target file.")
+	ErrEndpointNotFound  = errors.New("Endpoint not found.")
 )
 
 var fsystem fs.Fs
@@ -199,4 +201,17 @@ func LoadTargets() (*Target, error) {
 		return &t, nil
 	}
 	return nil, err
+}
+
+func GetURL(path string) (string, error) {
+	t, err := LoadTargets()
+	if err != nil {
+		return "", err
+	}
+	current := t.Options[t.Current]
+	if current == "" {
+		return "", ErrEndpointNotFound
+	}
+
+	return strings.TrimRight(current, "/") + path, nil
 }

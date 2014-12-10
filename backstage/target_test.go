@@ -110,3 +110,50 @@ func (s *S) TestSetTargetAsDefaultWithInvalidLabel(c *C) {
 	c.Assert(err, Not(IsNil))
 	c.Assert(err.Error(), Equals, "Label not found.")
 }
+
+func (s *S) TestGetURL(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com/"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	url, err := GetURL("/api/teams")
+	c.Assert(err, IsNil)
+	c.Assert(url, Equals, "http://www.example.com/api/teams")
+}
+
+func (s *S) TestGetURLWithoutEndpoint(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  key: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	url, err := GetURL("/api/teams")
+	c.Assert(err, Not(IsNil))
+	c.Assert(err.Error(), Equals, "Endpoint not found.")
+	c.Assert(url, Equals, "")
+}
+
+func (s *S) TestGetURLWithoutCurrent(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current: \noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	url, err := GetURL("/api/teams")
+	c.Assert(err, Not(IsNil))
+	c.Assert(err.Error(), Equals, "Endpoint not found.")
+	c.Assert(url, Equals, "")
+}
+
+func (s *S) TestGetURLWithoutContent(c *C) {
+	rfs := &testing.RecordingFs{}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	url, err := GetURL("/api/teams")
+	c.Assert(err, Not(IsNil))
+	c.Assert(err.Error(), Equals, "Endpoint not found.")
+	c.Assert(url, Equals, "")
+}
