@@ -20,10 +20,10 @@ GLOBAL OPTIONS:
 `
 
 var CommandHelpTemplate = `NAME:
-   {{.Name}} - {{.Usage}}
+   {{.Name}}
 
 USAGE:
-   {{.Name}}{{if .Flags}} [command options]{{end}} [arguments...]{{if .Description}}
+   {{.Usage}}{{if .Description}}
 
 DESCRIPTION:
    {{.Description}}{{end}}{{if .Flags}}
