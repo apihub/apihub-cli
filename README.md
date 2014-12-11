@@ -8,4 +8,4 @@ An open source command line solution for publishing APIs on [Backstage](https://
 Please report issues to the
 [backstage/backstage](https://github.com/backstage/backstage/issues) repository.
 
-This project's inspired by [Tsuru](https://github.com/tsuru/tsuru).
+This project's inspired by [Tsuru](https://github.com/tsuru/tsuru). It uses a ton of code from their projects!

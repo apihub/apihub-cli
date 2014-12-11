@@ -15,13 +15,13 @@ import (
 )
 
 var (
-	TargetFileName       = joinHomePath(".backstage_targets")
-	ErrLabelExists       = errors.New("The label provided exists already.")
-	ErrLabelNotFound     = errors.New("Label not found.")
-	ErrBadFormattedFile  = errors.New("Bad formatted file. Please open an issue on or Github page: backstage/backstage")
-	ErrCommandCancelled  = errors.New("Command Cancelled.")
-	ErrFailedWritingFile = errors.New("Failed trying to write the target file.")
-	ErrEndpointNotFound  = errors.New("Endpoint not found.")
+	TargetFileName              = joinHomePath(".backstage_targets")
+	ErrLabelExists              = errors.New("The label provided exists already.")
+	ErrLabelNotFound            = errors.New("Label not found.")
+	ErrBadFormattedFile         = errors.New("Bad formatted file. Please open an issue on or Github page: backstage/backstage")
+	ErrCommandCancelled         = errors.New("Command Cancelled.")
+	ErrFailedWrittingTargetFile = errors.New("Failed trying to write the target file.")
+	ErrEndpointNotFound         = errors.New("You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 )
 
 var fsystem fs.Fs
@@ -77,7 +77,7 @@ func (t *Target) GetCommands() []cli.Command {
 		{
 			Name:        "target-remove",
 			Usage:       "target-remove <label>",
-			Description: "Remove a target from the list of targets.",
+			Description: "Removes a target from the list of targets.",
 			Before: func(c *cli.Context) error {
 				if c.Args().First() == "" {
 					return ErrCommandCancelled
@@ -107,7 +107,7 @@ func (t *Target) GetCommands() []cli.Command {
 		{
 			Name:        "target-set",
 			Usage:       "target-set <label>",
-			Description: "Set a target as default to be used.",
+			Description: "Sets a target as default to be used.",
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("target-set")()
 				targets, err := LoadTargets()
@@ -177,7 +177,7 @@ func (t *Target) save() error {
 	}
 	n, err := targetsFile.WriteString(string(d))
 	if n != len(string(d)) || err != nil {
-		return ErrFailedWritingFile
+		return ErrFailedWrittingTargetFile
 	}
 	return nil
 }

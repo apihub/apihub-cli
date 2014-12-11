@@ -130,7 +130,7 @@ func (s *S) TestGetURLWithoutEndpoint(c *C) {
 	}()
 	url, err := GetURL("/api/teams")
 	c.Assert(err, Not(IsNil))
-	c.Assert(err.Error(), Equals, "Endpoint not found.")
+	c.Assert(err.Error(), Equals, "You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 	c.Assert(url, Equals, "")
 }
 
@@ -142,7 +142,7 @@ func (s *S) TestGetURLWithoutCurrent(c *C) {
 	}()
 	url, err := GetURL("/api/teams")
 	c.Assert(err, Not(IsNil))
-	c.Assert(err.Error(), Equals, "Endpoint not found.")
+	c.Assert(err.Error(), Equals, "You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 	c.Assert(url, Equals, "")
 }
 
@@ -154,6 +154,6 @@ func (s *S) TestGetURLWithoutContent(c *C) {
 	}()
 	url, err := GetURL("/api/teams")
 	c.Assert(err, Not(IsNil))
-	c.Assert(err.Error(), Equals, "Endpoint not found.")
+	c.Assert(err.Error(), Equals, "You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 	c.Assert(url, Equals, "")
 }

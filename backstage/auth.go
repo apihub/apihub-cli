@@ -95,10 +95,10 @@ func writeToken(token string) error {
 
 func ReadToken() (string, error) {
 	tokenFile, err := filesystem().OpenFile(TokenFileName, syscall.O_RDWR, 0600)
-	defer tokenFile.Close()
 	if err != nil {
 		return "", ErrLoginRequired
 	}
+	defer tokenFile.Close()
 	data, _ := ioutil.ReadAll(tokenFile)
 	return string(data), nil
 }
