@@ -115,3 +115,57 @@ func (s *S) TestTeamAddUserWhenUserDoesNotExist(c *C) {
 	r := team.addUser("invalid-email@example.org")
 	c.Assert(r, Equals, "User not found! Please check if the email provided is a valid user in the server.")
 }
+
+func (s *S) TestTeamRemoveUser(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	team := &Team{
+		Alias: "kotobuki",
+	}
+	transport := ttesting.Transport{
+		Status:  http.StatusOK,
+		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
+	}
+	team.client = NewClient(&http.Client{Transport: &transport})
+	r := team.removeUser("ringo@example.org")
+	c.Assert(r, Equals, "User `ringo@example.org` removed successfully to team `kotobuki`.")
+}
+
+func (s *S) TestTeamRemoveUserWhenUserDoesNotExist(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	team := &Team{
+		Alias: "kotobuki",
+	}
+	transport := ttesting.Transport{
+		Status:  http.StatusCreated,
+		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
+	}
+	team.client = NewClient(&http.Client{Transport: &transport})
+	r := team.removeUser("invalid-email@example.org")
+	c.Assert(r, Equals, "User not found! Please check if the email provided is a valid user in the server.")
+}
+
+func (s *S) TestTeamRemoveUserWhenUserItTheOwner(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	team := &Team{
+		Alias: "kotobuki",
+	}
+	transport := ttesting.Transport{
+		Status:  http.StatusOK,
+		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
+	}
+	team.client = NewClient(&http.Client{Transport: &transport})
+	r := team.removeUser("alice@example.org")
+	c.Assert(r, Equals, "You cannot remove the owner.")
+}

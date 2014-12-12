@@ -118,6 +118,32 @@ func (t *Team) GetCommands() []cli.Command {
 				fmt.Println(result)
 			},
 		},
+		{
+			Name:        "team-user-remove",
+			Usage:       "team-user-remove --team <team-alias> --email <email>",
+			Description: "Removes a user from a team.",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "team, t",
+					Value: "",
+					Usage: "Name of the team",
+				},
+				cli.StringFlag{
+					Name:  "email, e",
+					Value: "",
+					Usage: "User email",
+				},
+			},
+			Action: func(c *cli.Context) {
+				defer RecoverStrategy("team-user-remove")()
+				team := &Team{
+					Alias:  c.String("team"),
+					client: NewClient(&http.Client{}),
+				}
+				result := team.removeUser(c.String("email"))
+				fmt.Println(result)
+			},
+		},
 	}
 }
 
@@ -217,8 +243,41 @@ func (t *Team) addUser(user string) string {
 
 	var team = &Team{}
 	parseBody(response.Body, &team)
-	if response.StatusCode == http.StatusCreated && team.containsEmail(t.Users[0]) == true {
+	if response.StatusCode == http.StatusCreated && team.containsEmail(t.Users[0]) {
 		return "User `" + t.Users[0] + "` added successfully to team `" + t.Alias + "`."
+	}
+	return "User not found! Please check if the email provided is a valid user in the server."
+}
+
+func (t *Team) removeUser(user string) string {
+	url, err := GetURL("/api/teams/" + t.Alias + "/users")
+	if err != nil {
+		return err.Error()
+	}
+	t.Users = append(t.Users, user)
+	teamJson, err := json.Marshal(t)
+	if err != nil {
+		return err.Error()
+	}
+	b := bytes.NewBufferString(string(teamJson))
+	req, err := http.NewRequest("DELETE", url, b)
+	if err != nil {
+		return err.Error()
+	}
+
+	response, err := t.client.Do(req)
+	if err != nil {
+		httpEr := err.(*httpErr.HTTPError)
+		return httpEr.Message
+	}
+
+	var team = &Team{}
+	parseBody(response.Body, &team)
+	if response.StatusCode == http.StatusOK && !team.containsEmail(t.Users[0]) {
+		return "User `" + t.Users[0] + "` removed successfully to team `" + t.Alias + "`."
+	}
+	if team.Owner == user {
+		return "You cannot remove the owner."
 	}
 	return "User not found! Please check if the email provided is a valid user in the server."
 }
