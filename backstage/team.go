@@ -10,7 +10,6 @@ import (
 
 	httpErr "github.com/backstage/backstage/errors"
 	"github.com/codegangsta/cli"
-	. "github.com/mrvdot/golang-utils"
 )
 
 type Team struct {
@@ -44,19 +43,19 @@ func (t *Team) GetCommands() []cli.Command {
 		},
 		{
 			Name:        "team-info",
-			Usage:       "team-info --name <name>",
+			Usage:       "team-info --alias <alias>",
 			Description: "Retrieves team info.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "name, n",
+					Name:  "alias, a",
 					Value: "",
-					Usage: "Name of the team",
+					Usage: "Team alias",
 				},
 			},
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("team-info")()
 				team := &Team{
-					Name:   c.String("name"),
+					Alias:  c.String("alias"),
 					client: NewClient(&http.Client{}),
 				}
 				result := team.info()
@@ -65,13 +64,13 @@ func (t *Team) GetCommands() []cli.Command {
 		},
 		{
 			Name:        "team-remove",
-			Usage:       "team-remove --name <name>",
+			Usage:       "team-remove --alias <alias>",
 			Description: "Remove an existing team.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "name, n",
+					Name:  "alias, a",
 					Value: "",
-					Usage: "Name of the team",
+					Usage: "Team alias",
 				},
 			},
 			Action: func(c *cli.Context) {
@@ -81,7 +80,7 @@ func (t *Team) GetCommands() []cli.Command {
 				} else {
 					defer RecoverStrategy("team-remove")()
 					team := &Team{
-						Name:   c.String("name"),
+						Alias:  c.String("alias"),
 						client: NewClient(&http.Client{}),
 					}
 					result := team.remove()
@@ -120,7 +119,6 @@ func (t *Team) save() string {
 }
 
 func (t *Team) info() string {
-	t.Alias = GenerateSlug(t.Name)
 	url, err := GetURL("/api/teams" + "/" + t.Alias)
 	if err != nil {
 		return err.Error()
@@ -144,7 +142,6 @@ func (t *Team) info() string {
 }
 
 func (t *Team) remove() string {
-	t.Alias = GenerateSlug(t.Name)
 	url, err := GetURL("/api/teams" + "/" + t.Alias)
 	if err != nil {
 		return err.Error()

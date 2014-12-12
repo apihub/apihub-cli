@@ -15,7 +15,7 @@ func (s *S) TestTeamCreate(c *C) {
 		fsystem = nil
 	}()
 	team := &Team{
-		Name: "Kotobuki",
+		Alias: "kotobuki",
 	}
 	transport := ttesting.Transport{
 		Status:  http.StatusCreated,
@@ -37,7 +37,7 @@ func (s *S) TestTeamCreateWithExistingName(c *C) {
 		Message: `{"status_code":400,"message":"Someone already has that team name. Could you try another?"}`,
 	}
 	team := &Team{
-		Name: "Kotobuki",
+		Alias: "kotobuki",
 	}
 	team.client = NewClient(&http.Client{Transport: &transport})
 	r := team.save()
@@ -51,7 +51,7 @@ func (s *S) TestTeamRemove(c *C) {
 		fsystem = nil
 	}()
 	team := &Team{
-		Name: "Kotobuki",
+		Alias: "kotobuki",
 	}
 	transport := ttesting.Transport{
 		Status:  http.StatusOK,
@@ -69,7 +69,7 @@ func (s *S) TestTeamRemoveWithoutTarget(c *C) {
 		fsystem = nil
 	}()
 	team := &Team{
-		Name: "Kotobuki",
+		Alias: "kotobuki",
 	}
 	transport := ttesting.Transport{
 		Status:  http.StatusOK,
