@@ -85,7 +85,7 @@ func (s *S) TestUserRemoveWithoutTarget(c *C) {
 	}
 	transport := ttesting.Transport{
 		Status:  http.StatusOK,
-		Message: `{"name":"` + user.Name + `","email":"` + user.Email + `","username":"` + user.Username + `"}`,
+		Message: `{}`,
 	}
 	user.client = NewClient(&http.Client{Transport: &transport})
 	r := user.remove()
