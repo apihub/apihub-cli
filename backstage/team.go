@@ -276,10 +276,7 @@ func (t *Team) removeUser(user string) string {
 	if response.StatusCode == http.StatusOK && !team.containsEmail(t.Users[0]) {
 		return "User `" + t.Users[0] + "` removed successfully to team `" + t.Alias + "`."
 	}
-	if team.Owner == user {
-		return "You cannot remove the owner."
-	}
-	return "User not found! Please check if the email provided is a valid user in the server."
+	return "You cannot remove the owner."
 }
 
 func (t *Team) containsEmail(email string) bool {
