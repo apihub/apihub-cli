@@ -39,7 +39,6 @@ func Confirm(ctx *Context, question string) bool {
 	var answer string
 	fmt.Fscanf(ctx.Stdin, "%s", &answer)
 	if !r.MatchString(answer) {
-		fmt.Fprintln(ctx.Stdout, "Operation cancelled.")
 		return false
 	}
 	return true

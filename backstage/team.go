@@ -74,21 +74,19 @@ func (t *Team) GetCommands() []cli.Command {
 					Usage: "Name of the team",
 				},
 			},
-			Before: func(c *cli.Context) error {
+			Action: func(c *cli.Context) {
 				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
 				if Confirm(context, "Are you sure you want to remove this team?") != true {
-					return ErrCommandCancelled
+					fmt.Println(ErrCommandCancelled)
+				} else {
+					defer RecoverStrategy("team-remove")()
+					team := &Team{
+						Name:   c.String("name"),
+						client: NewClient(&http.Client{}),
+					}
+					result := team.remove()
+					fmt.Println(result)
 				}
-				return nil
-			},
-			Action: func(c *cli.Context) {
-				defer RecoverStrategy("team-remove")()
-				team := &Team{
-					Name:   c.String("name"),
-					client: NewClient(&http.Client{}),
-				}
-				result := team.remove()
-				fmt.Println(result)
 			},
 		},
 	}

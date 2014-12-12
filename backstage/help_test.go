@@ -28,7 +28,7 @@ func (s *S) TestConfirmCommandReturnFalseForn(c *C) {
 	context := Context{Stdout: &stdout, Stdin: strings.NewReader("n\n")}
 	result := Confirm(&context, "Are you sure you want to delete it?")
 	c.Assert(result, Equals, false)
-	c.Assert(stdout.String(), Equals, "Are you sure you want to delete it? (y/n)Operation cancelled.\n")
+	c.Assert(stdout.String(), Equals, "Are you sure you want to delete it? (y/n)")
 }
 
 func (s *S) TestConfirmCommandReturnFalseForN(c *C) {
@@ -36,7 +36,7 @@ func (s *S) TestConfirmCommandReturnFalseForN(c *C) {
 	context := Context{Stdout: &stdout, Stdin: strings.NewReader("N\n")}
 	result := Confirm(&context, "Are you sure you want to delete it?")
 	c.Assert(result, Equals, false)
-	c.Assert(stdout.String(), Equals, "Are you sure you want to delete it? (y/n)Operation cancelled.\n")
+	c.Assert(stdout.String(), Equals, "Are you sure you want to delete it? (y/n)")
 }
 
 func (s *S) TestConfirmCommandReturnFalseForAnythingButY(c *C) {
@@ -44,5 +44,5 @@ func (s *S) TestConfirmCommandReturnFalseForAnythingButY(c *C) {
 	context := Context{Stdout: &stdout, Stdin: strings.NewReader("A\n")}
 	result := Confirm(&context, "Are you sure you want to delete it?")
 	c.Assert(result, Equals, false)
-	c.Assert(stdout.String(), Equals, "Are you sure you want to delete it? (y/n)Operation cancelled.\n")
+	c.Assert(stdout.String(), Equals, "Are you sure you want to delete it? (y/n)")
 }
