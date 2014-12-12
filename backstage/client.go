@@ -42,9 +42,17 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	if resp.StatusCode >= 400 {
 		var httpResponse = map[string]interface{}{}
 		parseBody(resp.Body, &httpResponse)
-		err = &errors.HTTPError{
-			StatusCode: resp.StatusCode,
-			Message:    httpResponse["message"].(string),
+		switch resp.StatusCode {
+		case 401:
+			err = &errors.HTTPError{
+				StatusCode: resp.StatusCode,
+				Message:    ErrLoginRequired.Error(),
+			}
+		default:
+			err = &errors.HTTPError{
+				StatusCode: resp.StatusCode,
+				Message:    httpResponse["message"].(string),
+			}
 		}
 		return resp, err
 	}
