@@ -114,7 +114,7 @@ func (u *User) save() string {
 func (u *User) remove() string {
 	_, err := ReadToken()
 	if err != nil {
-		return "You must be logged in to remove your account."
+		return ErrLoginRequired.Error()
 	}
 
 	url, err := GetURL("/api/users")
