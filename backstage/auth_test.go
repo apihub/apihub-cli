@@ -89,6 +89,11 @@ func (s *S) TestLogout(c *C) {
 }
 
 func (s *S) TestLogoutWhenNotSignedIn(c *C) {
+	rfs := &testing.FileNotFoundFs{}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
 	auth := &Auth{}
 	result := auth.Logout()
 	c.Assert(result, Equals, "You are not signed in.")
@@ -108,6 +113,11 @@ func (s *S) TestReadToken(c *C) {
 }
 
 func (s *S) TestReadTokenWhenFileNotFound(c *C) {
+	rfs := &testing.FileNotFoundFs{}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
 	_, err := ReadToken()
 	c.Assert(err, Not(IsNil))
 }
@@ -125,6 +135,11 @@ func (s *S) TestDeleteToken(c *C) {
 }
 
 func (s *S) TestDeleteTokenWhenFileNotFound(c *C) {
+	rfs := &testing.FileNotFoundFs{}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
 	err := DeleteToken()
 	c.Assert(err, Not(IsNil))
 }
