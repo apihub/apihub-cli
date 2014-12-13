@@ -79,7 +79,6 @@ func (c *Client) MakePost(path string, payload string, r interface{}) (*http.Res
 		httpEr := err.(*httpErr.HTTPError)
 		return nil, httpEr
 	}
-
 	parseBody(response.Body, &r)
 	return response, nil
 }
@@ -100,7 +99,6 @@ func (c *Client) MakeDelete(path string, payload string, r interface{}) (*http.R
 		httpEr := err.(*httpErr.HTTPError)
 		return nil, httpEr
 	}
-
 	parseBody(response.Body, &r)
 	return response, nil
 }
@@ -120,7 +118,6 @@ func (c *Client) MakeGet(path string, r interface{}) (*http.Response, error) {
 		httpEr := err.(*httpErr.HTTPError)
 		return nil, httpEr
 	}
-
 	parseBody(response.Body, &r)
 	return response, nil
 }
