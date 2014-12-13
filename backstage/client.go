@@ -54,9 +54,14 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 				Message:    ErrLoginRequired.Error(),
 			}
 		default:
+			msg, ok := httpResponse["message"].(string)
+			if !ok {
+				msg = "Failed to connect to the server. Please check if the target is correct."
+			}
+
 			err = &httpErr.HTTPError{
 				StatusCode: resp.StatusCode,
-				Message:    httpResponse["message"].(string),
+				Message:    msg,
 			}
 		}
 		return resp, err
