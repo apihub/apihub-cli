@@ -64,3 +64,17 @@ func (s *S) TestShouldIncludeTheHeaderAuthorizationWhenTokenFileExists(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(request.Header.Get("Authorization"), Equals, "Token mytoken")
 }
+
+func (s *S) TestShouldIncludeTheClientVersionInTheHeader(c *C) {
+	fsystem = &testing.RecordingFs{FileContent: "Token mytoken"}
+	defer func() {
+		fsystem = nil
+	}()
+	request, err := http.NewRequest("GET", "/", nil)
+	c.Assert(err, IsNil)
+	trans := ttesting.Transport{Message: "", Status: http.StatusOK}
+	client := NewClient(&http.Client{Transport: &trans})
+	_, err = client.Do(request)
+	c.Assert(err, IsNil)
+	c.Assert(request.Header.Get("BackstageClient-Version"), Equals, BackstageClientVersion)
+}

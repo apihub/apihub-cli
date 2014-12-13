@@ -29,6 +29,8 @@ func (c *Client) checkTargetError(err error) error {
 }
 
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
+	req.Header.Set("BackstageClient-Version", BackstageClientVersion)
+
 	if token, err := ReadToken(); err == nil {
 		req.Header.Set("Authorization", token)
 	}
