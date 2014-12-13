@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -21,6 +22,16 @@ func parseBody(body io.ReadCloser, r interface{}) error {
 		return err
 	}
 	if err = json.Unmarshal(b, &r); err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoginRequired() error {
+	_, err := ReadToken()
+	if err != nil {
+		err = ErrLoginRequired
+		fmt.Println(err.Error())
 		return err
 	}
 	return nil
