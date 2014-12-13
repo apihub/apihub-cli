@@ -102,3 +102,23 @@ func (c *Client) MakeDelete(path string, payload string, r interface{}) (*http.R
 	parseBody(response.Body, &r)
 	return response, nil
 }
+
+func (c *Client) MakeGet(path string, r interface{}) (*http.Response, error) {
+	url, err := GetURL(path)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := c.Do(req)
+	if err != nil {
+		httpEr := err.(*httpErr.HTTPError)
+		return nil, httpEr
+	}
+
+	parseBody(response.Body, &r)
+	return response, nil
+}

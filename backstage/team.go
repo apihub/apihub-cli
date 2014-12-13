@@ -3,11 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 
-	httpErr "github.com/backstage/backstage/errors"
 	"github.com/codegangsta/cli"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -56,7 +54,7 @@ func (t *Team) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("team-info")()
+				//defer RecoverStrategy("team-info")()
 				team := &Team{
 					Alias:  c.String("alias"),
 					client: NewClient(&http.Client{}),
@@ -165,24 +163,15 @@ func (t *Team) save() string {
 }
 
 func (t *Team) info() string {
-	url, err := GetURL("/api/teams" + "/" + t.Alias)
+	path := "/api/teams/" + t.Alias
+	team := Team{}
+	response, err := t.client.MakeGet(path, &team)
 	if err != nil {
 		return err.Error()
-	}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return err.Error()
-	}
-
-	response, err := t.client.Do(req)
-	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
-		return httpEr.Message
 	}
 
 	if response.StatusCode == http.StatusOK {
-		body, _ := ioutil.ReadAll(response.Body)
-		return string(body)
+		return team.Name
 	}
 	return ErrBadRequest.Error()
 }
@@ -212,6 +201,7 @@ func (t *Team) addUser(email string) string {
 	if err != nil {
 		return err.Error()
 	}
+
 	if response.StatusCode == http.StatusCreated && team.containsUserByEmail(email) {
 		return "User `" + email + "` added successfully to team `" + t.Alias + "`."
 	}
