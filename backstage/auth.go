@@ -52,9 +52,12 @@ func (a *Auth) GetCommands() []cli.Command {
 
 func (a *Auth) Login(email, password string) string {
 	path := "/api/login"
-	payload := `{"email":"` + email + `", "password":"` + password + `"}`
+	user := &User{
+		Email:    email,
+		Password: password,
+	}
 	token := map[string]interface{}{}
-	_, err := a.client.MakePost(path, payload, &token)
+	_, err := a.client.MakePost(path, user, &token)
 	if err != nil {
 		return err.Error()
 	}

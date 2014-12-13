@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,11 +10,11 @@ import (
 )
 
 type User struct {
-	Name     string `json:"name,omitempty"`
-	Email    string `json:"email,omitempty"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-	client   *Client
+	Name     string  `json:"name,omitempty"`
+	Email    string  `json:"email,omitempty"`
+	Username string  `json:"username,omitempty"`
+	Password string  `json:"password,omitempty"`
+	client   *Client `json:"-"`
 }
 
 func (u *User) GetCommands() []cli.Command {
@@ -42,7 +41,7 @@ func (u *User) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("user-create")()
+
 				fmt.Println("Please type your password:")
 				password, err := terminal.ReadPassword(int(os.Stdin.Fd()))
 				if err != nil {
@@ -84,12 +83,8 @@ func (u *User) GetCommands() []cli.Command {
 
 func (u *User) save() string {
 	path := "/api/users"
-	payload, err := json.Marshal(u)
-	if err != nil {
-		return err.Error()
-	}
-	user := User{}
-	response, err := u.client.MakePost(path, string(payload), &user)
+	user := &User{}
+	response, err := u.client.MakePost(path, u, user)
 	if err != nil {
 		return err.Error()
 	}
@@ -103,7 +98,7 @@ func (u *User) save() string {
 func (u *User) remove() string {
 	path := "/api/users"
 	user := User{}
-	response, err := u.client.MakeDelete(path, "", &user)
+	response, err := u.client.MakeDelete(path, nil, &user)
 	if err != nil {
 		return err.Error()
 	}

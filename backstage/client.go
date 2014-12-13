@@ -3,6 +3,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strings"
@@ -64,12 +65,21 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) MakePost(path string, payload string, r interface{}) (*http.Response, error) {
+func (c *Client) MakePost(path string, p interface{}, r interface{}) (*http.Response, error) {
+	var body string
+	if p != nil {
+		payload, err := json.Marshal(p)
+		if err != nil {
+			return nil, err
+		}
+		body = string(payload)
+	}
+
 	url, err := GetURL(path)
 	if err != nil {
 		return nil, err
 	}
-	b := bytes.NewBufferString(payload)
+	b := bytes.NewBufferString(body)
 	req, err := http.NewRequest("POST", url, b)
 	if err != nil {
 		return nil, err
@@ -84,12 +94,20 @@ func (c *Client) MakePost(path string, payload string, r interface{}) (*http.Res
 	return response, nil
 }
 
-func (c *Client) MakeDelete(path string, payload string, r interface{}) (*http.Response, error) {
+func (c *Client) MakeDelete(path string, p interface{}, r interface{}) (*http.Response, error) {
+	var body string
+	if p != nil {
+		payload, err := json.Marshal(p)
+		if err != nil {
+			return nil, err
+		}
+		body = string(payload)
+	}
 	url, err := GetURL(path)
 	if err != nil {
 		return nil, err
 	}
-	b := bytes.NewBufferString(payload)
+	b := bytes.NewBufferString(body)
 	req, err := http.NewRequest("DELETE", url, b)
 	if err != nil {
 		return nil, err

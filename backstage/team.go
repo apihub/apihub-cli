@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -146,12 +145,8 @@ func (t *Team) GetCommands() []cli.Command {
 
 func (t *Team) save() string {
 	path := "/api/teams"
-	payload, err := json.Marshal(t)
-	if err != nil {
-		return err.Error()
-	}
-	team := Team{}
-	response, err := t.client.MakePost(path, string(payload), &team)
+	team := &Team{}
+	response, err := t.client.MakePost(path, t, team)
 	if err != nil {
 		return err.Error()
 	}
@@ -164,8 +159,8 @@ func (t *Team) save() string {
 
 func (t *Team) info() string {
 	path := "/api/teams/" + t.Alias
-	team := Team{}
-	response, err := t.client.MakeGet(path, &team)
+	team := &Team{}
+	response, err := t.client.MakeGet(path, team)
 	if err != nil {
 		return err.Error()
 	}
@@ -178,8 +173,8 @@ func (t *Team) info() string {
 
 func (t *Team) remove() string {
 	path := "/api/teams/" + t.Alias
-	team := Team{}
-	response, err := t.client.MakeDelete(path, "", &team)
+	team := &Team{}
+	response, err := t.client.MakeDelete(path, nil, team)
 	if err != nil {
 		return err.Error()
 	}
@@ -192,12 +187,8 @@ func (t *Team) remove() string {
 
 func (t *Team) addUser(email string) string {
 	path := "/api/teams/" + t.Alias + "/users"
-	payload, err := json.Marshal(t)
-	if err != nil {
-		return err.Error()
-	}
 	var team = &Team{}
-	response, err := t.client.MakePost(path, string(payload), &team)
+	response, err := t.client.MakePost(path, t, team)
 	if err != nil {
 		return err.Error()
 	}
@@ -211,12 +202,8 @@ func (t *Team) addUser(email string) string {
 func (t *Team) removeUser(email string) string {
 	path := "/api/teams/" + t.Alias + "/users"
 	t.Users = append(t.Users, email)
-	teamJson, err := json.Marshal(t)
-	if err != nil {
-		return err.Error()
-	}
-	team := Team{}
-	response, err := t.client.MakeDelete(path, string(teamJson), &team)
+	team := &Team{}
+	response, err := t.client.MakeDelete(path, t, team)
 	if err != nil {
 		return err.Error()
 	}
