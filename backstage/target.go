@@ -42,6 +42,13 @@ func (t *Target) GetCommands() []cli.Command {
 			Name:        "target-add",
 			Usage:       "target-add <label> <endpoint>",
 			Description: "Adds a new target in the list of targets.",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "set-default, s",
+					Value: "",
+					Usage: "Sets target as default.",
+				},
+			},
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("target-add")()
 				targets, err := LoadTargets()
@@ -55,6 +62,9 @@ func (t *Target) GetCommands() []cli.Command {
 				if err != nil {
 					fmt.Println(err.Error())
 					return
+				}
+				if c.String("set-default") == label {
+					targets.setDefault(label)
 				}
 				fmt.Println("Target added successfully!")
 			},
