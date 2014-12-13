@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -71,7 +70,8 @@ func (t *Target) GetCommands() []cli.Command {
 					fmt.Println(err.Error())
 					return
 				}
-				fmt.Println(targets.list())
+				table := targets.list()
+				table.Render()
 			},
 		},
 		{
@@ -135,15 +135,23 @@ func (t *Target) add(label string, endpoint string) error {
 	return t.save()
 }
 
-func (t *Target) list() string {
-	var targetList bytes.Buffer
-	for label, endpoint := range t.Options {
-		if t.Current == label {
-			targetList.WriteString("* ")
-		}
-		targetList.WriteString(label + " - " + endpoint + "\n")
+func (t *Target) list() *Table {
+	table := &Table{
+		Content: [][]string{},
+		Header:  []string{"Default", "Label", "Backstage Server"},
 	}
-	return targetList.String()
+	sortedKeys := sortMapKeys(t.Options)
+	for _, label := range sortedKeys {
+		endpoint := t.Options[label]
+		line := []string{""}
+		if t.Current == label {
+			line[0] = "*"
+		}
+		line = append(line, label, endpoint)
+		table.Content = append(table.Content, line)
+	}
+
+	return table
 }
 
 func (t *Target) remove(label string) error {

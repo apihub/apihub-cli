@@ -20,6 +20,12 @@ func (s *S) TestJoinHomePathWithMultipleValues(c *C) {
 	c.Assert(joinHomePath(str, str2), Equals, home+"/"+str+"/"+str2)
 }
 
+func (s *S) TestSortMapKeys(c *C) {
+	mapkeys := map[string]string{"c": "c", "b": "b", "a": "a"}
+	sortedKeys := sortMapKeys(mapkeys)
+	c.Assert(sortedKeys, DeepEquals, []string{"a", "b", "c"})
+}
+
 func (s *S) TestLoginRequired(c *C) {
 	rfs := &testing.RecordingFs{FileContent: "Token xyz"}
 	fsystem = rfs

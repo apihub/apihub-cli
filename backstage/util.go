@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"sort"
 )
 
 func joinHomePath(p ...string) string {
@@ -25,6 +26,17 @@ func parseBody(body io.ReadCloser, r interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func sortMapKeys(m map[string]string) []string {
+	mk := make([]string, len(m))
+	i := 0
+	for k, _ := range m {
+		mk[i] = k
+		i++
+	}
+	sort.Strings(mk)
+	return mk
 }
 
 func LoginRequired() error {

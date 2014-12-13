@@ -54,8 +54,9 @@ func (s *S) TestListTargets(c *C) {
 	}()
 	t, err := LoadTargets()
 	c.Assert(err, IsNil)
-	targets := t.list()
-	c.Assert(targets, Equals, "* backstage - http://www.example.com\nexample - www.example.com\n")
+	targetTable := t.list()
+	c.Assert(targetTable.Header, DeepEquals, []string{"Default", "Label", "Backstage Server"})
+	c.Assert(targetTable.Content, DeepEquals, [][]string{[]string{"*", "backstage", "http://www.example.com"}, []string{"", "example", "www.example.com"}})
 }
 
 func (s *S) TestRemoveTarget(c *C) {
