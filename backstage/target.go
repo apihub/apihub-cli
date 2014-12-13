@@ -70,7 +70,8 @@ func (t *Target) GetCommands() []cli.Command {
 					return
 				}
 				table := targets.list()
-				table.Render()
+				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
+				table.Render(context)
 			},
 		},
 		{
