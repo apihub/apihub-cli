@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -85,24 +84,15 @@ func (u *User) GetCommands() []cli.Command {
 }
 
 func (u *User) save() string {
-	url, err := GetURL("/api/users")
+	path := "/api/users"
+	payload, err := json.Marshal(u)
 	if err != nil {
 		return err.Error()
 	}
-	userJson, err := json.Marshal(u)
+	user := User{}
+	response, err := u.client.MakePost(path, string(payload), &user)
 	if err != nil {
 		return err.Error()
-	}
-	b := bytes.NewBufferString(string(userJson))
-	req, err := http.NewRequest("POST", url, b)
-	if err != nil {
-		return err.Error()
-	}
-
-	response, err := u.client.Do(req)
-	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
-		return httpEr.Message
 	}
 
 	if response.StatusCode == http.StatusCreated {

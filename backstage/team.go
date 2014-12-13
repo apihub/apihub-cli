@@ -148,24 +148,15 @@ func (t *Team) GetCommands() []cli.Command {
 }
 
 func (t *Team) save() string {
-	url, err := GetURL("/api/teams")
+	path := "/api/teams"
+	payload, err := json.Marshal(t)
 	if err != nil {
 		return err.Error()
 	}
-	teamJson, err := json.Marshal(t)
+	team := Team{}
+	response, err := t.client.MakePost(path, string(payload), &team)
 	if err != nil {
 		return err.Error()
-	}
-	b := bytes.NewBufferString(string(teamJson))
-	req, err := http.NewRequest("POST", url, b)
-	if err != nil {
-		return err.Error()
-	}
-
-	response, err := t.client.Do(req)
-	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
-		return httpEr.Message
 	}
 
 	if response.StatusCode == http.StatusCreated {
@@ -219,42 +210,29 @@ func (t *Team) remove() string {
 	return ErrBadRequest.Error()
 }
 
-func (t *Team) addUser(user string) string {
-	url, err := GetURL("/api/teams/" + t.Alias + "/users")
+func (t *Team) addUser(email string) string {
+	path := "/api/teams/" + t.Alias + "/users"
+	payload, err := json.Marshal(t)
 	if err != nil {
 		return err.Error()
 	}
-	t.Users = append(t.Users, user)
-	teamJson, err := json.Marshal(t)
-	if err != nil {
-		return err.Error()
-	}
-	b := bytes.NewBufferString(string(teamJson))
-	req, err := http.NewRequest("POST", url, b)
-	if err != nil {
-		return err.Error()
-	}
-
-	response, err := t.client.Do(req)
-	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
-		return httpEr.Message
-	}
-
 	var team = &Team{}
-	parseBody(response.Body, &team)
-	if response.StatusCode == http.StatusCreated && team.containsEmail(t.Users[0]) {
-		return "User `" + t.Users[0] + "` added successfully to team `" + t.Alias + "`."
+	response, err := t.client.MakePost(path, string(payload), &team)
+	if err != nil {
+		return err.Error()
+	}
+	if response.StatusCode == http.StatusCreated && team.containsUserByEmail(email) {
+		return "User `" + email + "` added successfully to team `" + t.Alias + "`."
 	}
 	return "User not found! Please check if the email provided is a valid user in the server."
 }
 
-func (t *Team) removeUser(user string) string {
+func (t *Team) removeUser(email string) string {
 	url, err := GetURL("/api/teams/" + t.Alias + "/users")
 	if err != nil {
 		return err.Error()
 	}
-	t.Users = append(t.Users, user)
+	t.Users = append(t.Users, email)
 	teamJson, err := json.Marshal(t)
 	if err != nil {
 		return err.Error()
@@ -273,13 +251,13 @@ func (t *Team) removeUser(user string) string {
 
 	var team = &Team{}
 	parseBody(response.Body, &team)
-	if response.StatusCode == http.StatusOK && !team.containsEmail(t.Users[0]) {
-		return "User `" + t.Users[0] + "` removed successfully to team `" + t.Alias + "`."
+	if response.StatusCode == http.StatusOK && !team.containsUserByEmail(email) {
+		return "User `" + email + "` removed successfully to team `" + t.Alias + "`."
 	}
 	return "You cannot remove the owner."
 }
 
-func (t *Team) containsEmail(email string) bool {
+func (t *Team) containsUserByEmail(email string) bool {
 	for _, u := range t.Users {
 		if u == email {
 			return true

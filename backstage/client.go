@@ -2,10 +2,11 @@
 package main
 
 import (
+	"bytes"
 	"net/http"
 	"net/url"
 
-	"github.com/backstage/backstage/errors"
+	httpErr "github.com/backstage/backstage/errors"
 )
 
 type Client struct {
@@ -21,7 +22,7 @@ func (c *Client) checkTargetError(err error) error {
 	if !ok {
 		return err
 	}
-	return &errors.HTTPError{
+	return &httpErr.HTTPError{
 		StatusCode: http.StatusServiceUnavailable,
 		Message:    "Failed to connect to Backstage server: " + urlErr.Err.Error(),
 	}
@@ -44,12 +45,12 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 		parseBody(resp.Body, &httpResponse)
 		switch resp.StatusCode {
 		case 401:
-			err = &errors.HTTPError{
+			err = &httpErr.HTTPError{
 				StatusCode: resp.StatusCode,
 				Message:    ErrLoginRequired.Error(),
 			}
 		default:
-			err = &errors.HTTPError{
+			err = &httpErr.HTTPError{
 				StatusCode: resp.StatusCode,
 				Message:    httpResponse["message"].(string),
 			}
@@ -58,4 +59,25 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	return resp, nil
+}
+
+func (c *Client) MakePost(path string, payload string, r interface{}) (*http.Response, error) {
+	url, err := GetURL(path)
+	if err != nil {
+		return nil, err
+	}
+	b := bytes.NewBufferString(payload)
+	req, err := http.NewRequest("POST", url, b)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := c.Do(req)
+	if err != nil {
+		httpEr := err.(*httpErr.HTTPError)
+		return nil, httpEr
+	}
+
+	parseBody(response.Body, &r)
+	return response, nil
 }

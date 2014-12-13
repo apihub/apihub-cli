@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -10,7 +9,6 @@ import (
 	"syscall"
 
 	"code.google.com/p/go.crypto/ssh/terminal"
-	httpErr "github.com/backstage/backstage/errors"
 	"github.com/codegangsta/cli"
 )
 
@@ -53,24 +51,14 @@ func (a *Auth) GetCommands() []cli.Command {
 }
 
 func (a *Auth) Login(email, password string) string {
-	url, err := GetURL("/api/login")
-	if err != nil {
-		return err.Error()
-	}
-	b := bytes.NewBufferString(`{"email":"` + email + `", "password":"` + password + `"}`)
-	req, err := http.NewRequest("POST", url, b)
+	path := "/api/login"
+	payload := `{"email":"` + email + `", "password":"` + password + `"}`
+	token := map[string]interface{}{}
+	_, err := a.client.MakePost(path, payload, &token)
 	if err != nil {
 		return err.Error()
 	}
 
-	response, err := a.client.Do(req)
-	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
-		return httpEr.Message
-	}
-
-	var token = map[string]interface{}{}
-	parseBody(response.Body, &token)
 	writeToken(token["token_type"].(string) + " " + token["token"].(string))
 	return "Welcome! You've signed in successfully."
 }
