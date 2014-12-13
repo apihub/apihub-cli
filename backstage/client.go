@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"net/http"
 	"net/url"
+	"strings"
 
 	httpErr "github.com/backstage/backstage/errors"
 )
@@ -120,4 +121,17 @@ func (c *Client) MakeGet(path string, r interface{}) (*http.Response, error) {
 	}
 	parseBody(response.Body, &r)
 	return response, nil
+}
+
+func GetURL(path string) (string, error) {
+	t, err := LoadTargets()
+	if err != nil {
+		return "", err
+	}
+	current := t.Options[t.Current]
+	if current == "" {
+		return "", ErrEndpointNotFound
+	}
+
+	return strings.TrimRight(current, "/") + path, nil
 }

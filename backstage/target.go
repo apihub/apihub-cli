@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"syscall"
 
 	"github.com/codegangsta/cli"
@@ -209,17 +208,4 @@ func LoadTargets() (*Target, error) {
 		return &t, nil
 	}
 	return nil, err
-}
-
-func GetURL(path string) (string, error) {
-	t, err := LoadTargets()
-	if err != nil {
-		return "", err
-	}
-	current := t.Options[t.Current]
-	if current == "" {
-		return "", ErrEndpointNotFound
-	}
-
-	return strings.TrimRight(current, "/") + path, nil
 }
