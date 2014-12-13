@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"code.google.com/p/go.crypto/ssh/terminal"
-	httpErr "github.com/backstage/backstage/errors"
 	"github.com/codegangsta/cli"
 )
 
@@ -69,7 +68,7 @@ func (u *User) GetCommands() []cli.Command {
 				if Confirm(context, "Are you sure you want to remove your user?(Everything will be lost!)") != true {
 					return ErrCommandCancelled
 				}
-				return nil
+				return LoginRequired()
 			},
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("user-remove")()
@@ -102,24 +101,11 @@ func (u *User) save() string {
 }
 
 func (u *User) remove() string {
-	_, err := ReadToken()
-	if err != nil {
-		return ErrLoginRequired.Error()
-	}
-
-	url, err := GetURL("/api/users")
+	path := "/api/users"
+	user := User{}
+	response, err := u.client.MakeDelete(path, "", &user)
 	if err != nil {
 		return err.Error()
-	}
-	req, err := http.NewRequest("DELETE", url, nil)
-	if err != nil {
-		return err.Error()
-	}
-
-	response, err := u.client.Do(req)
-	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
-		return httpEr.Message
 	}
 
 	if response.StatusCode == http.StatusOK {

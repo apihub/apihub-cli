@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -189,19 +188,11 @@ func (t *Team) info() string {
 }
 
 func (t *Team) remove() string {
-	url, err := GetURL("/api/teams" + "/" + t.Alias)
+	path := "/api/teams/" + t.Alias
+	team := Team{}
+	response, err := t.client.MakeDelete(path, "", &team)
 	if err != nil {
 		return err.Error()
-	}
-	req, err := http.NewRequest("DELETE", url, nil)
-	if err != nil {
-		return err.Error()
-	}
-
-	response, err := t.client.Do(req)
-	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
-		return httpEr.Message
 	}
 
 	if response.StatusCode == http.StatusOK {
@@ -228,29 +219,18 @@ func (t *Team) addUser(email string) string {
 }
 
 func (t *Team) removeUser(email string) string {
-	url, err := GetURL("/api/teams/" + t.Alias + "/users")
-	if err != nil {
-		return err.Error()
-	}
+	path := "/api/teams/" + t.Alias + "/users"
 	t.Users = append(t.Users, email)
 	teamJson, err := json.Marshal(t)
 	if err != nil {
 		return err.Error()
 	}
-	b := bytes.NewBufferString(string(teamJson))
-	req, err := http.NewRequest("DELETE", url, b)
+	team := Team{}
+	response, err := t.client.MakeDelete(path, string(teamJson), &team)
 	if err != nil {
 		return err.Error()
 	}
 
-	response, err := t.client.Do(req)
-	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
-		return httpEr.Message
-	}
-
-	var team = &Team{}
-	parseBody(response.Body, &team)
 	if response.StatusCode == http.StatusOK && !team.containsUserByEmail(email) {
 		return "User `" + email + "` removed successfully to team `" + t.Alias + "`."
 	}
