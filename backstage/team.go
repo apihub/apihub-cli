@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -53,13 +54,34 @@ func (t *Team) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				//defer RecoverStrategy("team-info")()
+				defer RecoverStrategy("team-info")()
 				team := &Team{
 					Alias:  c.String("alias"),
 					client: NewClient(&http.Client{}),
 				}
 				result := team.info()
 				fmt.Println(result)
+			},
+		},
+		{
+			Name:        "team-list",
+			Usage:       "team-list",
+			Description: "Retrieves all your teams.",
+			Action: func(c *cli.Context) {
+				defer RecoverStrategy("team-list")()
+				team := &Team{
+					client: NewClient(&http.Client{}),
+				}
+				table, err := team.list()
+				if table != nil {
+					context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
+					table.Render(context)
+					return
+				}
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
 			},
 		},
 		{
@@ -169,6 +191,29 @@ func (t *Team) info() string {
 		return team.Name
 	}
 	return ErrBadRequest.Error()
+}
+
+func (t *Team) list() (*Table, error) {
+	path := "/api/teams"
+	var teams []map[string]string
+	_, err := t.client.MakeGet(path, &teams)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(teams) > 0 {
+		table := &Table{
+			Content: [][]string{},
+			Header:  []string{"Team Name", "Alias", "Owner"},
+		}
+		for _, team := range teams {
+			line := []string{}
+			line = append(line, team["name"], team["alias"], team["owner"])
+			table.Content = append(table.Content, line)
+		}
+		return table, nil
+	}
+	return nil, errors.New("You have no teams.")
 }
 
 func (t *Team) remove() string {
