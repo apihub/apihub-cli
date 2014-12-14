@@ -59,8 +59,16 @@ func (t *Team) GetCommands() []cli.Command {
 					Alias:  c.String("alias"),
 					client: NewClient(&http.Client{}),
 				}
-				result := team.info()
-				fmt.Println(result)
+				table, err := team.info()
+				if table != nil {
+					context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
+					table.Render(context)
+					return
+				}
+				if err != nil {
+					fmt.Println(err.Error())
+					return
+				}
 			},
 		},
 		{
@@ -179,18 +187,30 @@ func (t *Team) save() string {
 	return ErrBadRequest.Error()
 }
 
-func (t *Team) info() string {
+func (t *Team) info() (*Table, error) {
 	path := "/api/teams/" + t.Alias
-	team := &Team{}
-	response, err := t.client.MakeGet(path, team)
+	var team Team
+	response, err := t.client.MakeGet(path, &team)
 	if err != nil {
-		return err.Error()
+		return nil, err
 	}
 
 	if response.StatusCode == http.StatusOK {
-		return team.Name
+		fmt.Println("Name: " + team.Name)
+		fmt.Println("Alias: " + team.Alias)
+		fmt.Println("Owner: " + team.Owner + "\n")
+		table := &Table{
+			Content: [][]string{},
+			Header:  []string{"Team Members"},
+		}
+		for _, member := range team.Users {
+			line := []string{}
+			line = append(line, member)
+			table.Content = append(table.Content, line)
+		}
+		return table, nil
 	}
-	return ErrBadRequest.Error()
+	return nil, ErrBadRequest
 }
 
 func (t *Team) list() (*Table, error) {

@@ -62,7 +62,7 @@ func (s *S) TestTeamList(c *C) {
 	c.Assert(table.Content, DeepEquals, [][]string{[]string{"backstage", "", "alice@example.org"}})
 }
 
-func (s *S) TestTeamListWithouTeam(c *C) {
+func (s *S) TestTeamListWithoutTeam(c *C) {
 	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
@@ -78,6 +78,24 @@ func (s *S) TestTeamListWithouTeam(c *C) {
 	c.Assert(table, IsNil)
 	c.Assert(err, Not(IsNil))
 	c.Assert(err.Error(), Equals, "You have no teams.")
+}
+
+func (s *S) TestTeamInfo(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	transport := ttesting.Transport{
+		Status:  http.StatusOK,
+		Message: `{"id":"54825cd18f897dbba8aba570","name":"Backstage","alias":"backstage","users":["alice@example.org"],"owner":"alice@example.org"}`,
+	}
+	team := &Team{}
+	team.client = NewClient(&http.Client{Transport: &transport})
+	table, err := team.info()
+	c.Assert(err, IsNil)
+	c.Assert(table.Header, DeepEquals, []string{"Team Members"})
+	c.Assert(table.Content, DeepEquals, [][]string{[]string{"alice@example.org"}})
 }
 
 func (s *S) TestTeamRemove(c *C) {
