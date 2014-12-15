@@ -6,7 +6,7 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-var BackstageClientVersion = "0.0.3"
+var BackstageClientVersion = "0.0.5"
 
 func main() {
 	cli.AppHelpTemplate = AppHelpTemplate
