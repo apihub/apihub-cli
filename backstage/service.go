@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/codegangsta/cli"
@@ -100,6 +101,32 @@ func (s *Service) GetCommands() []cli.Command {
 				fmt.Println(result)
 			},
 		},
+		{
+			Name:        "service-remove",
+			Usage:       "service-remove --subdomain <subdomain>",
+			Description: "Remove an existing service.",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "subdomain, s",
+					Value: "",
+					Usage: "Subdomain",
+				},
+			},
+			Action: func(c *cli.Context) {
+				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
+				if Confirm(context, "Are you sure you want to remove this service?") != true {
+					fmt.Println(ErrCommandCancelled)
+				} else {
+					defer RecoverStrategy("service-remove")()
+					service := &Service{
+						Subdomain: c.String("subdomain"),
+						client:    NewClient(&http.Client{}),
+					}
+					result := service.remove()
+					fmt.Println(result)
+				}
+			},
+		},
 	}
 }
 
@@ -113,6 +140,20 @@ func (s *Service) save() string {
 
 	if response.StatusCode == http.StatusCreated {
 		return "Service created successfully."
+	}
+	return ErrBadRequest.Error()
+}
+
+func (s *Service) remove() string {
+	path := "/api/services/" + s.Subdomain
+	service := &Service{}
+	response, err := s.client.MakeDelete(path, nil, service)
+	if err != nil {
+		return err.Error()
+	}
+
+	if response.StatusCode == http.StatusOK {
+		return "Service removed successfully."
 	}
 	return ErrBadRequest.Error()
 }

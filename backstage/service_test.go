@@ -33,7 +33,7 @@ func (s *S) TestServiceCreate(c *C) {
 	c.Assert(r, Equals, "Service created successfully.")
 }
 
-func (s *S) TestServiceCreateWithInvalidTeam(c *C) {
+func (s *S) TestServiceCreateWithInvalidSubdomain(c *C) {
 	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
@@ -41,14 +41,14 @@ func (s *S) TestServiceCreateWithInvalidTeam(c *C) {
 	}()
 	transport := ttesting.Transport{
 		Status:  http.StatusBadRequest,
-		Message: `{"status_code":400,"message":"Team not found."}`,
+		Message: `{"status_code":400,"message":"Service not found."}`,
 	}
-	team := &Team{
-		Alias: "kotobuki",
+	service := &Service{
+		Subdomain: "backstage",
 	}
-	team.client = NewClient(&http.Client{Transport: &transport})
-	r := team.save()
-	c.Assert(r, Equals, "Team not found.")
+	service.client = NewClient(&http.Client{Transport: &transport})
+	r := service.save()
+	c.Assert(r, Equals, "Service not found.")
 }
 
 func (s *S) TestServiceCreateWithAnExistingSubdomain(c *C) {
@@ -61,10 +61,46 @@ func (s *S) TestServiceCreateWithAnExistingSubdomain(c *C) {
 		Status:  http.StatusBadRequest,
 		Message: `{"status_code":400,"message":"There is another service with this subdomain."}`,
 	}
-	team := &Team{
-		Alias: "kotobuki",
+	service := &Service{
+		Subdomain: "backstage",
 	}
-	team.client = NewClient(&http.Client{Transport: &transport})
-	r := team.save()
+	service.client = NewClient(&http.Client{Transport: &transport})
+	r := service.save()
 	c.Assert(r, Equals, "There is another service with this subdomain.")
+}
+
+func (s *S) TestServiceRemove(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	service := &Service{
+		Subdomain: "backstage",
+	}
+	transport := ttesting.Transport{
+		Status:  http.StatusOK,
+		Message: `{"subdomain":"backstage","created_at":"2014-12-05T17:44:39.462-02:00","updated_at":"2014-12-05T17:44:39.462-02:00","allow_keyless_use":true,"description":"test","disabled":false,"documentation":"http://www.example.org/doc","endpoint":"http://github.com/backstage","owner":"alice@example.org","timeout":10}`,
+	}
+	service.client = NewClient(&http.Client{Transport: &transport})
+	r := service.remove()
+	c.Assert(r, Equals, "Service removed successfully.")
+}
+
+func (s *S) TestServiceRemoveWithInvalidSubdomain(c *C) {
+	rfs := &testing.RecordingFs{FileContent: "current:\n"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	service := &Service{
+		Subdomain: "backstage",
+	}
+	transport := ttesting.Transport{
+		Status:  http.StatusOK,
+		Message: `{}`,
+	}
+	service.client = NewClient(&http.Client{Transport: &transport})
+	r := service.remove()
+	c.Assert(r, Equals, "You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 }
