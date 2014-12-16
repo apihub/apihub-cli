@@ -1,4 +1,3 @@
-// This file is a free adaptation of Tsuru client: https://github.com/tsuru/tsuru/blob/master/cmd/client.go
 package main
 
 import (
@@ -32,11 +31,9 @@ func (c *Client) checkTargetError(err error) error {
 
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Set("BackstageClient-Version", BackstageClientVersion)
-
 	if token, err := ReadToken(); err == nil {
 		req.Header.Set("Authorization", token)
 	}
-
 	resp, err := c.HTTPClient.Do(req)
 	err = c.checkTargetError(err)
 	if err != nil {
@@ -56,7 +53,7 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 		default:
 			msg, ok := httpResponse["message"].(string)
 			if !ok {
-				msg = "Failed to connect to the server. Please check if the target is correct."
+				msg = ErrFailedConnectingServer.Error()
 			}
 
 			err = &httpErr.HTTPError{
@@ -64,20 +61,23 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 				Message:    msg,
 			}
 		}
-		return resp, err
 	}
 
-	return resp, nil
+	return resp, err
+}
+
+func convertInString(p interface{}) (string, error) {
+	payload, err := json.Marshal(p)
+	if err != nil {
+		return "", err
+	}
+	return string(payload), nil
 }
 
 func (c *Client) MakePost(path string, p interface{}, r interface{}) (*http.Response, error) {
-	var body string
-	if p != nil {
-		payload, err := json.Marshal(p)
-		if err != nil {
-			return nil, err
-		}
-		body = string(payload)
+	body, err := convertInString(p)
+	if err != nil {
+		return nil, err
 	}
 
 	url, err := GetURL(path)
@@ -100,14 +100,11 @@ func (c *Client) MakePost(path string, p interface{}, r interface{}) (*http.Resp
 }
 
 func (c *Client) MakeDelete(path string, p interface{}, r interface{}) (*http.Response, error) {
-	var body string
-	if p != nil {
-		payload, err := json.Marshal(p)
-		if err != nil {
-			return nil, err
-		}
-		body = string(payload)
+	body, err := convertInString(p)
+	if err != nil {
+		return nil, err
 	}
+
 	url, err := GetURL(path)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,3 @@
-// This file is a free adaptation of Tsuru client: https://github.com/tsuru/tsuru/blob/master/cmd/client_test.go
 package main
 
 import (

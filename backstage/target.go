@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,16 +12,9 @@ import (
 )
 
 var (
-	TargetFileName              = joinHomePath(".backstage_targets")
-	ErrLabelExists              = errors.New("The label provided exists already.")
-	ErrLabelNotFound            = errors.New("Label not found.")
-	ErrBadFormattedFile         = errors.New("Bad formatted file. Please open an issue on or Github page: backstage/backstage")
-	ErrCommandCancelled         = errors.New("Command Cancelled.")
-	ErrFailedWrittingTargetFile = errors.New("Failed trying to write the target file.")
-	ErrEndpointNotFound         = errors.New("You have not selected any target as default. For more details, please run `backstage target-set -h`.")
+	fsystem fs.Fs
+	TargetFileName = joinHomePath(".backstage_targets")
 )
-
-var fsystem fs.Fs
 
 func filesystem() fs.Fs {
 	if fsystem == nil {
@@ -41,7 +33,7 @@ func (t *Target) GetCommands() []cli.Command {
 		{
 			Name:        "target-add",
 			Usage:       "target-add <label> <endpoint>",
-			Description: "Adds a new target in the list of targets.",
+			Description: "Add a new target in the list of targets.",
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("target-add")()
 				targets, err := LoadTargets()
@@ -56,7 +48,7 @@ func (t *Target) GetCommands() []cli.Command {
 					fmt.Println(err.Error())
 					return
 				}
-				fmt.Println("Target added successfully!")
+				fmt.Println("Your new target has been added.")
 			},
 		},
 		{
@@ -77,13 +69,13 @@ func (t *Target) GetCommands() []cli.Command {
 		{
 			Name:        "target-remove",
 			Usage:       "target-remove <label>",
-			Description: "Removes a target from the list of targets.",
+			Description: "Remove a target from the list of targets.",
 			Before: func(c *cli.Context) error {
 				if c.Args().First() == "" {
 					return ErrCommandCancelled
 				}
 				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
-				if Confirm(context, "Are you sure you want to remove this target?") != true {
+				if Confirm(context, "Are you sure you want to remove this target? This action cannot be undone.") != true {
 					return ErrCommandCancelled
 				}
 				return nil
@@ -101,13 +93,13 @@ func (t *Target) GetCommands() []cli.Command {
 					fmt.Println(err.Error())
 					return
 				}
-				fmt.Println("Target removed successfully!")
+				fmt.Println("The target `"+ label +"` has been remove.")
 			},
 		},
 		{
 			Name:        "target-set",
 			Usage:       "target-set <label>",
-			Description: "Sets a target as default to be used.",
+			Description: "Set a target as default.",
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("target-set")()
 				targets, err := LoadTargets()
@@ -185,7 +177,7 @@ func (t *Target) save() error {
 	}
 	n, err := targetsFile.WriteString(string(d))
 	if n != len(string(d)) || err != nil {
-		return ErrFailedWrittingTargetFile
+		return ErrFailedWritingTargetFile
 	}
 	return nil
 }

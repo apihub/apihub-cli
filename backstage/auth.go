@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -12,12 +11,7 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-var (
-	TokenFileName              = joinHomePath(".backstage_token")
-	ErrFailedWrittingTokenFile = errors.New("Failed trying to write the token file.")
-	ErrLoginRequired           = errors.New("You must log in.")
-	ErrBadRequest              = errors.New("It was not possible to handle your request at this moment. Please ty again.")
-)
+var TokenFileName  = joinHomePath(".backstage_token")
 
 type Auth struct {
 	client *Client
@@ -27,11 +21,11 @@ func (a *Auth) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:        "login",
-			Usage:       "login <email>",
-			Description: "Sign in with your Backstage credentials to continue.",
+			Usage:       "login <email>\n   Password (typing will be hidden):\n   Authentication successful.",
+			Description: "Login in with your Backstage credentials.",
 			Action: func(c *cli.Context) {
 				email := c.Args().First()
-				fmt.Println("Please type your password:")
+				fmt.Println("Password (typing will be hidden):")
 				password, _ := terminal.ReadPassword(int(os.Stdin.Fd()))
 				auth := &Auth{client: NewClient(&http.Client{})}
 				result := auth.Login(email, string(password))
@@ -40,11 +34,12 @@ func (a *Auth) GetCommands() []cli.Command {
 		},
 		{
 			Name:        "logout",
-			Description: "Sign out from Backstage.",
+			Usage:       "logout\n   You have successfully logged out.",
+			Description: "Clear local credentials.",
 			Action: func(c *cli.Context) {
 				auth := &Auth{}
-				resp := auth.Logout()
-				fmt.Println(resp)
+				result := auth.Logout()
+				fmt.Println(result)
 			},
 		},
 	}
@@ -62,24 +57,23 @@ func (a *Auth) Login(email, password string) string {
 		return err.Error()
 	}
 
-	writeToken(token["token_type"].(string) + " " + token["token"].(string))
-	return "Welcome! You've signed in successfully."
+	if err := writeToken(token["token_type"].(string) + " " + token["token"].(string)); err != nil {
+		return err.Error()
+	}
+	return "Authentication successful."
 }
 
 func (a *Auth) Logout() string {
-	err := filesystem().Remove(joinHomePath(".backstage_token"))
-	if err != nil {
-		return "You are not signed in."
-	}
-	return "You have signed out successfully."
+	filesystem().Remove(joinHomePath(".backstage_token"))
+	return "You have successfully logged out."
 }
 
 func writeToken(token string) error {
 	tokenFile, err := filesystem().OpenFile(TokenFileName, syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, 0600)
-	defer tokenFile.Close()
 	if err != nil {
 		return err
 	}
+	defer tokenFile.Close()
 	tokenFile.WriteString(token)
 	return nil
 }
@@ -96,8 +90,5 @@ func ReadToken() (string, error) {
 
 func DeleteToken() error {
 	err := filesystem().Remove(TokenFileName)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

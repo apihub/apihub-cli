@@ -24,7 +24,7 @@ func (s *S) TestLogin(c *C) {
 		client: NewClient(&http.Client{Transport: &transport}),
 	}
 	r := auth.Login("alice@example.org", "123")
-	c.Assert(r, Equals, "Welcome! You've signed in successfully.")
+	c.Assert(r, Equals, "Authentication successful.")
 }
 
 func (s *S) TestLoginWithInvalidCredentials(c *C) {
@@ -83,7 +83,7 @@ func (s *S) TestLogout(c *C) {
 	}()
 	auth := &Auth{}
 	result := auth.Logout()
-	c.Assert(result, Equals, "You have signed out successfully.")
+	c.Assert(result, Equals, "You have successfully logged out.")
 	filePath := path.Join(os.ExpandEnv("${HOME}"), ".backstage_token")
 	c.Assert(rfs.HasAction("remove "+filePath), Equals, true)
 }
@@ -96,7 +96,7 @@ func (s *S) TestLogoutWhenNotSignedIn(c *C) {
 	}()
 	auth := &Auth{}
 	result := auth.Logout()
-	c.Assert(result, Equals, "You are not signed in.")
+	c.Assert(result, Equals, "You have successfully logged out.")
 }
 
 func (s *S) TestReadToken(c *C) {

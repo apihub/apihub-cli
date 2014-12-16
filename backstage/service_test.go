@@ -30,7 +30,7 @@ func (s *S) TestServiceCreate(c *C) {
 	}
 	service.client = NewClient(&http.Client{Transport: &transport})
 	r := service.save()
-	c.Assert(r, Equals, "Service created successfully.")
+	c.Assert(r, Equals, "Your new service has been created.")
 }
 
 func (s *S) TestServiceCreateWithInvalidSubdomain(c *C) {
@@ -84,7 +84,7 @@ func (s *S) TestServiceRemove(c *C) {
 	}
 	service.client = NewClient(&http.Client{Transport: &transport})
 	r := service.remove()
-	c.Assert(r, Equals, "Service removed successfully.")
+	c.Assert(r, Equals, "The service `backstage` has been deleted.")
 }
 
 func (s *S) TestServiceRemoveWithInvalidSubdomain(c *C) {

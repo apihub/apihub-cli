@@ -22,27 +22,26 @@ func (u *User) GetCommands() []cli.Command {
 		{
 			Name:        "user-create",
 			Usage:       "user-create --name <name> --email <email> --username <username>",
-			Description: "Creates a new account.",
+			Description: "Create a user account.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "name, n",
 					Value: "",
-					Usage: "Name of the user",
+					Usage: "The user's real life name",
 				},
 				cli.StringFlag{
 					Name:  "email, e",
 					Value: "",
-					Usage: "Email",
+					Usage: "User's email",
 				},
 				cli.StringFlag{
 					Name:  "username, u",
 					Value: "",
-					Usage: "Username",
+					Usage: "Username is a unique variation on your name",
 				},
 			},
 			Action: func(c *cli.Context) {
-
-				fmt.Println("Please type your password:")
+				fmt.Println("Password (typing will be hidden):")
 				password, err := terminal.ReadPassword(int(os.Stdin.Fd()))
 				if err != nil {
 					fmt.Println(err.Error())
@@ -61,15 +60,14 @@ func (u *User) GetCommands() []cli.Command {
 		{
 			Name:        "user-remove",
 			Usage:       "user-remove",
-			Description: "Removes an account.",
-			Before: func(c *cli.Context) error {
-				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
-				if Confirm(context, "Are you sure you want to remove your user?(Everything will be lost!)") != true {
-					return ErrCommandCancelled
-				}
-				return LoginRequired()
-			},
+			Description: "Delete a user account.",
 			Action: func(c *cli.Context) {
+				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
+				if Confirm(context, "Are you sure you want to delete your account? If deleted, you can't restore it.") != true {
+					fmt.Println(ErrCommandCancelled.Error())
+					return
+				}
+
 				defer RecoverStrategy("user-remove")()
 				user := &User{
 					client: NewClient(&http.Client{}),
@@ -90,7 +88,7 @@ func (u *User) save() string {
 	}
 
 	if response.StatusCode == http.StatusCreated {
-		return "User created successfully."
+		return "Your account has been created."
 	}
 	return ErrBadRequest.Error()
 }
@@ -105,7 +103,7 @@ func (u *User) remove() string {
 
 	if response.StatusCode == http.StatusOK {
 		DeleteToken()
-		return "User removed successfully."
+		return "Your account has been deleted."
 	}
 	return ErrBadRequest.Error()
 }

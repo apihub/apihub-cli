@@ -43,7 +43,7 @@ func (s *S) TestAddWhenLabelAlreadyExists(c *C) {
 	t, err := LoadTargets()
 	err = t.add("backstage", "http://www.example.org")
 	c.Assert(err, Not(IsNil))
-	c.Assert(err.Error(), Equals, "The label provided exists already.")
+	c.Assert(err.Error(), Equals, "Sorry, that label has been used by another user.")
 
 }
 func (s *S) TestListTargets(c *C) {
@@ -81,7 +81,7 @@ func (s *S) TestRemoveTargetWithInvalidLabel(c *C) {
 	c.Assert(err, IsNil)
 	err = t.remove("invalid-label")
 	c.Assert(err, Not(IsNil))
-	c.Assert(err.Error(), Equals, "Label not found.")
+	c.Assert(err.Error(), Equals, "Sorry, that label does not exist.")
 }
 
 func (s *S) TestSetTargetAsDefault(c *C) {
@@ -109,7 +109,7 @@ func (s *S) TestSetTargetAsDefaultWithInvalidLabel(c *C) {
 	c.Assert(err, IsNil)
 	err = t.setDefault("invalid-label")
 	c.Assert(err, Not(IsNil))
-	c.Assert(err.Error(), Equals, "Label not found.")
+	c.Assert(err.Error(), Equals, "Sorry, that label does not exist.")
 }
 
 func (s *S) TestGetURL(c *C) {

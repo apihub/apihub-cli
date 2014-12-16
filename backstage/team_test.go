@@ -23,7 +23,7 @@ func (s *S) TestTeamCreate(c *C) {
 	}
 	team.client = NewClient(&http.Client{Transport: &transport})
 	r := team.save()
-	c.Assert(r, Equals, "Team created successfully.")
+	c.Assert(r, Equals, "Your team has been created.")
 }
 
 func (s *S) TestTeamCreateWithExistingName(c *C) {
@@ -113,7 +113,7 @@ func (s *S) TestTeamRemove(c *C) {
 	}
 	team.client = NewClient(&http.Client{Transport: &transport})
 	r := team.remove()
-	c.Assert(r, Equals, "Team removed successfully.")
+	c.Assert(r, Equals, "Your team has been deleted.")
 }
 
 func (s *S) TestTeamRemoveWithoutTarget(c *C) {
@@ -167,7 +167,7 @@ func (s *S) TestTeamAddUserWhenUserDoesNotExist(c *C) {
 	}
 	team.client = NewClient(&http.Client{Transport: &transport})
 	r := team.addUser("invalid-email@example.org")
-	c.Assert(r, Equals, "User not found! Please check if the email provided is a valid user in the server.")
+	c.Assert(r, Equals, "Sorry, the user was not found.")
 }
 
 func (s *S) TestTeamRemoveUser(c *C) {
@@ -203,5 +203,5 @@ func (s *S) TestTeamRemoveUserWhenUserItTheOwner(c *C) {
 	}
 	team.client = NewClient(&http.Client{Transport: &transport})
 	r := team.removeUser("alice@example.org")
-	c.Assert(r, Equals, "You cannot remove the owner.")
+	c.Assert(r, Equals, "It's not allowed to remove the owner from its team.")
 }

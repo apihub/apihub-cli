@@ -26,7 +26,7 @@ func (s *S) TestUserCreate(c *C) {
 	}
 	user.client = NewClient(&http.Client{Transport: &transport})
 	r := user.save()
-	c.Assert(r, Equals, "User created successfully.")
+	c.Assert(r, Equals, "Your account has been created.")
 }
 
 func (s *S) TestUserCreateInvalidUserInfo(c *C) {
@@ -68,7 +68,7 @@ func (s *S) TestUserRemove(c *C) {
 	}
 	user.client = NewClient(&http.Client{Transport: &transport})
 	r := user.remove()
-	c.Assert(r, Equals, "User removed successfully.")
+	c.Assert(r, Equals, "Your account has been deleted.")
 }
 
 func (s *S) TestUserRemoveWithoutTarget(c *C) {

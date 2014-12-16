@@ -26,14 +26,9 @@ func (s *Service) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:        "service-add",
-			Usage:       "service-add ...",
-			Description: "Creates a new service.",
+			Usage:       "service-add --team <team> --subdomain <subdomain> --endpoint <api_endpoint>\n   Your new service has been created.",
+			Description: "Create a new service.",
 			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "keyless, k",
-					Value: "",
-					Usage: "Allow keyless use",
-				},
 				cli.StringFlag{
 					Name:  "description, desc",
 					Value: "",
@@ -53,6 +48,11 @@ func (s *Service) GetCommands() []cli.Command {
 					Name:  "endpoint, e",
 					Value: "",
 					Usage: "Url where the service is running",
+				},
+				cli.StringFlag{
+					Name:  "keyless, k",
+					Value: "",
+					Usage: "Allow keyless use",
 				},
 				cli.StringFlag{
 					Name:  "subdomain, s",
@@ -103,7 +103,7 @@ func (s *Service) GetCommands() []cli.Command {
 		},
 		{
 			Name:        "service-remove",
-			Usage:       "service-remove --subdomain <subdomain>",
+			Usage:       "service-remove --subdomain <subdomain>\n   The service `<subdomain>` has been deleted.",
 			Description: "Remove an existing service.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -114,7 +114,7 @@ func (s *Service) GetCommands() []cli.Command {
 			},
 			Action: func(c *cli.Context) {
 				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
-				if Confirm(context, "Are you sure you want to remove this service?") != true {
+				if Confirm(context, "Are you sure you want to delete this service? This action cannot be undone.") != true {
 					fmt.Println(ErrCommandCancelled)
 				} else {
 					defer RecoverStrategy("service-remove")()
@@ -139,7 +139,7 @@ func (s *Service) save() string {
 	}
 
 	if response.StatusCode == http.StatusCreated {
-		return "Service created successfully."
+		return "Your new service has been created."
 	}
 	return ErrBadRequest.Error()
 }
@@ -153,7 +153,7 @@ func (s *Service) remove() string {
 	}
 
 	if response.StatusCode == http.StatusOK {
-		return "Service removed successfully."
+		return "The service `" + s.Subdomain + "` has been deleted."
 	}
 	return ErrBadRequest.Error()
 }

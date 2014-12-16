@@ -24,7 +24,7 @@ func (t *Team) GetCommands() []cli.Command {
 		{
 			Name:        "team-create",
 			Usage:       "team-create --name <name>",
-			Description: "Creates a new team.",
+			Description: "Create a team.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "name, n",
@@ -45,7 +45,7 @@ func (t *Team) GetCommands() []cli.Command {
 		{
 			Name:        "team-info",
 			Usage:       "team-info --alias <alias>",
-			Description: "Retrieves team info.",
+			Description: "Return team info and lists of members and services.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "alias, a",
@@ -74,7 +74,7 @@ func (t *Team) GetCommands() []cli.Command {
 		{
 			Name:        "team-list",
 			Usage:       "team-list",
-			Description: "Retrieves all your teams.",
+			Description: "Return a list of all teams.",
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("team-list")()
 				team := &Team{
@@ -95,7 +95,7 @@ func (t *Team) GetCommands() []cli.Command {
 		{
 			Name:        "team-remove",
 			Usage:       "team-remove --alias <alias>",
-			Description: "Remove an existing team.",
+			Description: "Delete a team.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "alias, a",
@@ -105,7 +105,7 @@ func (t *Team) GetCommands() []cli.Command {
 			},
 			Action: func(c *cli.Context) {
 				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
-				if Confirm(context, "Are you sure you want to remove this team?") != true {
+				if Confirm(context, "Are you sure you want to delete this team? This action cannot be undone.") != true {
 					fmt.Println(ErrCommandCancelled)
 				} else {
 					defer RecoverStrategy("team-remove")()
@@ -121,7 +121,7 @@ func (t *Team) GetCommands() []cli.Command {
 		{
 			Name:        "team-user-add",
 			Usage:       "team-user-add --team <team-alias> --email <email>",
-			Description: "Adds a user in a team.",
+			Description: "Add a user to a team.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "team, t",
@@ -131,7 +131,7 @@ func (t *Team) GetCommands() []cli.Command {
 				cli.StringFlag{
 					Name:  "email, e",
 					Value: "",
-					Usage: "User email",
+					Usage: "User's email",
 				},
 			},
 			Action: func(c *cli.Context) {
@@ -147,7 +147,7 @@ func (t *Team) GetCommands() []cli.Command {
 		{
 			Name:        "team-user-remove",
 			Usage:       "team-user-remove --team <team-alias> --email <email>",
-			Description: "Removes a user from a team.",
+			Description: "Remove a user from a team.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "team, t",
@@ -157,7 +157,7 @@ func (t *Team) GetCommands() []cli.Command {
 				cli.StringFlag{
 					Name:  "email, e",
 					Value: "",
-					Usage: "User email",
+					Usage: "User's email",
 				},
 			},
 			Action: func(c *cli.Context) {
@@ -182,7 +182,7 @@ func (t *Team) save() string {
 	}
 
 	if response.StatusCode == http.StatusCreated {
-		return "Team created successfully."
+		return "Your team has been created."
 	}
 	return ErrBadRequest.Error()
 }
@@ -245,7 +245,7 @@ func (t *Team) remove() string {
 	}
 
 	if response.StatusCode == http.StatusOK {
-		return "Team removed successfully."
+		return "Your team has been deleted."
 	}
 	return ErrBadRequest.Error()
 }
@@ -261,7 +261,7 @@ func (t *Team) addUser(email string) string {
 	if response.StatusCode == http.StatusCreated && team.containsUserByEmail(email) {
 		return "User `" + email + "` added successfully to team `" + t.Alias + "`."
 	}
-	return "User not found! Please check if the email provided is a valid user in the server."
+	return "Sorry, the user was not found."
 }
 
 func (t *Team) removeUser(email string) string {
@@ -276,7 +276,7 @@ func (t *Team) removeUser(email string) string {
 	if response.StatusCode == http.StatusOK && !team.containsUserByEmail(email) {
 		return "User `" + email + "` removed successfully to team `" + t.Alias + "`."
 	}
-	return "You cannot remove the owner."
+	return "It's not allowed to remove the owner from its team."
 }
 
 func (t *Team) containsUserByEmail(email string) bool {
