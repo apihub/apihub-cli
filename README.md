@@ -5,7 +5,12 @@
 An open source command line solution for publishing APIs on [Backstage](https://github.com/backstage/backstage).
 
 ##reporting issues
+
 Please report issues to the
 [backstage/backstage](https://github.com/backstage/backstage/issues) repository.
 
 This project's inspired by [Tsuru](https://github.com/tsuru/tsuru). It uses a ton of code from their projects!
+
+##License
+
+Distributed under the New BSD License. See LICENSE file for further details.
