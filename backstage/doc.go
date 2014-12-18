@@ -7,26 +7,26 @@ Usage:
 
 The currently available commands are:
 
-  login            Login in with your Backstage credentials.
-  logout           Clear local credentials.
+  login               Login in with your Backstage credentials.
+  logout              Clear local credentials.
 
-  service-add      Create a new service.
-  service-remove   Remove an existing service.
+  service-add         Create a new service.
+  service-remove      Remove an existing service.
 
-  target-add       Add a new target in the list of targets.
-  target-list      Adds a new target in the list of targets.
-  target-remove    Remove a target from the list of targets.
-  target-set       Set a target as default.
+  target-add          Add a new target in the list of targets.
+  target-list         Adds a new target in the list of targets.
+  target-remove       Remove a target from the list of targets.
+  target-set          Set a target as default.
 
-  team-create      Create a team.
-  team-info        Return team info and lists of members and services.
-  team-list        Return a list of all teams.
-  team-remove      Delete a team.
-  team-user-add    Add a user to a team.
-  team-user-remove Remove a user from a team.
+  team-create         Create a team.
+  team-info           Return team info and lists of members and services.
+  team-list           Return a list of all teams.
+  team-remove         Delete a team.
+  team-user-add       Add a user to a team.
+  team-user-remove    Remove a user from a team.
 
-  user-create      Create a user account.
-  user-remove      Delete a user account.
+  user-create         Create a user account.
+  user-remove         Delete a user account.
 
   GLOBAL OPTIONS:
    --version, -v   print the version
@@ -55,6 +55,7 @@ Usage:
 Clear local token (the file file ~/.backstage_token).
 
 
+
 Create a new service.
 
 USAGE:
@@ -74,6 +75,7 @@ OPTIONS
 
   --team,           -t    Team responsible for the service
   --timeout         Timeout Default: 0 (Do nothing. Wait the api server to return timeout.)
+
 
 
 Remove an existing service.
