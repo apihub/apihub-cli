@@ -55,8 +55,7 @@ Usage:
 Clear local token (the file file ~/.backstage_token).
 
 
-
-Create a new service.
+Create a new service
 
 USAGE:
 
@@ -77,8 +76,7 @@ OPTIONS
   --timeout         Timeout Default: 0 (Do nothing. Wait the api server to return timeout.)
 
 
-
-Remove an existing service.
+Remove an existing service
 
 USAGE:
 
