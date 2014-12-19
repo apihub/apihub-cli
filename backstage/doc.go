@@ -190,7 +190,7 @@ USAGE:
   % backstage team-user-add --team <team-alias> --email <email>
 
 OPTIONS:
-   --team, -tName of the team
+   --team,  -t  Name of the team
    --email, -e  User's email
 
 You need to be a member of the team to remove a user from a team.
