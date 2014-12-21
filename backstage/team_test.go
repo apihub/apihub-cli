@@ -92,10 +92,10 @@ func (s *S) TestTeamInfo(c *C) {
 	}
 	team := &Team{}
 	team.client = NewClient(&http.Client{Transport: &transport})
-	table, err := team.info()
+	tables, err := team.info()
 	c.Assert(err, IsNil)
-	c.Assert(table.Header, DeepEquals, []string{"Team Members"})
-	c.Assert(table.Content, DeepEquals, [][]string{[]string{"alice@example.org"}})
+	c.Assert(tables[0].Header, DeepEquals, []string{"Team Members"})
+	c.Assert(tables[0].Content, DeepEquals, [][]string{[]string{"alice@example.org"}})
 }
 
 func (s *S) TestTeamRemove(c *C) {
@@ -144,7 +144,7 @@ func (s *S) TestTeamAddUser(c *C) {
 		Alias: "kotobuki",
 	}
 	transport := ttesting.Transport{
-		Status:  http.StatusCreated,
+		Status:  http.StatusOK,
 		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
 	}
 	team.client = NewClient(&http.Client{Transport: &transport})

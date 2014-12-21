@@ -11,12 +11,13 @@ import (
 )
 
 type Team struct {
-	Id     bson.ObjectId `bson:"_id,omitempty" json:"id,omitempty""`
-	Name   string        `json:"name"`
-	Alias  string        `json:"alias"`
-	Users  []string      `json:"users"`
-	Owner  string        `json:"owner"`
-	client *Client
+	Id       bson.ObjectId `bson:"_id,omitempty" json:"id,omitempty""`
+	Name     string        `json:"name"`
+	Alias    string        `json:"alias"`
+	Users    []string      `json:"users"`
+	Owner    string        `json:"owner"`
+	Services []*Service    `json:"services,omitempty"`
+	client   *Client
 }
 
 func (t *Team) GetCommands() []cli.Command {
@@ -59,10 +60,13 @@ func (t *Team) GetCommands() []cli.Command {
 					Alias:  c.String("alias"),
 					client: NewClient(&http.Client{}),
 				}
-				table, err := team.info()
-				if table != nil {
-					context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
-					table.Render(context)
+				tables, err := team.info()
+				if tables != nil {
+					for _, table := range tables {
+						context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
+						table.Render(context)
+						fmt.Println("\n")
+					}
 					return
 				}
 				if err != nil {
@@ -187,7 +191,8 @@ func (t *Team) save() string {
 	return ErrBadRequest.Error()
 }
 
-func (t *Team) info() (*Table, error) {
+func (t *Team) info() ([]*Table, error) {
+	var tables []*Table
 	path := "/api/teams/" + t.Alias
 	var team Team
 	response, err := t.client.MakeGet(path, &team)
@@ -199,16 +204,32 @@ func (t *Team) info() (*Table, error) {
 		fmt.Println("Name: " + team.Name)
 		fmt.Println("Alias: " + team.Alias)
 		fmt.Println("Owner: " + team.Owner + "\n")
-		table := &Table{
+		membersTable := &Table{
 			Content: [][]string{},
 			Header:  []string{"Team Members"},
 		}
 		for _, member := range team.Users {
 			line := []string{}
 			line = append(line, member)
-			table.Content = append(table.Content, line)
+			membersTable.Content = append(membersTable.Content, line)
 		}
-		return table, nil
+		tables = append(tables, membersTable)
+		if len(team.Services) > 0 {
+			servicesTable := &Table{
+				Title:   "Available Services:",
+				Content: [][]string{},
+				Header:  []string{"Subdomain", "Endpoint", "Owner"},
+			}
+			for _, service := range team.Services {
+				line := []string{}
+				line = append(line, service.Subdomain)
+				line = append(line, service.Endpoint)
+				line = append(line, service.Owner)
+				servicesTable.Content = append(servicesTable.Content, line)
+			}
+			tables = append(tables, servicesTable)
+		}
+		return tables, nil
 	}
 	return nil, ErrBadRequest
 }
@@ -258,7 +279,7 @@ func (t *Team) addUser(email string) string {
 		return err.Error()
 	}
 
-	if response.StatusCode == http.StatusCreated && team.containsUserByEmail(email) {
+	if response.StatusCode == http.StatusOK && team.containsUserByEmail(email) {
 		return "User `" + email + "` added successfully to team `" + t.Alias + "`."
 	}
 	return "Sorry, the user was not found."
