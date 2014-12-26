@@ -18,7 +18,7 @@ func (s *S) TestLogin(c *C) {
 	}()
 	transport := ttesting.Transport{
 		Status:  http.StatusOK,
-		Message: `{"token_type": "Token", "token": "zyz"}`,
+		Message: `{"token_type": "Token", "access_token": "zyz"}`,
 	}
 	auth := &Auth{
 		client: NewClient(&http.Client{Transport: &transport}),

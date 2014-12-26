@@ -57,7 +57,7 @@ func (a *Auth) Login(email, password string) string {
 		return err.Error()
 	}
 
-	if err := writeToken(token["token_type"].(string) + " " + token["token"].(string)); err != nil {
+	if err := writeToken(token["token_type"].(string) + " " + token["access_token"].(string)); err != nil {
 		return err.Error()
 	}
 	return "Authentication successful."
