@@ -17,6 +17,7 @@ type Team struct {
 	Users    []string      `json:"users"`
 	Owner    string        `json:"owner"`
 	Services []*Service    `json:"services,omitempty"`
+	Clients  []*Client     `json:"clients,omitempty"`
 	client   *HTTPClient
 }
 
@@ -228,6 +229,21 @@ func (t *Team) info() ([]*Table, error) {
 				servicesTable.Content = append(servicesTable.Content, line)
 			}
 			tables = append(tables, servicesTable)
+		}
+		if len(team.Clients) > 0 {
+			clientsTable := &Table{
+				Title:   "Available Clients:",
+				Content: [][]string{},
+				Header:  []string{"Id", "Name", "Redirect Uri"},
+			}
+			for _, client := range team.Clients {
+				line := []string{}
+				line = append(line, client.Id)
+				line = append(line, client.Name)
+				line = append(line, client.RedirectUri)
+				clientsTable.Content = append(clientsTable.Content, line)
+			}
+			tables = append(tables, clientsTable)
 		}
 		return tables, nil
 	}
