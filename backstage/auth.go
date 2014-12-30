@@ -14,7 +14,7 @@ import (
 var TokenFileName  = joinHomePath(".backstage_token")
 
 type Auth struct {
-	client *Client
+	client *HTTPClient
 }
 
 func (a *Auth) GetCommands() []cli.Command {
@@ -27,7 +27,7 @@ func (a *Auth) GetCommands() []cli.Command {
 				email := c.Args().First()
 				fmt.Println("Password (typing will be hidden):")
 				password, _ := terminal.ReadPassword(int(os.Stdin.Fd()))
-				auth := &Auth{client: NewClient(&http.Client{})}
+				auth := &Auth{client: NewHTTPClient(&http.Client{})}
 				result := auth.Login(email, string(password))
 				fmt.Println(result)
 			},

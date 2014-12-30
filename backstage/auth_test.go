@@ -21,7 +21,7 @@ func (s *S) TestLogin(c *C) {
 		Message: `{"token_type": "Token", "access_token": "zyz"}`,
 	}
 	auth := &Auth{
-		client: NewClient(&http.Client{Transport: &transport}),
+		client: NewHTTPClient(&http.Client{Transport: &transport}),
 	}
 	r := auth.Login("alice@example.org", "123")
 	c.Assert(r, Equals, "Authentication successful.")
@@ -38,7 +38,7 @@ func (s *S) TestLoginWithInvalidCredentials(c *C) {
 		Message: `{"status_code":400,"error_description":"Invalid Username or Password."}`,
 	}
 	auth := &Auth{
-		client: NewClient(&http.Client{Transport: &transport}),
+		client: NewHTTPClient(&http.Client{Transport: &transport}),
 	}
 	r := auth.Login("alice@example.org", "123")
 	c.Assert(r, Equals, "Invalid Username or Password.")
@@ -55,7 +55,7 @@ func (s *S) TestLoginWithInvalidPayload(c *C) {
 		Message: `{"status_code":400,"error_description":"The request was bad-formed."}`,
 	}
 	auth := &Auth{
-		client: NewClient(&http.Client{Transport: &transport}),
+		client: NewHTTPClient(&http.Client{Transport: &transport}),
 	}
 	r := auth.Login("alice@example.org", "123")
 	c.Assert(r, Equals, "The request was bad-formed.")
@@ -69,7 +69,7 @@ func (s *S) TestLoginWithoutTarget(c *C) {
 	}()
 
 	auth := &Auth{
-		client: NewClient(&http.Client{}),
+		client: NewHTTPClient(&http.Client{}),
 	}
 	r := auth.Login("alice@example.org", "123")
 	c.Assert(r, Equals, "You have not selected any target as default. For more details, please run `backstage target-set -h`.")

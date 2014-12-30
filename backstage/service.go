@@ -19,7 +19,7 @@ type Service struct {
 	Subdomain       string `json:"subdomain"`
 	Team            string `json:"team"`
 	Timeout         int    `json:"timeout"`
-	client          *Client
+	client          *HTTPClient
 }
 
 func (s *Service) GetCommands() []cli.Command {
@@ -92,10 +92,9 @@ func (s *Service) GetCommands() []cli.Command {
 					Disabled:        disabled,
 					Documentation:   c.String("documentation"),
 					Endpoint:        c.String("endpoint"),
-					Owner:           c.String("owner"),
 					Team:            c.String("team"),
 					Timeout:         int(timeout),
-					client:          NewClient(&http.Client{}),
+					client:          NewHTTPClient(&http.Client{}),
 				}
 				result := service.save()
 				fmt.Println(result)
@@ -120,7 +119,7 @@ func (s *Service) GetCommands() []cli.Command {
 					defer RecoverStrategy("service-remove")()
 					service := &Service{
 						Subdomain: c.String("subdomain"),
-						client:    NewClient(&http.Client{}),
+						client:    NewHTTPClient(&http.Client{}),
 					}
 					result := service.remove()
 					fmt.Println(result)

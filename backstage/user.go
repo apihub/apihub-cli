@@ -14,7 +14,7 @@ type User struct {
 	Email    string  `json:"email,omitempty"`
 	Username string  `json:"username,omitempty"`
 	Password string  `json:"password,omitempty"`
-	client   *Client `json:"-"`
+	client   *HTTPClient `json:"-"`
 }
 
 func (u *User) GetCommands() []cli.Command {
@@ -51,7 +51,7 @@ func (u *User) GetCommands() []cli.Command {
 					Email:    c.String("email"),
 					Username: c.String("username"),
 					Password: string(password),
-					client:   NewClient(&http.Client{}),
+					client:   NewHTTPClient(&http.Client{}),
 				}
 				result := user.save()
 				fmt.Println(result)
@@ -70,7 +70,7 @@ func (u *User) GetCommands() []cli.Command {
 
 				defer RecoverStrategy("user-remove")()
 				user := &User{
-					client: NewClient(&http.Client{}),
+					client: NewHTTPClient(&http.Client{}),
 				}
 				result := user.remove()
 				fmt.Println(result)

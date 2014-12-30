@@ -17,7 +17,7 @@ type Team struct {
 	Users    []string      `json:"users"`
 	Owner    string        `json:"owner"`
 	Services []*Service    `json:"services,omitempty"`
-	client   *Client
+	client   *HTTPClient
 }
 
 func (t *Team) GetCommands() []cli.Command {
@@ -37,7 +37,7 @@ func (t *Team) GetCommands() []cli.Command {
 				defer RecoverStrategy("team-create")()
 				team := &Team{
 					Name:   c.String("name"),
-					client: NewClient(&http.Client{}),
+					client: NewHTTPClient(&http.Client{}),
 				}
 				result := team.save()
 				fmt.Println(result)
@@ -58,7 +58,7 @@ func (t *Team) GetCommands() []cli.Command {
 				defer RecoverStrategy("team-info")()
 				team := &Team{
 					Alias:  c.String("alias"),
-					client: NewClient(&http.Client{}),
+					client: NewHTTPClient(&http.Client{}),
 				}
 				tables, err := team.info()
 				if tables != nil {
@@ -82,7 +82,7 @@ func (t *Team) GetCommands() []cli.Command {
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("team-list")()
 				team := &Team{
-					client: NewClient(&http.Client{}),
+					client: NewHTTPClient(&http.Client{}),
 				}
 				table, err := team.list()
 				if table != nil {
@@ -115,7 +115,7 @@ func (t *Team) GetCommands() []cli.Command {
 					defer RecoverStrategy("team-remove")()
 					team := &Team{
 						Alias:  c.String("alias"),
-						client: NewClient(&http.Client{}),
+						client: NewHTTPClient(&http.Client{}),
 					}
 					result := team.remove()
 					fmt.Println(result)
@@ -142,7 +142,7 @@ func (t *Team) GetCommands() []cli.Command {
 				defer RecoverStrategy("team-user-add")()
 				team := &Team{
 					Alias:  c.String("team"),
-					client: NewClient(&http.Client{}),
+					client: NewHTTPClient(&http.Client{}),
 				}
 				result := team.addUser(c.String("email"))
 				fmt.Println(result)
@@ -168,7 +168,7 @@ func (t *Team) GetCommands() []cli.Command {
 				defer RecoverStrategy("team-user-remove")()
 				team := &Team{
 					Alias:  c.String("team"),
-					client: NewClient(&http.Client{}),
+					client: NewHTTPClient(&http.Client{}),
 				}
 				result := team.removeUser(c.String("email"))
 				fmt.Println(result)

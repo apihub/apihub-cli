@@ -1,88 +1,101 @@
 package main
 
 import (
-	"net/http"
+  "net/http"
 
-	ttesting "github.com/tsuru/tsuru/cmd/testing"
-	"github.com/tsuru/tsuru/fs/testing"
-	. "gopkg.in/check.v1"
+  ttesting "github.com/tsuru/tsuru/cmd/testing"
+  "github.com/tsuru/tsuru/fs/testing"
+  . "gopkg.in/check.v1"
 )
 
-func (s *S) TestShouldSetCloseToTrue(c *C) {
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	transport := ttesting.Transport{
-		Status:  http.StatusOK,
-		Message: "OK",
-	}
-	client := NewClient(&http.Client{Transport: &transport})
-	client.Do(request)
-	c.Assert(request.Close, Equals, true)
+func (s *S) TestClientCreate(c *C) {
+  rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+  fsystem = rfs
+  defer func() {
+    fsystem = nil
+  }()
+  client := &Client{
+    Id:       "backstage",
+    Name:       "Backstage",
+    RedirectUri:   "http://www.example.org/auth",
+  }
+  transport := ttesting.Transport{
+    Status:  http.StatusCreated,
+    Message: `{"id":"backstage","secret":"TJl5HvdhC-NepxCAUXy7fanL4enr3xKDiUcWI2KrBSY=","name":"Backstage","redirect_uri":"","owner":"owner@example.org","team":"backstage"}`,
+  }
+  client.client = NewHTTPClient(&http.Client{Transport: &transport})
+  r := client.save()
+  c.Assert(r, Equals, "Your new client has been created.")
 }
 
-func (s *S) TestShouldReturnErrorWhenServerIsDown(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "http://www.example.org"}
-	fsystem = rfs
-	defer func() {
-		fsystem = nil
-	}()
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	client := NewClient(&http.Client{})
-	_, err = client.Do(request)
-	c.Assert(err, NotNil)
-	c.Assert(err.Error(), Equals, "Failed to connect to Backstage server: unsupported protocol scheme \"\"")
+func (s *S) TestClientCreateWithInvalidTeam(c *C) {
+  rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+  fsystem = rfs
+  defer func() {
+    fsystem = nil
+  }()
+  transport := ttesting.Transport{
+    Status:  http.StatusBadRequest,
+    Message: `{"error":"bad_request","error_description":"Team not found."}`,
+  }
+  client := &Client{
+    Team: "backstage",
+  }
+  client.client = NewHTTPClient(&http.Client{Transport: &transport})
+  r := client.save()
+  c.Assert(r, Equals, "Team not found.")
 }
 
-func (s *S) TestShouldNotIncludeTheHeaderAuthorizationWhenTokenFileIsMissing(c *C) {
-	fsystem = &testing.FileNotFoundFs{}
-	defer func() {
-		fsystem = nil
-	}()
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	trans := ttesting.Transport{
-		Message: "",
-		Status: http.StatusOK,
-	}
-	client := NewClient(&http.Client{Transport: &trans})
-	_, err = client.Do(request)
-	c.Assert(err, IsNil)
-	header := map[string][]string(request.Header)
-	_, ok := header["Authorization"]
-	c.Assert(ok, Equals, false)
+func (s *S) TestClientCreateWithAnExistingName(c *C) {
+  rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+  fsystem = rfs
+  defer func() {
+    fsystem = nil
+  }()
+  transport := ttesting.Transport{
+    Status:  http.StatusBadRequest,
+    Message: `{"error":"bad_request","error_description":"There is another client with this name."}`,
+  }
+  client := &Client{
+    Name: "backstage",
+  }
+  client.client = NewHTTPClient(&http.Client{Transport: &transport})
+  r := client.save()
+  c.Assert(r, Equals, "There is another client with this name.")
 }
 
-func (s *S) TestShouldIncludeTheHeaderAuthorizationWhenTokenFileExists(c *C) {
-	fsystem = &testing.RecordingFs{FileContent: "Token mytoken"}
-	defer func() {
-		fsystem = nil
-	}()
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	trans := ttesting.Transport{
-		Message: "",
-		Status: http.StatusOK,
-	}
-	client := NewClient(&http.Client{Transport: &trans})
-	_, err = client.Do(request)
-	c.Assert(err, IsNil)
-	c.Assert(request.Header.Get("Authorization"), Equals, "Token mytoken")
+func (s *S) TestClientRemove(c *C) {
+  rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+  fsystem = rfs
+  defer func() {
+    fsystem = nil
+  }()
+  client := &Client{
+    Id: "backstage",
+  }
+  transport := ttesting.Transport{
+    Status:  http.StatusOK,
+    Message: `{"id":"backstage","secret":"TJl5HvdhC-NepxCAUXy7fanL4enr3xKDiUcWI2KrBSY=","name":"Backstage","redirect_uri":"","owner":"owner@example.org","team":"backstage"}`,
+  }
+  client.client = NewHTTPClient(&http.Client{Transport: &transport})
+  r := client.remove()
+  c.Assert(r, Equals, "The client `backstage` has been deleted.")
 }
 
-func (s *S) TestShouldIncludeTheClientVersionInTheHeader(c *C) {
-	fsystem = &testing.RecordingFs{FileContent: "Token mytoken"}
-	defer func() {
-		fsystem = nil
-	}()
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	trans := ttesting.Transport{
-		Message: "",
-		Status: http.StatusOK,
-	}
-	client := NewClient(&http.Client{Transport: &trans})
-	_, err = client.Do(request)
-	c.Assert(err, IsNil)
-	c.Assert(request.Header.Get("BackstageClient-Version"), Equals, BackstageClientVersion)
+func (s *S) TestClientRemoveWithError(c *C) {
+  rfs := &testing.RecordingFs{FileContent: "current:\n"}
+  fsystem = rfs
+  defer func() {
+    fsystem = nil
+  }()
+  client := &Client{
+    Name: "backstage",
+  }
+  transport := ttesting.Transport{
+    Status:  http.StatusOK,
+    Message: `{}`,
+  }
+  client.client = NewHTTPClient(&http.Client{Transport: &transport})
+  r := client.remove()
+  c.Assert(r, Equals, "You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 }

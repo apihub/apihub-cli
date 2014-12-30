@@ -19,6 +19,7 @@ func main() {
 
 	m := NewManager(app)
 	m.Register(&Auth{})
+	m.Register(&Client{})
 	m.Register(&Service{})
 	m.Register(&Target{})
 	m.Register(&Team{})

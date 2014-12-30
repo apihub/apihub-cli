@@ -24,7 +24,7 @@ func (s *S) TestUserCreate(c *C) {
 		Status:  http.StatusCreated,
 		Message: `{"name":"` + user.Name + `","email":"` + user.Email + `","username":"` + user.Username + `"}`,
 	}
-	user.client = NewClient(&http.Client{Transport: &transport})
+	user.client = NewHTTPClient(&http.Client{Transport: &transport})
 	r := user.save()
 	c.Assert(r, Equals, "Your account has been created.")
 }
@@ -44,7 +44,7 @@ func (s *S) TestUserCreateInvalidUserInfo(c *C) {
 		Email:    "alice@example.org",
 		Username: "alice",
 		Password: "123",
-		client:   NewClient(&http.Client{Transport: &transport}),
+		client:   NewHTTPClient(&http.Client{Transport: &transport}),
 	}
 	r := user.save()
 	c.Assert(r, Equals, "Someone already has that username. Could you try another?")
@@ -66,7 +66,7 @@ func (s *S) TestUserRemove(c *C) {
 		Status:  http.StatusOK,
 		Message: `{"name":"` + user.Name + `","email":"` + user.Email + `","username":"` + user.Username + `"}`,
 	}
-	user.client = NewClient(&http.Client{Transport: &transport})
+	user.client = NewHTTPClient(&http.Client{Transport: &transport})
 	r := user.remove()
 	c.Assert(r, Equals, "Your account has been deleted.")
 }
@@ -87,7 +87,7 @@ func (s *S) TestUserRemoveWithoutTarget(c *C) {
 		Status:  http.StatusOK,
 		Message: `{}`,
 	}
-	user.client = NewClient(&http.Client{Transport: &transport})
+	user.client = NewHTTPClient(&http.Client{Transport: &transport})
 	r := user.remove()
 	c.Assert(r, Equals, "You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 }
