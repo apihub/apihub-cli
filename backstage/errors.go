@@ -13,3 +13,14 @@ var (
 	ErrFailedConnectingServer  = errors.New("Failed to connect to the server. Please check if the target is correct.")
 	ErrEndpointNotFound        = errors.New("You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 )
+
+// The HTTPError type is a http representation of error.
+type HTTPError struct {
+	StatusCode       int  	`json:"status_code"`
+	ErrorDescription string `json:"error_description"`
+	Url              string `json:"url"`
+}
+
+func (err *HTTPError) Error() string {
+	return err.ErrorDescription
+}

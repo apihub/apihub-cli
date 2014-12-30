@@ -273,6 +273,7 @@ func (t *Team) remove() string {
 
 func (t *Team) addUser(email string) string {
 	path := "/api/teams/" + t.Alias + "/users"
+	t.Users = append(t.Users, email)
 	var team = &Team{}
 	response, err := t.client.MakePost(path, t, team)
 	if err != nil {

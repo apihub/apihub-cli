@@ -41,7 +41,7 @@ func (s *S) TestServiceCreateWithInvalidSubdomain(c *C) {
 	}()
 	transport := ttesting.Transport{
 		Status:  http.StatusBadRequest,
-		Message: `{"status_code":400,"message":"Service not found."}`,
+		Message: `{"status_code":400,"error_description":"Service not found."}`,
 	}
 	service := &Service{
 		Subdomain: "backstage",
@@ -59,7 +59,7 @@ func (s *S) TestServiceCreateWithAnExistingSubdomain(c *C) {
 	}()
 	transport := ttesting.Transport{
 		Status:  http.StatusBadRequest,
-		Message: `{"status_code":400,"message":"There is another service with this subdomain."}`,
+		Message: `{"status_code":400,"error_description":"There is another service with this subdomain."}`,
 	}
 	service := &Service{
 		Subdomain: "backstage",

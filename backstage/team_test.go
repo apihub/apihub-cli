@@ -34,7 +34,7 @@ func (s *S) TestTeamCreateWithExistingName(c *C) {
 	}()
 	transport := ttesting.Transport{
 		Status:  http.StatusBadRequest,
-		Message: `{"status_code":400,"message":"Someone already has that team name. Could you try another?"}`,
+		Message: `{"status_code":400,"error_description":"Someone already has that team name. Could you try another?"}`,
 	}
 	team := &Team{
 		Alias: "kotobuki",

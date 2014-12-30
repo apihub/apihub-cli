@@ -41,7 +41,10 @@ func (s *S) TestShouldNotIncludeTheHeaderAuthorizationWhenTokenFileIsMissing(c *
 	}()
 	request, err := http.NewRequest("GET", "/", nil)
 	c.Assert(err, IsNil)
-	trans := ttesting.Transport{Message: "", Status: http.StatusOK}
+	trans := ttesting.Transport{
+		Message: "",
+		Status: http.StatusOK,
+	}
 	client := NewClient(&http.Client{Transport: &trans})
 	_, err = client.Do(request)
 	c.Assert(err, IsNil)
@@ -57,7 +60,10 @@ func (s *S) TestShouldIncludeTheHeaderAuthorizationWhenTokenFileExists(c *C) {
 	}()
 	request, err := http.NewRequest("GET", "/", nil)
 	c.Assert(err, IsNil)
-	trans := ttesting.Transport{Message: "", Status: http.StatusOK}
+	trans := ttesting.Transport{
+		Message: "",
+		Status: http.StatusOK,
+	}
 	client := NewClient(&http.Client{Transport: &trans})
 	_, err = client.Do(request)
 	c.Assert(err, IsNil)
@@ -71,7 +77,10 @@ func (s *S) TestShouldIncludeTheClientVersionInTheHeader(c *C) {
 	}()
 	request, err := http.NewRequest("GET", "/", nil)
 	c.Assert(err, IsNil)
-	trans := ttesting.Transport{Message: "", Status: http.StatusOK}
+	trans := ttesting.Transport{
+		Message: "",
+		Status: http.StatusOK,
+	}
 	client := NewClient(&http.Client{Transport: &trans})
 	_, err = client.Do(request)
 	c.Assert(err, IsNil)

@@ -35,7 +35,7 @@ func (s *S) TestLoginWithInvalidCredentials(c *C) {
 	}()
 	transport := ttesting.Transport{
 		Status:  http.StatusBadRequest,
-		Message: `{"status_code":400,"message":"Invalid Username or Password."}`,
+		Message: `{"status_code":400,"error_description":"Invalid Username or Password."}`,
 	}
 	auth := &Auth{
 		client: NewClient(&http.Client{Transport: &transport}),
@@ -52,7 +52,7 @@ func (s *S) TestLoginWithInvalidPayload(c *C) {
 	}()
 	transport := ttesting.Transport{
 		Status:  http.StatusBadRequest,
-		Message: `{"status_code":400,"message":"The request was bad-formed."}`,
+		Message: `{"status_code":400,"error_description":"The request was bad-formed."}`,
 	}
 	auth := &Auth{
 		client: NewClient(&http.Client{Transport: &transport}),

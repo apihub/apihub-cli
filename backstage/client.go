@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	httpErr "github.com/backstage/backstage/errors"
 )
 
 type Client struct {
@@ -23,9 +21,10 @@ func (c *Client) checkTargetError(err error) error {
 	if !ok {
 		return err
 	}
-	return &httpErr.HTTPError{
+
+	return &HTTPError{
 		StatusCode: http.StatusServiceUnavailable,
-		Message:    "Failed to connect to Backstage server: " + urlErr.Err.Error(),
+		ErrorDescription:    "Failed to connect to Backstage server: " + urlErr.Err.Error(),
 	}
 }
 
@@ -46,19 +45,19 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 		parseBody(resp.Body, &httpResponse)
 		switch resp.StatusCode {
 		case 401:
-			err = &httpErr.HTTPError{
+			err = &HTTPError{
 				StatusCode: resp.StatusCode,
-				Message:    ErrLoginRequired.Error(),
+				ErrorDescription:    ErrLoginRequired.Error(),
 			}
 		default:
-			msg, ok := httpResponse["message"].(string)
+			msg, ok := httpResponse["error_description"].(string)
 			if !ok {
 				msg = ErrFailedConnectingServer.Error()
 			}
 
-			err = &httpErr.HTTPError{
+			err = &HTTPError{
 				StatusCode: resp.StatusCode,
-				Message:    msg,
+				ErrorDescription:    msg,
 			}
 		}
 	}
@@ -92,7 +91,7 @@ func (c *Client) MakePost(path string, p interface{}, r interface{}) (*http.Resp
 
 	response, err := c.Do(req)
 	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
+		httpEr := err.(*HTTPError)
 		return nil, httpEr
 	}
 	parseBody(response.Body, &r)
@@ -117,7 +116,7 @@ func (c *Client) MakeDelete(path string, p interface{}, r interface{}) (*http.Re
 
 	response, err := c.Do(req)
 	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
+		httpEr := err.(*HTTPError)
 		return nil, httpEr
 	}
 	parseBody(response.Body, &r)
@@ -136,7 +135,7 @@ func (c *Client) MakeGet(path string, r interface{}) (*http.Response, error) {
 
 	response, err := c.Do(req)
 	if err != nil {
-		httpEr := err.(*httpErr.HTTPError)
+		httpEr := err.(*HTTPError)
 		return nil, httpEr
 	}
 	parseBody(response.Body, &r)
