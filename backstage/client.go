@@ -34,7 +34,7 @@ func (c *Client) GetCommands() []cli.Command {
           Usage: "Client name",
         },
         cli.StringFlag{
-          Name:  "redirect_uri, red",
+          Name:  "redirect_uri, r",
           Value: "",
           Usage: "Client Redirect Uri (used by oAuth 2.0)",
         },

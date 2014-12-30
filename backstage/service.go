@@ -25,8 +25,8 @@ type Service struct {
 func (s *Service) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:        "service-add",
-			Usage:       "service-add --team <team> --subdomain <subdomain> --endpoint <api_endpoint>\n   Your new service has been created.",
+			Name:        "team-service-add",
+			Usage:       "team-service-add --team <team> --subdomain <subdomain> --endpoint <api_endpoint>\n   Your new service has been created.",
 			Description: "Create a new service.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -71,7 +71,7 @@ func (s *Service) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("service-add")()
+				defer RecoverStrategy("team-service-add")()
 				keyless, err := strconv.ParseBool(c.String("keyless"))
 				if err != nil {
 					keyless = false
@@ -101,8 +101,8 @@ func (s *Service) GetCommands() []cli.Command {
 			},
 		},
 		{
-			Name:        "service-remove",
-			Usage:       "service-remove --subdomain <subdomain>\n   The service `<subdomain>` has been deleted.",
+			Name:        "team-service-remove",
+			Usage:       "team-service-remove --subdomain <subdomain>\n   The service `<subdomain>` has been deleted.",
 			Description: "Remove an existing service.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -116,7 +116,7 @@ func (s *Service) GetCommands() []cli.Command {
 				if Confirm(context, "Are you sure you want to delete this service? This action cannot be undone.") != true {
 					fmt.Println(ErrCommandCancelled)
 				} else {
-					defer RecoverStrategy("service-remove")()
+					defer RecoverStrategy("team-service-remove")()
 					service := &Service{
 						Subdomain: c.String("subdomain"),
 						client:    NewHTTPClient(&http.Client{}),
@@ -130,7 +130,7 @@ func (s *Service) GetCommands() []cli.Command {
 }
 
 func (s *Service) save() string {
-	path := "/api/services"
+	path := fmt.Sprintf("/api/teams/%s/services", s.Team)
 	service := &Service{}
 	response, err := s.client.MakePost(path, s, service)
 	if err != nil {
@@ -144,7 +144,7 @@ func (s *Service) save() string {
 }
 
 func (s *Service) remove() string {
-	path := "/api/services/" + s.Subdomain
+	path := fmt.Sprintf("/api/teams/%s/services/%s", s.Team, s.Subdomain)
 	service := &Service{}
 	response, err := s.client.MakeDelete(path, nil, service)
 	if err != nil {
