@@ -16,7 +16,6 @@ var (
 
 // The HTTPError type is a http representation of error.
 type HTTPError struct {
-	StatusCode       int  	`json:"status_code"`
 	ErrorDescription string `json:"error_description"`
 	Url              string `json:"url"`
 }

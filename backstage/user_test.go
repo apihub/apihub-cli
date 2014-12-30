@@ -37,7 +37,7 @@ func (s *S) TestUserCreateInvalidUserInfo(c *C) {
 	}()
 	transport := ttesting.Transport{
 		Status:  http.StatusBadRequest,
-		Message: `{"status_code":400,"error_description":"Someone already has that username. Could you try another?"}`,
+		Message: `{"error":"bad_request","error_description":"Someone already has that username. Could you try another?"}`,
 	}
 	user := &User{
 		Name:     "Alice",

@@ -22,10 +22,7 @@ func (c *HTTPClient) checkTargetError(err error) error {
 		return err
 	}
 
-	return &HTTPError{
-		StatusCode: http.StatusServiceUnavailable,
-		ErrorDescription:    "Failed to connect to Backstage server: " + urlErr.Err.Error(),
-	}
+	return &HTTPError{ErrorDescription: "Failed to connect to Backstage server: " + urlErr.Err.Error()}
 }
 
 func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
@@ -45,20 +42,14 @@ func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
 		parseBody(resp.Body, &httpResponse)
 		switch resp.StatusCode {
 		case 401:
-			err = &HTTPError{
-				StatusCode: resp.StatusCode,
-				ErrorDescription:    ErrLoginRequired.Error(),
-			}
+			err = &HTTPError{ErrorDescription: ErrLoginRequired.Error()}
 		default:
 			msg, ok := httpResponse["error_description"].(string)
 			if !ok {
 				msg = ErrFailedConnectingServer.Error()
 			}
 
-			err = &HTTPError{
-				StatusCode: resp.StatusCode,
-				ErrorDescription:    msg,
-			}
+			err = &HTTPError{ErrorDescription: msg}
 		}
 	}
 
