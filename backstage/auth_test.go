@@ -5,18 +5,18 @@ import (
 	"os"
 	"path"
 
-	ttesting "github.com/tsuru/tsuru/cmd/testing"
-	"github.com/tsuru/tsuru/fs/testing"
+	"github.com/tsuru/tsuru/cmd/cmdtest"
+	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestLogin(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{"token_type": "Token", "access_token": "zyz"}`,
 	}
@@ -28,12 +28,12 @@ func (s *S) TestLogin(c *C) {
 }
 
 func (s *S) TestLoginWithInvalidCredentials(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusBadRequest,
 		Message: `{"error":"bad_request","error_description":"Invalid Username or Password."}`,
 	}
@@ -45,12 +45,12 @@ func (s *S) TestLoginWithInvalidCredentials(c *C) {
 }
 
 func (s *S) TestLoginWithInvalidPayload(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusBadRequest,
 		Message: `{"error":"bad_request","error_description":"The request was bad-formed."}`,
 	}
@@ -62,7 +62,7 @@ func (s *S) TestLoginWithInvalidPayload(c *C) {
 }
 
 func (s *S) TestLoginWithoutTarget(c *C) {
-	rfs := &testing.RecordingFs{}
+	rfs := &fstest.RecordingFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -76,7 +76,7 @@ func (s *S) TestLoginWithoutTarget(c *C) {
 }
 
 func (s *S) TestLogout(c *C) {
-	rfs := &testing.RecordingFs{}
+	rfs := &fstest.RecordingFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -89,7 +89,7 @@ func (s *S) TestLogout(c *C) {
 }
 
 func (s *S) TestLogoutWhenNotSignedIn(c *C) {
-	rfs := &testing.FileNotFoundFs{}
+	rfs := &fstest.FileNotFoundFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -100,7 +100,7 @@ func (s *S) TestLogoutWhenNotSignedIn(c *C) {
 }
 
 func (s *S) TestReadToken(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "Token xyz"}
+	rfs := &fstest.RecordingFs{FileContent: "Token xyz"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -113,7 +113,7 @@ func (s *S) TestReadToken(c *C) {
 }
 
 func (s *S) TestReadTokenWhenFileNotFound(c *C) {
-	rfs := &testing.FileNotFoundFs{}
+	rfs := &fstest.FileNotFoundFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -123,7 +123,7 @@ func (s *S) TestReadTokenWhenFileNotFound(c *C) {
 }
 
 func (s *S) TestDeleteToken(c *C) {
-	rfs := &testing.RecordingFs{}
+	rfs := &fstest.RecordingFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -135,7 +135,7 @@ func (s *S) TestDeleteToken(c *C) {
 }
 
 func (s *S) TestDeleteTokenWhenFileNotFound(c *C) {
-	rfs := &testing.FileNotFoundFs{}
+	rfs := &fstest.FileNotFoundFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil

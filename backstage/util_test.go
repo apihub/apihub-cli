@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/tsuru/tsuru/fs/testing"
+	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
@@ -27,7 +27,7 @@ func (s *S) TestSortMapKeys(c *C) {
 }
 
 func (s *S) TestLoginRequired(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "Token xyz"}
+	rfs := &fstest.RecordingFs{FileContent: "Token xyz"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -37,7 +37,7 @@ func (s *S) TestLoginRequired(c *C) {
 }
 
 func (s *S) TestLoginRequriedWhenFileNotFound(c *C) {
-	rfs := &testing.FileNotFoundFs{}
+	rfs := &fstest.FileNotFoundFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil

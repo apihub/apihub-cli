@@ -3,13 +3,13 @@ package main
 import (
 	"net/http"
 
-	ttesting "github.com/tsuru/tsuru/cmd/testing"
-	"github.com/tsuru/tsuru/fs/testing"
+	"github.com/tsuru/tsuru/cmd/cmdtest"
+	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestUserCreate(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -20,7 +20,7 @@ func (s *S) TestUserCreate(c *C) {
 		Username: "alice",
 		Password: "123",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusCreated,
 		Message: `{"name":"` + user.Name + `","email":"` + user.Email + `","username":"` + user.Username + `"}`,
 	}
@@ -30,12 +30,12 @@ func (s *S) TestUserCreate(c *C) {
 }
 
 func (s *S) TestUserCreateInvalidUserInfo(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusBadRequest,
 		Message: `{"error":"bad_request","error_description":"Someone already has that username. Could you try another?"}`,
 	}
@@ -51,7 +51,7 @@ func (s *S) TestUserCreateInvalidUserInfo(c *C) {
 }
 
 func (s *S) TestUserRemove(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -62,7 +62,7 @@ func (s *S) TestUserRemove(c *C) {
 		Username: "alice",
 		Password: "123",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{"name":"` + user.Name + `","email":"` + user.Email + `","username":"` + user.Username + `"}`,
 	}
@@ -72,7 +72,7 @@ func (s *S) TestUserRemove(c *C) {
 }
 
 func (s *S) TestUserRemoveWithoutTarget(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current:\n"}
+	rfs := &fstest.RecordingFs{FileContent: "current:\n"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -83,7 +83,7 @@ func (s *S) TestUserRemoveWithoutTarget(c *C) {
 		Username: "alice",
 		Password: "123",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{}`,
 	}

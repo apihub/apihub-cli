@@ -4,12 +4,12 @@ import (
 	"os"
 	"path"
 
-	"github.com/tsuru/tsuru/fs/testing"
+	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestLoadTargets(c *C) {
-	rfs := &testing.RecordingFs{}
+	rfs := &fstest.RecordingFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -21,7 +21,7 @@ func (s *S) TestLoadTargets(c *C) {
 }
 
 func (s *S) TestAddNewTarget(c *C) {
-	rfs := &testing.RecordingFs{}
+	rfs := &fstest.RecordingFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -35,7 +35,7 @@ func (s *S) TestAddNewTarget(c *C) {
 }
 
 func (s *S) TestAddWhenLabelAlreadyExists(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -47,7 +47,7 @@ func (s *S) TestAddWhenLabelAlreadyExists(c *C) {
 
 }
 func (s *S) TestListTargets(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com\n  example: www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com\n  example: www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -60,7 +60,7 @@ func (s *S) TestListTargets(c *C) {
 }
 
 func (s *S) TestRemoveTarget(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -72,7 +72,7 @@ func (s *S) TestRemoveTarget(c *C) {
 }
 
 func (s *S) TestRemoveTargetWithInvalidLabel(c *C) {
-	rfs := &testing.RecordingFs{}
+	rfs := &fstest.RecordingFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -85,7 +85,7 @@ func (s *S) TestRemoveTargetWithInvalidLabel(c *C) {
 }
 
 func (s *S) TestSetTargetAsDefault(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current:\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current:\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -100,7 +100,7 @@ func (s *S) TestSetTargetAsDefault(c *C) {
 }
 
 func (s *S) TestSetTargetAsDefaultWithInvalidLabel(c *C) {
-	rfs := &testing.RecordingFs{}
+	rfs := &fstest.RecordingFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -113,7 +113,7 @@ func (s *S) TestSetTargetAsDefaultWithInvalidLabel(c *C) {
 }
 
 func (s *S) TestGetURL(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com/"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com/"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -124,7 +124,7 @@ func (s *S) TestGetURL(c *C) {
 }
 
 func (s *S) TestGetURLWithoutEndpoint(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  key: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  key: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -136,7 +136,7 @@ func (s *S) TestGetURLWithoutEndpoint(c *C) {
 }
 
 func (s *S) TestGetURLWithoutCurrent(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: \noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: \noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -148,7 +148,7 @@ func (s *S) TestGetURLWithoutCurrent(c *C) {
 }
 
 func (s *S) TestGetURLWithoutContent(c *C) {
-	rfs := &testing.RecordingFs{}
+	rfs := &fstest.RecordingFs{}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil

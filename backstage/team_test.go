@@ -3,13 +3,13 @@ package main
 import (
 	"net/http"
 
-	ttesting "github.com/tsuru/tsuru/cmd/testing"
-	"github.com/tsuru/tsuru/fs/testing"
+	"github.com/tsuru/tsuru/cmd/cmdtest"
+	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestTeamCreate(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -17,7 +17,7 @@ func (s *S) TestTeamCreate(c *C) {
 	team := &Team{
 		Alias: "kotobuki",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusCreated,
 		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
 	}
@@ -27,12 +27,12 @@ func (s *S) TestTeamCreate(c *C) {
 }
 
 func (s *S) TestTeamCreateWithExistingName(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusBadRequest,
 		Message: `{"error":"bad_request","error_description":"Someone already has that team name. Could you try another?"}`,
 	}
@@ -45,12 +45,12 @@ func (s *S) TestTeamCreateWithExistingName(c *C) {
 }
 
 func (s *S) TestTeamList(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `[{"id":"54825cd18f897dbba8aba570","name":"backstage","users":["alice@example.org"],"owner":"alice@example.org"}]`,
 	}
@@ -63,12 +63,12 @@ func (s *S) TestTeamList(c *C) {
 }
 
 func (s *S) TestTeamListWithoutTeam(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `[]`,
 	}
@@ -81,12 +81,12 @@ func (s *S) TestTeamListWithoutTeam(c *C) {
 }
 
 func (s *S) TestTeamInfo(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{"id":"54825cd18f897dbba8aba570","name":"Backstage","alias":"backstage","users":["alice@example.org"],"owner":"alice@example.org"}`,
 	}
@@ -99,7 +99,7 @@ func (s *S) TestTeamInfo(c *C) {
 }
 
 func (s *S) TestTeamRemove(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -107,7 +107,7 @@ func (s *S) TestTeamRemove(c *C) {
 	team := &Team{
 		Alias: "kotobuki",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
 	}
@@ -117,7 +117,7 @@ func (s *S) TestTeamRemove(c *C) {
 }
 
 func (s *S) TestTeamRemoveWithoutTarget(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current:\n"}
+	rfs := &fstest.RecordingFs{FileContent: "current:\n"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -125,7 +125,7 @@ func (s *S) TestTeamRemoveWithoutTarget(c *C) {
 	team := &Team{
 		Alias: "kotobuki",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{}`,
 	}
@@ -135,7 +135,7 @@ func (s *S) TestTeamRemoveWithoutTarget(c *C) {
 }
 
 func (s *S) TestTeamAddUser(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -143,7 +143,7 @@ func (s *S) TestTeamAddUser(c *C) {
 	team := &Team{
 		Alias: "kotobuki",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
 	}
@@ -153,7 +153,7 @@ func (s *S) TestTeamAddUser(c *C) {
 }
 
 func (s *S) TestTeamAddUserWhenUserDoesNotExist(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -161,7 +161,7 @@ func (s *S) TestTeamAddUserWhenUserDoesNotExist(c *C) {
 	team := &Team{
 		Alias: "kotobuki",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusCreated,
 		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
 	}
@@ -171,7 +171,7 @@ func (s *S) TestTeamAddUserWhenUserDoesNotExist(c *C) {
 }
 
 func (s *S) TestTeamRemoveUser(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -179,7 +179,7 @@ func (s *S) TestTeamRemoveUser(c *C) {
 	team := &Team{
 		Alias: "kotobuki",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
 	}
@@ -189,7 +189,7 @@ func (s *S) TestTeamRemoveUser(c *C) {
 }
 
 func (s *S) TestTeamRemoveUserWhenUserItTheOwner(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -197,7 +197,7 @@ func (s *S) TestTeamRemoveUserWhenUserItTheOwner(c *C) {
 	team := &Team{
 		Alias: "kotobuki",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{"id":"548ab5b00904b8bf2e8dd838","name":"Kotobuki","alias":"kotobuki","users":["alice@example.org"],"owner":"alice@example.org"}`,
 	}

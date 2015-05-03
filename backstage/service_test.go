@@ -3,13 +3,13 @@ package main
 import (
 	"net/http"
 
-	ttesting "github.com/tsuru/tsuru/cmd/testing"
-	"github.com/tsuru/tsuru/fs/testing"
+	"github.com/tsuru/tsuru/cmd/cmdtest"
+	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestServiceCreate(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -24,7 +24,7 @@ func (s *S) TestServiceCreate(c *C) {
 		Endpoint:        "http://github.com/backstage",
 		Timeout:         10,
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusCreated,
 		Message: `{"subdomain":"backstage","created_at":"2014-12-05T17:44:39.462-02:00","updated_at":"2014-12-05T17:44:39.462-02:00","allow_keyless_use":true,"description":"test","disabled":false,"documentation":"http://www.example.org/doc","endpoint":"http://github.com/backstage","owner":"alice@example.org","timeout":10}`,
 	}
@@ -34,12 +34,12 @@ func (s *S) TestServiceCreate(c *C) {
 }
 
 func (s *S) TestServiceCreateWithInvalidSubdomain(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusBadRequest,
 		Message: `{"error":"bad_request","error_description":"Service not found."}`,
 	}
@@ -52,12 +52,12 @@ func (s *S) TestServiceCreateWithInvalidSubdomain(c *C) {
 }
 
 func (s *S) TestServiceCreateWithAnExistingSubdomain(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusBadRequest,
 		Message: `{"error":"bad_request","error_description":"There is another service with this subdomain."}`,
 	}
@@ -70,7 +70,7 @@ func (s *S) TestServiceCreateWithAnExistingSubdomain(c *C) {
 }
 
 func (s *S) TestServiceRemove(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -78,7 +78,7 @@ func (s *S) TestServiceRemove(c *C) {
 	service := &Service{
 		Subdomain: "backstage",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{"subdomain":"backstage","created_at":"2014-12-05T17:44:39.462-02:00","updated_at":"2014-12-05T17:44:39.462-02:00","allow_keyless_use":true,"description":"test","disabled":false,"documentation":"http://www.example.org/doc","endpoint":"http://github.com/backstage","owner":"alice@example.org","timeout":10}`,
 	}
@@ -88,7 +88,7 @@ func (s *S) TestServiceRemove(c *C) {
 }
 
 func (s *S) TestServiceRemoveWithInvalidSubdomain(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "current:\n"}
+	rfs := &fstest.RecordingFs{FileContent: "current:\n"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -96,7 +96,7 @@ func (s *S) TestServiceRemoveWithInvalidSubdomain(c *C) {
 	service := &Service{
 		Subdomain: "backstage",
 	}
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: `{}`,
 	}

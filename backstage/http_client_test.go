@@ -3,15 +3,15 @@ package main
 import (
 	"net/http"
 
-	ttesting "github.com/tsuru/tsuru/cmd/testing"
-	"github.com/tsuru/tsuru/fs/testing"
+	"github.com/tsuru/tsuru/cmd/cmdtest"
+	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestShouldSetCloseToTrue(c *C) {
 	request, err := http.NewRequest("GET", "/", nil)
 	c.Assert(err, IsNil)
-	transport := ttesting.Transport{
+	transport := cmdtest.Transport{
 		Status:  http.StatusOK,
 		Message: "OK",
 	}
@@ -21,7 +21,7 @@ func (s *S) TestShouldSetCloseToTrue(c *C) {
 }
 
 func (s *S) TestShouldReturnErrorWhenServerIsDown(c *C) {
-	rfs := &testing.RecordingFs{FileContent: "http://www.example.org"}
+	rfs := &fstest.RecordingFs{FileContent: "http://www.example.org"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
@@ -35,15 +35,15 @@ func (s *S) TestShouldReturnErrorWhenServerIsDown(c *C) {
 }
 
 func (s *S) TestShouldNotIncludeTheHeaderAuthorizationWhenTokenFileIsMissing(c *C) {
-	fsystem = &testing.FileNotFoundFs{}
+	fsystem = &fstest.FileNotFoundFs{}
 	defer func() {
 		fsystem = nil
 	}()
 	request, err := http.NewRequest("GET", "/", nil)
 	c.Assert(err, IsNil)
-	trans := ttesting.Transport{
+	trans := cmdtest.Transport{
 		Message: "",
-		Status: http.StatusOK,
+		Status:  http.StatusOK,
 	}
 	client := NewHTTPClient(&http.Client{Transport: &trans})
 	_, err = client.Do(request)
@@ -54,15 +54,15 @@ func (s *S) TestShouldNotIncludeTheHeaderAuthorizationWhenTokenFileIsMissing(c *
 }
 
 func (s *S) TestShouldIncludeTheHeaderAuthorizationWhenTokenFileExists(c *C) {
-	fsystem = &testing.RecordingFs{FileContent: "Token mytoken"}
+	fsystem = &fstest.RecordingFs{FileContent: "Token mytoken"}
 	defer func() {
 		fsystem = nil
 	}()
 	request, err := http.NewRequest("GET", "/", nil)
 	c.Assert(err, IsNil)
-	trans := ttesting.Transport{
+	trans := cmdtest.Transport{
 		Message: "",
-		Status: http.StatusOK,
+		Status:  http.StatusOK,
 	}
 	client := NewHTTPClient(&http.Client{Transport: &trans})
 	_, err = client.Do(request)
@@ -71,15 +71,15 @@ func (s *S) TestShouldIncludeTheHeaderAuthorizationWhenTokenFileExists(c *C) {
 }
 
 func (s *S) TestShouldIncludeTheClientVersionInTheHeader(c *C) {
-	fsystem = &testing.RecordingFs{FileContent: "Token mytoken"}
+	fsystem = &fstest.RecordingFs{FileContent: "Token mytoken"}
 	defer func() {
 		fsystem = nil
 	}()
 	request, err := http.NewRequest("GET", "/", nil)
 	c.Assert(err, IsNil)
-	trans := ttesting.Transport{
+	trans := cmdtest.Transport{
 		Message: "",
-		Status: http.StatusOK,
+		Status:  http.StatusOK,
 	}
 	client := NewHTTPClient(&http.Client{Transport: &trans})
 	_, err = client.Do(request)
