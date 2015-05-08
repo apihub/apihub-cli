@@ -110,6 +110,11 @@ func (s *Service) GetCommands() []cli.Command {
 					Value: "",
 					Usage: "Subdomain",
 				},
+				cli.StringFlag{
+					Name:  "team, t",
+					Value: "",
+					Usage: "Team",
+				},
 			},
 			Action: func(c *cli.Context) {
 				context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
@@ -119,6 +124,7 @@ func (s *Service) GetCommands() []cli.Command {
 					defer RecoverStrategy("team-service-remove")()
 					service := &Service{
 						Subdomain: c.String("subdomain"),
+						Team:      c.String("team"),
 						client:    NewHTTPClient(&http.Client{}),
 					}
 					result := service.remove()
