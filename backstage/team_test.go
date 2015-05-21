@@ -51,15 +51,16 @@ func (s *S) TestTeamList(c *C) {
 		fsystem = nil
 	}()
 	transport := cmdtest.Transport{
-		Status:  http.StatusOK,
-		Message: `[{"id":"54825cd18f897dbba8aba570","name":"backstage","users":["alice@example.org"],"owner":"alice@example.org"}]`,
+		Status: http.StatusOK,
+		Message: `{"items": [{"id":"54825cd18f897dbba8aba570","name":"Backstage","alias":"backstage","users":["alice@example.org"],"owner":"alice@example.org"}],
+		"item_count": 1}`,
 	}
 	team := &Team{}
 	team.client = NewHTTPClient(&http.Client{Transport: &transport})
 	table, err := team.list()
 	c.Assert(err, IsNil)
 	c.Assert(table.Header, DeepEquals, []string{"Team Name", "Alias", "Owner"})
-	c.Assert(table.Content, DeepEquals, [][]string{[]string{"backstage", "", "alice@example.org"}})
+	c.Assert(table.Content, DeepEquals, [][]string{[]string{"Backstage", "backstage", "alice@example.org"}})
 }
 
 func (s *S) TestTeamListWithoutTeam(c *C) {

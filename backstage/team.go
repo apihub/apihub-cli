@@ -252,20 +252,22 @@ func (t *Team) info() ([]*Table, error) {
 
 func (t *Team) list() (*Table, error) {
 	path := "/api/teams"
-	var teams []map[string]string
+	var teams map[string]interface{}
 	_, err := t.client.MakeGet(path, &teams)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(teams) > 0 {
+	if teams["item_count"] != nil && teams["item_count"].(float64) > 0 {
 		table := &Table{
 			Content: [][]string{},
 			Header:  []string{"Team Name", "Alias", "Owner"},
 		}
-		for _, team := range teams {
+		var t map[string]interface{}
+		for _, team := range teams["items"].([]interface{}) {
+			t = team.(map[string]interface{})
 			line := []string{}
-			line = append(line, team["name"], team["alias"], team["owner"])
+			line = append(line, t["name"].(string), t["alias"].(string), t["owner"].(string))
 			table.Content = append(table.Content, line)
 		}
 		return table, nil
