@@ -11,7 +11,7 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-var TokenFileName  = joinHomePath(".backstage_token")
+var TokenFileName = joinHomePath(".backstage_token")
 
 type Auth struct {
 	client *HTTPClient
@@ -37,7 +37,7 @@ func (a *Auth) GetCommands() []cli.Command {
 			Usage:       "logout\n   You have successfully logged out.",
 			Description: "Clear local credentials.",
 			Action: func(c *cli.Context) {
-				auth := &Auth{}
+				auth := &Auth{client: NewHTTPClient(&http.Client{})}
 				result := auth.Logout()
 				fmt.Println(result)
 			},
@@ -64,8 +64,17 @@ func (a *Auth) Login(email, password string) string {
 }
 
 func (a *Auth) Logout() string {
-	filesystem().Remove(joinHomePath(".backstage_token"))
-	return "You have successfully logged out."
+	path := "/api/logout"
+	response, err := a.client.MakeDelete(path, nil, nil)
+	if err != nil {
+		return err.Error()
+	}
+
+	if response.StatusCode == http.StatusNoContent {
+		filesystem().Remove(joinHomePath(".backstage_token"))
+		return "You have successfully logged out."
+	}
+	return ErrBadRequest.Error()
 }
 
 func writeToken(token string) error {

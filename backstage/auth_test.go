@@ -76,27 +76,40 @@ func (s *S) TestLoginWithoutTarget(c *C) {
 }
 
 func (s *S) TestLogout(c *C) {
-	rfs := &fstest.RecordingFs{}
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	auth := &Auth{}
+
+	transport := cmdtest.Transport{
+		Status:  http.StatusNoContent,
+		Message: ``,
+	}
+	auth := &Auth{
+		client: NewHTTPClient(&http.Client{Transport: &transport}),
+	}
 	result := auth.Logout()
 	c.Assert(result, Equals, "You have successfully logged out.")
 	filePath := path.Join(os.ExpandEnv("${HOME}"), ".backstage_token")
 	c.Assert(rfs.HasAction("remove "+filePath), Equals, true)
 }
 
-func (s *S) TestLogoutWhenNotSignedIn(c *C) {
-	rfs := &fstest.FileNotFoundFs{}
+func (s *S) TestLogoutWithError(c *C) {
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
 	fsystem = rfs
 	defer func() {
 		fsystem = nil
 	}()
-	auth := &Auth{}
+	transport := cmdtest.Transport{
+		Status:  http.StatusBadRequest,
+		Message: `{"error":"bad_request","error_description":"The request was invalid or cannot be served."}`,
+	}
+	auth := &Auth{
+		client: NewHTTPClient(&http.Client{Transport: &transport}),
+	}
 	result := auth.Logout()
-	c.Assert(result, Equals, "You have successfully logged out.")
+	c.Assert(result, Equals, "The request was invalid or cannot be served.")
 }
 
 func (s *S) TestReadToken(c *C) {
