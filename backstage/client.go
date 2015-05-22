@@ -47,7 +47,7 @@ func (c *Client) GetCommands() []cli.Command {
       Action: func(c *cli.Context) {
         defer RecoverStrategy("team-client-add")()
         client := &Client{
-          Id   :       c.String("id"),
+          Id   :       c.String("client_id"),
           Name      :  c.String("name"),
           RedirectUri :c.String("redirect_uri"),
           Team   :     c.String("team"),
