@@ -21,7 +21,7 @@ func (a *Auth) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:        "login",
-			Usage:       "login <email>\n   Password (typing will be hidden):\n   Authentication successful.",
+			Usage:       "login <email>",
 			Description: "Login in with your Backstage credentials.",
 			Action: func(c *cli.Context) {
 				email := c.Args().First()
@@ -34,11 +34,28 @@ func (a *Auth) GetCommands() []cli.Command {
 		},
 		{
 			Name:        "logout",
-			Usage:       "logout\n   You have successfully logged out.",
+			Usage:       "logout",
 			Description: "Clear local credentials.",
 			Action: func(c *cli.Context) {
 				auth := &Auth{client: NewHTTPClient(&http.Client{})}
 				result := auth.Logout()
+				fmt.Println(result)
+			},
+		},
+		{
+			Name:        "change-password",
+			Usage:       "change-password <email>",
+			Description: "Change the password of the user provided.",
+			Action: func(c *cli.Context) {
+				email := c.Args().First()
+				fmt.Println("Current password (typing will be hidden):")
+				password, _ := terminal.ReadPassword(int(os.Stdin.Fd()))
+				fmt.Println("New password (typing will be hidden):")
+				newPassword, _ := terminal.ReadPassword(int(os.Stdin.Fd()))
+				fmt.Println("Confirme new password (typing will be hidden):")
+				confirmationPassword, _ := terminal.ReadPassword(int(os.Stdin.Fd()))
+				auth := &Auth{client: NewHTTPClient(&http.Client{})}
+				result := auth.ChangePassword(email, string(password), string(newPassword), string(confirmationPassword))
 				fmt.Println(result)
 			},
 		},
@@ -77,6 +94,24 @@ func (a *Auth) Logout() string {
 	return ErrBadRequest.Error()
 }
 
+func (a *Auth) ChangePassword(email, password, newPassword, confirmationPassword string) string {
+	path := "/api/password"
+	user := &User{
+		Email:                email,
+		Password:             password,
+		NewPassword:          newPassword,
+		ConfirmationPassword: confirmationPassword,
+	}
+	response, err := a.client.MakePut(path, user, nil)
+	if err != nil {
+		return err.Error()
+	}
+
+	if response.StatusCode == http.StatusNoContent {
+		return "You password has been changed."
+	}
+	return "It was not possible to change your password. Please try again."
+}
 func writeToken(token string) error {
 	tokenFile, err := filesystem().OpenFile(TokenFileName, syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, 0600)
 	if err != nil {
