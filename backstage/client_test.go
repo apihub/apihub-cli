@@ -24,7 +24,7 @@ func (s *S) TestClientCreate(c *C) {
 		Message: `{"id":"backstage","secret":"TJl5HvdhC-NepxCAUXy7fanL4enr3xKDiUcWI2KrBSY=","name":"Backstage","redirect_uri":"","owner":"owner@example.org","team":"backstage"}`,
 	}
 	client.client = NewHTTPClient(&http.Client{Transport: &transport})
-	r := client.save()
+	r := client.create()
 	c.Assert(r, Equals, "Your new client has been created.")
 }
 
@@ -42,7 +42,7 @@ func (s *S) TestClientCreateWithInvalidTeam(c *C) {
 		Team: "backstage",
 	}
 	client.client = NewHTTPClient(&http.Client{Transport: &transport})
-	r := client.save()
+	r := client.create()
 	c.Assert(r, Equals, "Team not found.")
 }
 
@@ -60,8 +60,28 @@ func (s *S) TestClientCreateWithAnExistingName(c *C) {
 		Name: "backstage",
 	}
 	client.client = NewHTTPClient(&http.Client{Transport: &transport})
-	r := client.save()
+	r := client.create()
 	c.Assert(r, Equals, "There is another client with this name.")
+}
+
+func (s *S) TestClientUpdate(c *C) {
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	client := &Client{
+		Id:          "backstage",
+		Name:        "Backstage",
+		RedirectUri: "http://www.example.org/auth",
+	}
+	transport := cmdtest.Transport{
+		Status:  http.StatusOK,
+		Message: `{"id":"backstage","secret":"TJl5HvdhC-NepxCAUXy7fanL4enr3xKDiUcWI2KrBSY=","name":"Backstage","redirect_uri":"","owner":"owner@example.org","team":"backstage"}`,
+	}
+	client.client = NewHTTPClient(&http.Client{Transport: &transport})
+	r := client.update()
+	c.Assert(r, Equals, "Your client has been updated.")
 }
 
 func (s *S) TestClientRemove(c *C) {
