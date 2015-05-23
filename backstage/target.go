@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	fsystem fs.Fs
+	fsystem        fs.Fs
 	TargetFileName = joinHomePath(".backstage_targets")
 )
 
@@ -54,7 +54,7 @@ func (t *Target) GetCommands() []cli.Command {
 		{
 			Name:        "target-list",
 			Usage:       "",
-			Description: "Adds a new target in the list of targets.",
+			Description: "List all targets.",
 			Action: func(c *cli.Context) {
 				targets, err := LoadTargets()
 				if err != nil {
@@ -93,7 +93,7 @@ func (t *Target) GetCommands() []cli.Command {
 					fmt.Println(err.Error())
 					return
 				}
-				fmt.Println("The target `"+ label +"` has been remove.")
+				fmt.Println("The target `" + label + "` has been remove.")
 			},
 		},
 		{
