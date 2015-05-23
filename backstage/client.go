@@ -19,8 +19,8 @@ type Client struct {
 func (c *Client) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:        "team-client-add",
-			Usage:       "team-client-add --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>\n   Your new client has been created.",
+			Name:        "client-add",
+			Usage:       "client-add --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>\n   Your new client has been created.",
 			Description: "Create a new client.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -45,7 +45,7 @@ func (c *Client) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("team-client-add")()
+				defer RecoverStrategy("client-add")()
 				client := &Client{
 					Id:          c.String("client_id"),
 					Name:        c.String("name"),
