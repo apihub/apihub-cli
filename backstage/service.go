@@ -96,8 +96,8 @@ func (s *Service) GetCommands() []cli.Command {
 			},
 		},
 		{
-			Name:        "team-service-update",
-			Usage:       "team-service-update --team <team> --subdomain <subdomain> --endpoint <api_endpoint>",
+			Name:        "service-update",
+			Usage:       "service-update --team <team> --subdomain <subdomain> --endpoint <api_endpoint>",
 			Description: "Update an existing service.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -142,7 +142,7 @@ func (s *Service) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("team-service-update")()
+				defer RecoverStrategy("service-update")()
 				disabled, err := strconv.ParseBool(c.String("disabled"))
 				if err != nil {
 					disabled = false
@@ -167,8 +167,8 @@ func (s *Service) GetCommands() []cli.Command {
 			},
 		},
 		{
-			Name:        "team-service-remove",
-			Usage:       "team-service-remove --subdomain <subdomain>",
+			Name:        "service-remove",
+			Usage:       "service-remove --subdomain <subdomain>",
 			Description: "Remove an existing service.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -187,7 +187,7 @@ func (s *Service) GetCommands() []cli.Command {
 				if Confirm(context, "Are you sure you want to delete this service? This action cannot be undone.") != true {
 					fmt.Println(ErrCommandCancelled)
 				} else {
-					defer RecoverStrategy("team-service-remove")()
+					defer RecoverStrategy("service-remove")()
 					service := &Service{
 						Subdomain: c.String("subdomain"),
 						Team:      c.String("team"),

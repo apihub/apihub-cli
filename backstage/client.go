@@ -58,8 +58,8 @@ func (c *Client) GetCommands() []cli.Command {
 			},
 		},
 		{
-			Name:        "team-client-update",
-			Usage:       "team-client-update --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>\n   Your new client has been created.",
+			Name:        "client-update",
+			Usage:       "client-update --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>\n   Your new client has been created.",
 			Description: "Update an existing client.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -84,7 +84,7 @@ func (c *Client) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("team-client-update")()
+				defer RecoverStrategy("client-update")()
 				client := &Client{
 					Id:          c.String("client_id"),
 					Name:        c.String("name"),
@@ -97,8 +97,8 @@ func (c *Client) GetCommands() []cli.Command {
 			},
 		},
 		{
-			Name:        "team-client-remove",
-			Usage:       "team-client-remove --client_id <client_id> --team <team>\n   The client `<name>` has been deleted.",
+			Name:        "client-remove",
+			Usage:       "client-remove --client_id <client_id> --team <team>\n   The client `<name>` has been deleted.",
 			Description: "Remove an existing client.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -117,7 +117,7 @@ func (c *Client) GetCommands() []cli.Command {
 				if Confirm(context, "Are you sure you want to delete this client? This action cannot be undone.") != true {
 					fmt.Println(ErrCommandCancelled)
 				} else {
-					defer RecoverStrategy("team-client-remove")()
+					defer RecoverStrategy("client-remove")()
 					client := &Client{
 						Id:     c.String("client_id"),
 						Team:   c.String("team"),
