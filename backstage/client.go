@@ -10,6 +10,7 @@ import (
 
 type Client struct {
 	Id          string `json:"id,omitempty"`
+	Secret      string `json:"secret,omitempty"`
 	Name        string `json:"name,omitempty"`
 	RedirectUri string `json:"redirect_uri,omitempty"`
 	Team        string `json:"team,omitempty"`
@@ -20,7 +21,7 @@ func (c *Client) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:        "client-add",
-			Usage:       "client-add --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>\n   Your new client has been created.",
+			Usage:       "client-add --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>",
 			Description: "Create a new client.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -59,7 +60,7 @@ func (c *Client) GetCommands() []cli.Command {
 		},
 		{
 			Name:        "client-update",
-			Usage:       "client-update --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>\n   Your new client has been created.",
+			Usage:       "client-update --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>",
 			Description: "Update an existing client.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -94,6 +95,35 @@ func (c *Client) GetCommands() []cli.Command {
 				}
 				result := client.update()
 				fmt.Println(result)
+			},
+		},
+		{
+			Name:        "client-info",
+			Usage:       "client-info --client_id <client_id>",
+			Description: "Retrieve client information.",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "client_id, i",
+					Value: "",
+					Usage: "Client Id",
+				},
+			},
+			Action: func(c *cli.Context) {
+				defer RecoverStrategy("client-info")()
+				client := &Client{
+					Id:     c.String("client_id"),
+					client: NewHTTPClient(&http.Client{}),
+				}
+				table, err := client.info()
+				if err != "" {
+					fmt.Println(err)
+				}
+
+				if table != nil {
+					context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
+					table.Render(context)
+					fmt.Println("\n")
+				}
 			},
 		},
 		{
@@ -155,6 +185,33 @@ func (c *Client) update() string {
 
 	if response.StatusCode == http.StatusOK {
 		return "Your client has been updated."
+	}
+	panic("The client was not found for the team provided.")
+}
+
+func (c *Client) info() (*Table, string) {
+	path := fmt.Sprintf("/api/teams/clients/%s", c.Id)
+	var client Client
+	response, err := c.client.MakeGet(path, &client)
+	if err != nil {
+		return nil, err.Error()
+	}
+
+	if response.StatusCode == http.StatusOK {
+		fmt.Println("Team Name: " + client.Team)
+		fmt.Println("")
+		clientTable := &Table{
+			Title:   "Client Details:",
+			Content: [][]string{},
+			Header:  []string{"Name", "Redirect Uri", "Id", "Secret"},
+		}
+		line := []string{}
+		line = append(line, client.Name)
+		line = append(line, client.RedirectUri)
+		line = append(line, client.Id)
+		line = append(line, client.Secret)
+		clientTable.Content = append(clientTable.Content, line)
+		return clientTable, ""
 	}
 	panic("The client was not found for the team provided.")
 }

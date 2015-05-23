@@ -119,3 +119,21 @@ func (s *S) TestClientRemoveWithError(c *C) {
 	r := client.remove()
 	c.Assert(r, Equals, "You have not selected any target as default. For more details, please run `backstage target-set -h`.")
 }
+
+func (s *S) TestClientInfo(c *C) {
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	transport := cmdtest.Transport{
+		Status:  http.StatusOK,
+		Message: `{"id":"loteria","secret":"UQqUBmAZ27F485m4XrngZVzw_ulZTsJxDByAd1m7Lss=","name":"loteri a a","redirect_uri":"oi","owner":"albertonb@gmail.com","team":"oi"}`,
+	}
+	client := &Client{}
+	client.client = NewHTTPClient(&http.Client{Transport: &transport})
+	table, err := client.info()
+	c.Assert(err, Equals, "")
+	c.Assert(table.Header, DeepEquals, []string{"Name", "Redirect Uri", "Id", "Secret"})
+	c.Assert(table.Content, DeepEquals, [][]string{[]string{"loteri a a", "oi", "loteria", "UQqUBmAZ27F485m4XrngZVzw_ulZTsJxDByAd1m7Lss="}})
+}
