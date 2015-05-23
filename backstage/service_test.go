@@ -15,21 +15,20 @@ func (s *S) TestServiceCreate(c *C) {
 		fsystem = nil
 	}()
 	service := &Service{
-		Subdomain:       "backstage",
-		AllowKeylessUse: true,
-		Description:     "test",
-		Disabled:        false,
-		Documentation:   "http://www.example.org/doc",
-		Owner:           "alice@example.org",
-		Endpoint:        "http://github.com/backstage",
-		Timeout:         10,
+		Subdomain:     "backstage",
+		Description:   "test",
+		Disabled:      false,
+		Documentation: "http://www.example.org/doc",
+		Owner:         "alice@example.org",
+		Endpoint:      "http://github.com/backstage",
+		Timeout:       10,
 	}
 	transport := cmdtest.Transport{
 		Status:  http.StatusCreated,
 		Message: `{"subdomain":"backstage","created_at":"2014-12-05T17:44:39.462-02:00","updated_at":"2014-12-05T17:44:39.462-02:00","allow_keyless_use":true,"description":"test","disabled":false,"documentation":"http://www.example.org/doc","endpoint":"http://github.com/backstage","owner":"alice@example.org","timeout":10}`,
 	}
 	service.client = NewHTTPClient(&http.Client{Transport: &transport})
-	r := service.save()
+	r := service.create()
 	c.Assert(r, Equals, "Your new service has been created.")
 }
 
@@ -47,7 +46,7 @@ func (s *S) TestServiceCreateWithInvalidSubdomain(c *C) {
 		Subdomain: "backstage",
 	}
 	service.client = NewHTTPClient(&http.Client{Transport: &transport})
-	r := service.save()
+	r := service.create()
 	c.Assert(r, Equals, "Service not found.")
 }
 
@@ -65,8 +64,32 @@ func (s *S) TestServiceCreateWithAnExistingSubdomain(c *C) {
 		Subdomain: "backstage",
 	}
 	service.client = NewHTTPClient(&http.Client{Transport: &transport})
-	r := service.save()
+	r := service.create()
 	c.Assert(r, Equals, "There is another service with this subdomain.")
+}
+
+func (s *S) TestServiceUpdate(c *C) {
+	rfs := &fstest.RecordingFs{FileContent: "current: backstage\noptions:\n  backstage: http://www.example.com"}
+	fsystem = rfs
+	defer func() {
+		fsystem = nil
+	}()
+	service := &Service{
+		Subdomain:     "backstage",
+		Description:   "test",
+		Disabled:      false,
+		Documentation: "http://www.example.org/doc",
+		Owner:         "alice@example.org",
+		Endpoint:      "http://github.com/backstage",
+		Timeout:       10,
+	}
+	transport := cmdtest.Transport{
+		Status:  http.StatusOK,
+		Message: `{"subdomain":"backstage","created_at":"2014-12-05T17:44:39.462-02:00","updated_at":"2014-12-05T17:44:39.462-02:00","allow_keyless_use":true,"description":"test","disabled":false,"documentation":"http://www.example.org/doc","endpoint":"http://github.com/backstage","owner":"alice@example.org","timeout":10}`,
+	}
+	service.client = NewHTTPClient(&http.Client{Transport: &transport})
+	r := service.update()
+	c.Assert(r, Equals, "Your service has been updated.")
 }
 
 func (s *S) TestServiceRemove(c *C) {

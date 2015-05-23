@@ -10,23 +10,23 @@ import (
 )
 
 type Service struct {
-	AllowKeylessUse bool   `json:"allow_keyless_use"`
-	Description     string `json:"description"`
-	Disabled        bool   `json:"disabled"`
-	Documentation   string `json:"documentation"`
-	Endpoint        string `json:"endpoint"`
-	Owner           string `json:"owner"`
-	Subdomain       string `json:"subdomain"`
-	Team            string `json:"team"`
-	Timeout         int    `json:"timeout"`
-	client          *HTTPClient
+	Description   string   `json:"description,omitempty"`
+	Disabled      bool     `json:"disabled,omitempty"`
+	Documentation string   `json:"documentation,omitempty"`
+	Endpoint      string   `json:"endpoint,omitempty"`
+	Owner         string   `json:"owner,omitempty"`
+	Subdomain     string   `json:"subdomain,omitempty"`
+	Team          string   `json:"team,omitempty"`
+	Timeout       int      `json:"timeout,omitempty"`
+	Transformers  []string `json:"transformers,omitempty"`
+	client        *HTTPClient
 }
 
 func (s *Service) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:        "team-service-add",
-			Usage:       "team-service-add --team <team> --subdomain <subdomain> --endpoint <api_endpoint>\n   Your new service has been created.",
+			Usage:       "team-service-add --team <team> --subdomain <subdomain> --endpoint <api_endpoint>",
 			Description: "Create a new service.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -50,9 +50,75 @@ func (s *Service) GetCommands() []cli.Command {
 					Usage: "Url where the service is running",
 				},
 				cli.StringFlag{
-					Name:  "keyless, k",
+					Name:  "subdomain, s",
 					Value: "",
-					Usage: "Allow keyless use",
+					Usage: "Desired subdomain",
+				},
+				cli.StringFlag{
+					Name:  "team, t",
+					Value: "",
+					Usage: "Team responsible for the service",
+				},
+				cli.StringFlag{
+					Name:  "timeout",
+					Value: "",
+					Usage: "Timeout",
+				},
+				cli.StringFlag{
+					Name:  "transformers, tf",
+					Value: "",
+					Usage: "Transformers",
+				},
+			},
+			Action: func(c *cli.Context) {
+				defer RecoverStrategy("team-service-add")()
+				disabled, err := strconv.ParseBool(c.String("disabled"))
+				if err != nil {
+					disabled = false
+				}
+				timeout, err := strconv.ParseInt(c.String("timeout"), 10, 0)
+				if err != nil {
+					timeout = 0
+				}
+
+				service := &Service{
+					Subdomain:     c.String("subdomain"),
+					Description:   c.String("description"),
+					Disabled:      disabled,
+					Documentation: c.String("documentation"),
+					Endpoint:      c.String("endpoint"),
+					Team:          c.String("team"),
+					Timeout:       int(timeout),
+					client:        NewHTTPClient(&http.Client{}),
+				}
+				result := service.create()
+				fmt.Println(result)
+			},
+		},
+		{
+			Name:        "team-service-update",
+			Usage:       "team-service-update --team <team> --subdomain <subdomain> --endpoint <api_endpoint>",
+			Description: "Update an existing service.",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "description, desc",
+					Value: "",
+					Usage: "Service description",
+				},
+				cli.StringFlag{
+					Name:  "disabled, dis",
+					Value: "",
+					Usage: "Disable the service",
+				},
+				cli.StringFlag{
+					Name:  "documentation, doc",
+					Value: "",
+					Usage: "Url with the documentation",
+				},
+				cli.StringFlag{
+					Name:  "endpoint, e",
+					Value: "",
+					Usage: "Url where the service is running",
 				},
 				cli.StringFlag{
 					Name:  "subdomain, s",
@@ -69,13 +135,14 @@ func (s *Service) GetCommands() []cli.Command {
 					Value: "",
 					Usage: "Timeout",
 				},
+				cli.StringFlag{
+					Name:  "transformers, tf",
+					Value: "",
+					Usage: "Transformers",
+				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("team-service-add")()
-				keyless, err := strconv.ParseBool(c.String("keyless"))
-				if err != nil {
-					keyless = false
-				}
+				defer RecoverStrategy("team-service-update")()
 				disabled, err := strconv.ParseBool(c.String("disabled"))
 				if err != nil {
 					disabled = false
@@ -86,23 +153,22 @@ func (s *Service) GetCommands() []cli.Command {
 				}
 
 				service := &Service{
-					Subdomain:       c.String("subdomain"),
-					AllowKeylessUse: keyless,
-					Description:     c.String("description"),
-					Disabled:        disabled,
-					Documentation:   c.String("documentation"),
-					Endpoint:        c.String("endpoint"),
-					Team:            c.String("team"),
-					Timeout:         int(timeout),
-					client:          NewHTTPClient(&http.Client{}),
+					Subdomain:     c.String("subdomain"),
+					Disabled:      disabled,
+					Description:   c.String("description"),
+					Documentation: c.String("documentation"),
+					Endpoint:      c.String("endpoint"),
+					Team:          c.String("team"),
+					Timeout:       int(timeout),
+					client:        NewHTTPClient(&http.Client{}),
 				}
-				result := service.save()
+				result := service.update()
 				fmt.Println(result)
 			},
 		},
 		{
 			Name:        "team-service-remove",
-			Usage:       "team-service-remove --subdomain <subdomain>\n   The service `<subdomain>` has been deleted.",
+			Usage:       "team-service-remove --subdomain <subdomain>",
 			Description: "Remove an existing service.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -135,7 +201,7 @@ func (s *Service) GetCommands() []cli.Command {
 	}
 }
 
-func (s *Service) save() string {
+func (s *Service) create() string {
 	path := fmt.Sprintf("/api/teams/%s/services", s.Team)
 	service := &Service{}
 	response, err := s.client.MakePost(path, s, service)
@@ -146,9 +212,22 @@ func (s *Service) save() string {
 	if response.StatusCode == http.StatusCreated {
 		return "Your new service has been created."
 	}
-	return ErrBadRequest.Error()
+	panic("The team was not found.")
 }
 
+func (s *Service) update() string {
+	path := fmt.Sprintf("/api/teams/%s/services/%s", s.Team, s.Subdomain)
+	service := &Service{}
+	response, err := s.client.MakePut(path, s, service)
+	if err != nil {
+		return err.Error()
+	}
+
+	if response.StatusCode == http.StatusOK {
+		return "Your service has been updated."
+	}
+	panic("The team was not found.")
+}
 func (s *Service) remove() string {
 	path := fmt.Sprintf("/api/teams/%s/services/%s", s.Team, s.Subdomain)
 	service := &Service{}
@@ -160,5 +239,5 @@ func (s *Service) remove() string {
 	if response.StatusCode == http.StatusOK {
 		return "The service `" + s.Subdomain + "` has been deleted."
 	}
-	return ErrBadRequest.Error()
+	panic("The service was not found for the team provided.")
 }

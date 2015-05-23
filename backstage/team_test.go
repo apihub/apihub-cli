@@ -168,7 +168,7 @@ func (s *S) TestTeamAddUserWhenUserDoesNotExist(c *C) {
 	}
 	team.client = NewHTTPClient(&http.Client{Transport: &transport})
 	r := team.addUser("invalid-email@example.org")
-	c.Assert(r, Equals, "Sorry, the user was not found.")
+	c.Assert(r, Equals, "The user was not found.")
 }
 
 func (s *S) TestTeamRemoveUser(c *C) {
@@ -204,5 +204,5 @@ func (s *S) TestTeamRemoveUserWhenUserItTheOwner(c *C) {
 	}
 	team.client = NewHTTPClient(&http.Client{Transport: &transport})
 	r := team.removeUser("alice@example.org")
-	c.Assert(r, Equals, "It's not allowed to remove the owner from its team.")
+	c.Assert(r, Equals, "The user was not found.")
 }

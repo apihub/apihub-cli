@@ -36,8 +36,12 @@ func (t *Team) GetCommands() []cli.Command {
 			},
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("team-create")()
+				name := c.String("name")
+				if name == "" {
+					name = c.Args().First()
+				}
 				team := &Team{
-					Name:   c.String("name"),
+					Name:   name,
 					client: NewHTTPClient(&http.Client{}),
 				}
 				result := team.save()
@@ -57,8 +61,12 @@ func (t *Team) GetCommands() []cli.Command {
 			},
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("team-info")()
+				alias := c.String("alias")
+				if alias == "" {
+					alias = c.Args().First()
+				}
 				team := &Team{
-					Alias:  c.String("alias"),
+					Alias:  alias,
 					client: NewHTTPClient(&http.Client{}),
 				}
 				tables, err := team.info()
@@ -114,8 +122,12 @@ func (t *Team) GetCommands() []cli.Command {
 					fmt.Println(ErrCommandCancelled)
 				} else {
 					defer RecoverStrategy("team-remove")()
+					alias := c.String("alias")
+					if alias == "" {
+						alias = c.Args().First()
+					}
 					team := &Team{
-						Alias:  c.String("alias"),
+						Alias:  alias,
 						client: NewHTTPClient(&http.Client{}),
 					}
 					result := team.remove()
@@ -301,7 +313,7 @@ func (t *Team) addUser(email string) string {
 	if response.StatusCode == http.StatusOK && team.containsUserByEmail(email) {
 		return "User `" + email + "` added successfully to team `" + t.Alias + "`."
 	}
-	return "Sorry, the user was not found."
+	return "The user was not found."
 }
 
 func (t *Team) removeUser(email string) string {
@@ -313,10 +325,10 @@ func (t *Team) removeUser(email string) string {
 		return err.Error()
 	}
 
-	if response.StatusCode == http.StatusOK && !team.containsUserByEmail(email) {
+	if email != "" && response.StatusCode == http.StatusOK && !team.containsUserByEmail(email) {
 		return "User `" + email + "` removed successfully to team `" + t.Alias + "`."
 	}
-	return "It's not allowed to remove the owner from its team."
+	return "The user was not found."
 }
 
 func (t *Team) containsUserByEmail(email string) bool {

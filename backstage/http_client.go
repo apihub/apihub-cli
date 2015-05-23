@@ -89,6 +89,31 @@ func (c *HTTPClient) MakePost(path string, p interface{}, r interface{}) (*http.
 	return response, nil
 }
 
+func (c *HTTPClient) MakePut(path string, p interface{}, r interface{}) (*http.Response, error) {
+	body, err := convertInString(p)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := GetURL(path)
+	if err != nil {
+		return nil, err
+	}
+	b := bytes.NewBufferString(body)
+	req, err := http.NewRequest("PUT", url, b)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := c.Do(req)
+	if err != nil {
+		httpEr := err.(*HTTPError)
+		return nil, httpEr
+	}
+	parseBody(response.Body, &r)
+	return response, nil
+}
+
 func (c *HTTPClient) MakeDelete(path string, p interface{}, r interface{}) (*http.Response, error) {
 	body, err := convertInString(p)
 	if err != nil {
