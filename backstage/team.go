@@ -33,9 +33,40 @@ func (t *Team) GetCommands() []cli.Command {
 					Value: "",
 					Usage: "Name of the team",
 				},
+				cli.StringFlag{
+					Name:  "alias, a",
+					Value: "",
+					Usage: "Alias",
+				},
 			},
 			Action: func(c *cli.Context) {
 				defer RecoverStrategy("team-create")()
+				name := c.String("name")
+				if name == "" {
+					name = c.Args().First()
+				}
+				team := &Team{
+					Name:   name,
+					Alias:  c.String("alias"),
+					client: NewHTTPClient(&http.Client{}),
+				}
+				result := team.save()
+				fmt.Println(result)
+			},
+		},
+		{
+			Name:        "team-update",
+			Usage:       "team-update --name <name>",
+			Description: "Update an existing.",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name, n",
+					Value: "",
+					Usage: "Name of the team",
+				},
+			},
+			Action: func(c *cli.Context) {
+				defer RecoverStrategy("team-update")()
 				name := c.String("name")
 				if name == "" {
 					name = c.Args().First()

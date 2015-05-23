@@ -25,8 +25,8 @@ type Service struct {
 func (s *Service) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:        "service-add",
-			Usage:       "service-add --team <team> --subdomain <subdomain> --endpoint <api_endpoint>",
+			Name:        "service-create",
+			Usage:       "service-create --team <team> --subdomain <subdomain> --endpoint <api_endpoint>",
 			Description: "Create a new service.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -71,7 +71,7 @@ func (s *Service) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("service-add")()
+				defer RecoverStrategy("service-create")()
 				disabled, err := strconv.ParseBool(c.String("disabled"))
 				if err != nil {
 					disabled = false

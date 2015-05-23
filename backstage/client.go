@@ -20,8 +20,8 @@ type Client struct {
 func (c *Client) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
-			Name:        "client-add",
-			Usage:       "client-add --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>",
+			Name:        "client-create",
+			Usage:       "client-create --team <team> --client_id <client_id> --name <name> --redirect_uri <redirect_uri>",
 			Description: "Create a new client.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -46,7 +46,7 @@ func (c *Client) GetCommands() []cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) {
-				defer RecoverStrategy("client-add")()
+				defer RecoverStrategy("client-create")()
 				client := &Client{
 					Id:          c.String("client_id"),
 					Name:        c.String("name"),
@@ -201,7 +201,7 @@ func (c *Client) info() (*Table, string) {
 		fmt.Println("Team Name: " + client.Team)
 		fmt.Println("")
 		clientTable := &Table{
-			Title:   "Client Details:",
+			Title:   "Clients Details:",
 			Content: [][]string{},
 			Header:  []string{"Name", "Redirect Uri", "Id", "Secret"},
 		}
