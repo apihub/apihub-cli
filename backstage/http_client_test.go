@@ -1,88 +1,156 @@
-package main
+package backstage_test
 
 import (
 	"net/http"
+	"net/http/httptest"
 
-	"github.com/tsuru/tsuru/cmd/cmdtest"
+	"github.com/backstage/backstage-client/backstage"
 	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
-func (s *S) TestShouldSetCloseToTrue(c *C) {
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	transport := cmdtest.Transport{
-		Status:  http.StatusOK,
-		Message: "OK",
-	}
-	client := NewHTTPClient(&http.Client{Transport: &transport})
-	client.Do(request)
-	c.Assert(request.Close, Equals, true)
+func (s *S) TestMakeRequest(c *C) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"name": "Alice"}`))
+	}))
+	defer server.Close()
+	httpClient.Host = server.URL
+
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil, AcceptableCode: http.StatusOK}
+	body, err := httpClient.MakeRequest(args)
+	c.Assert(string(body), Equals, `{"name": "Alice"}`)
+	c.Check(err, IsNil)
 }
 
-func (s *S) TestShouldReturnErrorWhenServerIsDown(c *C) {
-	rfs := &fstest.RecordingFs{FileContent: "http://www.example.org"}
-	fsystem = rfs
-	defer func() {
-		fsystem = nil
-	}()
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	client := NewHTTPClient(&http.Client{})
-	_, err = client.Do(request)
-	c.Assert(err, NotNil)
-	c.Assert(err.Error(), Equals, "Failed to connect to Backstage server: unsupported protocol scheme \"\"")
+func (s *S) TestMakeRequestWithNonAcceptableCode(c *C) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"name": "Alice"}`))
+	}))
+	defer server.Close()
+	httpClient.Host = server.URL
+
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil, AcceptableCode: http.StatusBadRequest}
+	body, err := httpClient.MakeRequest(args)
+	c.Assert(string(body), Equals, `{"name": "Alice"}`)
+	e, ok := err.(backstage.ResponseError)
+	c.Assert(ok, Equals, true)
+	c.Assert(e.Error(), Equals, "The response was invalid or cannot be served. For more details, execute the command with `-h`.")
 }
 
-func (s *S) TestShouldNotIncludeTheHeaderAuthorizationWhenTokenFileIsMissing(c *C) {
-	fsystem = &fstest.FileNotFoundFs{}
-	defer func() {
-		fsystem = nil
-	}()
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	trans := cmdtest.Transport{
-		Message: "",
-		Status:  http.StatusOK,
-	}
-	client := NewHTTPClient(&http.Client{Transport: &trans})
-	_, err = client.Do(request)
-	c.Assert(err, IsNil)
-	header := map[string][]string(request.Header)
-	_, ok := header["Authorization"]
-	c.Assert(ok, Equals, false)
+func (s *S) TestReturnsErrorWhenPayloadIsInvalid(c *C) {
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: unsupportedPayload}
+	_, err := httpClient.MakeRequest(args)
+	_, ok := err.(backstage.InvalidBodyError)
+	c.Assert(ok, Equals, true)
 }
 
-func (s *S) TestShouldIncludeTheHeaderAuthorizationWhenTokenFileExists(c *C) {
-	fsystem = &fstest.RecordingFs{FileContent: "Token mytoken"}
+func (s *S) TestReturnsErrorWhenHostIsInvalid(c *C) {
+	httpClient.Host = "://invalid-host"
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil}
+	_, err := httpClient.MakeRequest(args)
+	_, ok := err.(backstage.InvalidHostError)
+	c.Assert(ok, Equals, true)
+}
+
+func (s *S) TestReturnsErrorWhenRequestIsInvalid(c *C) {
+	httpClient.Host = "invalid-host"
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil}
+	_, err := httpClient.MakeRequest(args)
+	_, ok := err.(backstage.RequestError)
+	c.Assert(ok, Equals, true)
+}
+
+func (s *S) TestReturnsErrorWhenResponseIsInvalid(c *C) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Content-Length", "1")
+		w.Write([]byte("{}"))
+	}))
+	defer server.Close()
+
+	httpClient.Host = server.URL
+
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil}
+	_, err := httpClient.MakeRequest(args)
+	_, ok := err.(backstage.ResponseError)
+	c.Assert(ok, Equals, true)
+}
+
+func (s *S) TestIncludesTokenInHeader(c *C) {
+	rfs := &fstest.RecordingFs{FileContent: "Token abcde"}
+	backstage.Fsystem = rfs
 	defer func() {
-		fsystem = nil
+		backstage.Fsystem = nil
 	}()
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	trans := cmdtest.Transport{
-		Message: "",
-		Status:  http.StatusOK,
-	}
-	client := NewHTTPClient(&http.Client{Transport: &trans})
-	_, err = client.Do(request)
-	c.Assert(err, IsNil)
-	c.Assert(request.Header.Get("Authorization"), Equals, "Token mytoken")
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		auth := req.Header.Get("Authorization")
+		c.Assert(auth, Equals, "Token abcde")
+	}))
+	defer server.Close()
+
+	httpClient.Host = server.URL
+
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil}
+	httpClient.MakeRequest(args)
 }
 
 func (s *S) TestShouldIncludeTheClientVersionInTheHeader(c *C) {
-	fsystem = &fstest.RecordingFs{FileContent: "Token mytoken"}
-	defer func() {
-		fsystem = nil
-	}()
-	request, err := http.NewRequest("GET", "/", nil)
-	c.Assert(err, IsNil)
-	trans := cmdtest.Transport{
-		Message: "",
-		Status:  http.StatusOK,
-	}
-	client := NewHTTPClient(&http.Client{Transport: &trans})
-	_, err = client.Do(request)
-	c.Assert(err, IsNil)
-	c.Assert(request.Header.Get("BackstageClient-Version"), Equals, BackstageClientVersion)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		version := req.Header.Get("BackstageClient-Version")
+		c.Assert(version, Equals, backstage.BackstageClientVersion)
+	}))
+	defer server.Close()
+
+	httpClient.Host = server.URL
+
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil}
+	httpClient.MakeRequest(args)
+}
+
+func (s *S) TestReturnsUnauthorizedError(c *C) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer server.Close()
+
+	httpClient.Host = server.URL
+
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil}
+	_, err := httpClient.MakeRequest(args)
+	_, ok := err.(backstage.UnauthorizedError)
+	c.Assert(ok, Equals, true)
+}
+
+func (s *S) TestReturnsErrorForBadRequest(c *C) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error_description": "Something went wrong."}`))
+	}))
+	defer server.Close()
+
+	httpClient.Host = server.URL
+
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil}
+	_, err := httpClient.MakeRequest(args)
+	e, ok := err.(backstage.ResponseError)
+	c.Assert(e.Error(), Equals, "Something went wrong.")
+	c.Assert(ok, Equals, true)
+}
+
+func (s *S) TestReturnsDefaultError(c *C) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{}`))
+	}))
+	defer server.Close()
+
+	httpClient.Host = server.URL
+
+	args := backstage.RequestArgs{Method: "GET", Path: "/path", Body: nil}
+	_, err := httpClient.MakeRequest(args)
+	e, ok := err.(backstage.ResponseError)
+	c.Assert(e.Error(), Equals, "The response was invalid or cannot be served. For more details, execute the command with `-h`.")
+	c.Assert(ok, Equals, true)
 }

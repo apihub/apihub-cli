@@ -1,0 +1,100 @@
+package backstage
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
+type ClientService struct {
+	client HttpClient
+}
+
+func NewClientService(client HttpClient) *ClientService {
+	return &ClientService{
+		client: client,
+	}
+}
+
+func (s ClientService) Create(team, clientId, name, redirectUri, secret string) (Client, error) {
+	body, err := s.client.MakeRequest(RequestArgs{
+		AcceptableCode: http.StatusCreated,
+		Method:         "POST",
+		Path:           fmt.Sprintf("/api/teams/%s/clients", team),
+		Body: Client{
+			Team:        team,
+			Id:          clientId,
+			Name:        name,
+			RedirectUri: redirectUri,
+			Secret:      secret,
+		},
+	})
+
+	if err != nil {
+		return Client{}, err
+	}
+
+	var client Client
+	err = json.Unmarshal(body, &client)
+	if err != nil {
+		panic(err)
+	}
+
+	return client, nil
+}
+
+func (s ClientService) Update(team, clientId, name, redirectUri, secret string) (Client, error) {
+	body, err := s.client.MakeRequest(RequestArgs{
+		AcceptableCode: http.StatusOK,
+		Method:         "PUT",
+		Path:           fmt.Sprintf("/api/teams/%s/clients/%s", team, clientId),
+		Body: Client{
+			Team:        team,
+			Name:        name,
+			RedirectUri: redirectUri,
+			Secret:      secret,
+		},
+	})
+
+	if err != nil {
+		return Client{}, err
+	}
+
+	var client Client
+	err = json.Unmarshal(body, &client)
+	if err != nil {
+		panic(err)
+	}
+
+	return client, nil
+}
+
+func (s ClientService) Info(clientId string) (Client, error) {
+	body, err := s.client.MakeRequest(RequestArgs{
+		AcceptableCode: http.StatusOK,
+		Method:         "GET",
+		Path:           fmt.Sprintf("/api/teams/clients/%s", clientId),
+	})
+
+	if err != nil {
+		return Client{}, err
+	}
+
+	var client Client
+	err = json.Unmarshal(body, &client)
+	if err != nil {
+		panic(err)
+	}
+
+	return client, nil
+}
+
+func (s ClientService) Delete(team, clientId string) error {
+	_, err := s.client.MakeRequest(RequestArgs{
+		AcceptableCode: http.StatusOK,
+		Method:         "DELETE",
+		Path:           fmt.Sprintf("/api/teams/%s/clients/%s", team, clientId),
+	})
+
+	return err
+}

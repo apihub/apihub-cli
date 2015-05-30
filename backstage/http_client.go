@@ -1,172 +1,81 @@
-package main
+package backstage
 
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
-type HTTPClient struct {
+var BackstageClientVersion = "0.0.9"
+
+type HttpClient struct {
+	Host   string
 	client *http.Client
 }
 
-func NewHTTPClient(client *http.Client) *HTTPClient {
-	return &HTTPClient{client: client}
+func NewHttpClient(host string) HttpClient {
+	return HttpClient{
+		Host:   host,
+		client: &http.Client{},
+	}
 }
 
-func (c *HTTPClient) checkTargetError(err error) error {
-	urlErr, ok := err.(*url.Error)
-	if !ok {
-		return err
+type RequestArgs struct {
+	AcceptableCode int
+	Body           interface{}
+	Path           string
+	Method         string
+}
+
+func (c *HttpClient) MakeRequest(requestArgs RequestArgs) ([]byte, error) {
+	body, err := json.Marshal(requestArgs.Body)
+	if err != nil {
+		return []byte{}, newInvalidBodyError(err)
 	}
 
-	return &HTTPError{ErrorDescription: "Failed to connect to Backstage server: " + urlErr.Err.Error()}
-}
+	url, err := url.Parse(c.Host)
+	if err != nil {
+		return nil, newInvalidHostError(err)
+	}
 
-func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
-	req.Header.Set("BackstageClient-Version", BackstageClientVersion)
+	url.Path = requestArgs.Path
+	req, err := http.NewRequest(requestArgs.Method, url.String(), bytes.NewBuffer(body))
+	if err != nil {
+		return nil, newRequestError(err)
+	}
+
 	if token, err := ReadToken(); err == nil {
 		req.Header.Set("Authorization", token)
 	}
+	req.Header.Set("BackstageClient-Version", BackstageClientVersion)
+
 	resp, err := c.client.Do(req)
-	err = c.checkTargetError(err)
 	if err != nil {
-		return nil, err
+		return nil, newRequestError(err)
 	}
-	req.Close = true
 
-	if resp.StatusCode >= 400 {
-		var httpResponse = map[string]interface{}{}
-		parseBody(resp.Body, &httpResponse)
-		switch resp.StatusCode {
-		case 401:
-			err = &HTTPError{ErrorDescription: ErrLoginRequired.Error()}
-		default:
-			msg, ok := httpResponse["error_description"].(string)
-			if !ok {
-				msg = ErrFailedConnectingServer.Error()
-			}
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, newResponseError(err)
+	}
 
-			err = &HTTPError{ErrorDescription: msg}
+	if resp.StatusCode == http.StatusUnauthorized {
+		return nil, newUnauthorizedError(ErrLoginRequired)
+	}
+
+	if resp.StatusCode == requestArgs.AcceptableCode {
+		return respBody, nil
+	}
+
+	var errorResponse ErrorResponse
+	err = json.Unmarshal(respBody, &errorResponse)
+	e := ErrBadResponse
+	if err == nil {
+		if errorResponse.Description != "" {
+			e = newErrorResponse(errorResponse.Type, errorResponse.Description)
 		}
 	}
-
-	return resp, err
-}
-
-func convertInString(p interface{}) (string, error) {
-	payload, err := json.Marshal(p)
-	if err != nil {
-		return "", err
-	}
-	return string(payload), nil
-}
-
-func (c *HTTPClient) MakePost(path string, p interface{}, r interface{}) (*http.Response, error) {
-	body, err := convertInString(p)
-	if err != nil {
-		return nil, err
-	}
-
-	url, err := GetURL(path)
-	if err != nil {
-		return nil, err
-	}
-	b := bytes.NewBufferString(body)
-	req, err := http.NewRequest("POST", url, b)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := c.Do(req)
-	if err != nil {
-		httpEr := err.(*HTTPError)
-		return nil, httpEr
-	}
-	parseBody(response.Body, &r)
-	return response, nil
-}
-
-func (c *HTTPClient) MakePut(path string, p interface{}, r interface{}) (*http.Response, error) {
-	body, err := convertInString(p)
-	if err != nil {
-		return nil, err
-	}
-
-	url, err := GetURL(path)
-	if err != nil {
-		return nil, err
-	}
-	b := bytes.NewBufferString(body)
-	req, err := http.NewRequest("PUT", url, b)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := c.Do(req)
-	if err != nil {
-		httpEr := err.(*HTTPError)
-		return nil, httpEr
-	}
-	parseBody(response.Body, &r)
-	return response, nil
-}
-
-func (c *HTTPClient) MakeDelete(path string, p interface{}, r interface{}) (*http.Response, error) {
-	body, err := convertInString(p)
-	if err != nil {
-		return nil, err
-	}
-
-	url, err := GetURL(path)
-	if err != nil {
-		return nil, err
-	}
-	b := bytes.NewBufferString(body)
-	req, err := http.NewRequest("DELETE", url, b)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := c.Do(req)
-	if err != nil {
-		httpEr := err.(*HTTPError)
-		return nil, httpEr
-	}
-	parseBody(response.Body, &r)
-	return response, nil
-}
-
-func (c *HTTPClient) MakeGet(path string, r interface{}) (*http.Response, error) {
-	url, err := GetURL(path)
-	if err != nil {
-		return nil, err
-	}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := c.Do(req)
-	if err != nil {
-		httpEr := err.(*HTTPError)
-		return nil, httpEr
-	}
-	parseBody(response.Body, &r)
-	return response, nil
-}
-
-func GetURL(path string) (string, error) {
-	t, err := LoadTargets()
-	if err != nil {
-		return "", err
-	}
-	current := t.Options[t.Current]
-	if current == "" {
-		return "", ErrEndpointNotFound
-	}
-
-	return strings.TrimRight(current, "/") + path, nil
+	return respBody, newResponseError(e)
 }

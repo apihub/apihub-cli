@@ -1,47 +1,27 @@
-package main
+package backstage_test
 
 import (
 	"os"
 
-	"github.com/tsuru/tsuru/fs/fstest"
+	"github.com/backstage/backstage-client/backstage"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestJoinHomePath(c *C) {
 	str := ".backstage_targets"
 	home := os.ExpandEnv("$HOME")
-	c.Assert(joinHomePath(str), Equals, home+"/"+str)
+	c.Assert(backstage.JoinHomePath(str), Equals, home+"/"+str)
 }
 
 func (s *S) TestJoinHomePathWithMultipleValues(c *C) {
 	str := ".backstage_targets"
 	str2 := ".test"
 	home := os.ExpandEnv("$HOME")
-	c.Assert(joinHomePath(str, str2), Equals, home+"/"+str+"/"+str2)
+	c.Assert(backstage.JoinHomePath(str, str2), Equals, home+"/"+str+"/"+str2)
 }
 
 func (s *S) TestSortMapKeys(c *C) {
 	mapkeys := map[string]string{"c": "c", "b": "b", "a": "a"}
-	sortedKeys := sortMapKeys(mapkeys)
+	sortedKeys := backstage.SortMapKeys(mapkeys)
 	c.Assert(sortedKeys, DeepEquals, []string{"a", "b", "c"})
-}
-
-func (s *S) TestLoginRequired(c *C) {
-	rfs := &fstest.RecordingFs{FileContent: "Token xyz"}
-	fsystem = rfs
-	defer func() {
-		fsystem = nil
-	}()
-	login := LoginRequired()
-	c.Assert(login, IsNil)
-}
-
-func (s *S) TestLoginRequriedWhenFileNotFound(c *C) {
-	rfs := &fstest.FileNotFoundFs{}
-	fsystem = rfs
-	defer func() {
-		fsystem = nil
-	}()
-	login := LoginRequired()
-	c.Assert(login, Not(IsNil))
 }

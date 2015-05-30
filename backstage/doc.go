@@ -228,4 +228,4 @@ USAGE:
 Return the current version of the client. This version will be sent via header `BackstageClient-Version` to all API requests.
 
 */
-package main
+package backstage
