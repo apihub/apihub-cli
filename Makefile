@@ -4,7 +4,7 @@ help:
 	@echo '    test ..................... runs tests'
 
 build:
-	go build .
+	go build -o bin/backstage .
 
 save-deps:
 	$(GOPATH)/bin/godep save ./...

@@ -16,6 +16,7 @@ func main() {
 	app.Usage = "An open source solution for publishing APIs."
 	app.Version = backstage.BackstageClientVersion
 	app.HideHelp = true
+	app.EnableBashCompletion = true
 
 	currentTarget, err := backstage.GetCurrentTarget()
 	if err != nil {
