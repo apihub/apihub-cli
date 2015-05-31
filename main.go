@@ -8,15 +8,13 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-var BackstageClientVersion = "0.0.9"
-
 func main() {
 	cli.AppHelpTemplate = AppHelpTemplate
 	cli.CommandHelpTemplate = CommandHelpTemplate
 	app := cli.NewApp()
 	app.Name = "backstage"
 	app.Usage = "An open source solution for publishing APIs."
-	app.Version = BackstageClientVersion
+	app.Version = backstage.BackstageClientVersion
 	app.HideHelp = true
 
 	currentTarget, err := backstage.GetCurrentTarget()
