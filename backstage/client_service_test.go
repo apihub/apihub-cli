@@ -37,12 +37,6 @@ func (s *S) TestUpdateClient(c *C) {
 	c.Assert(cli.Secret, Equals, "amazing")
 }
 
-func (s *S) TestUpdateClientWhenTeamNotFound(c *C) {
-	_, err := clientService.Update("backstage", "123", "New Name", "http://example.org/v2/auth", "amazing")
-	e := err.(backstage.ResponseError)
-	c.Assert(e.Error(), Equals, "Team not found.")
-}
-
 func (s *S) TestUpdateClientNotFound(c *C) {
 	t, err := teamService.Create("Backstage Team", "backstage")
 	_, err = clientService.Update(t.Alias, "123", "New Name", "http://example.org/v2/auth", "amazing")

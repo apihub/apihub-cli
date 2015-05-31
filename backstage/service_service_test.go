@@ -35,12 +35,6 @@ func (s *S) TestUpdateService(c *C) {
 	c.Assert(service.Description, Equals, "new description")
 }
 
-func (s *S) TestUpdateServiceWhenTeamNotFound(c *C) {
-	_, err := serviceService.Update("subdomain", true, "new description", "new documentation", "http://example.org/v2", "not-found", 1, []string{"XMLTOJSON"})
-	e := err.(backstage.ResponseError)
-	c.Assert(e.Error(), Equals, "Team not found.")
-}
-
 func (s *S) TestUpdateServiceNotFound(c *C) {
 	team, err := teamService.Create("Backstage Team", "backstage")
 	_, err = serviceService.Update("not-found", true, "new description", "new documentation", "http://example.org/v2", team.Alias, 1, []string{"XMLTOJSON"})

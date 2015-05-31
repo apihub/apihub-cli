@@ -3,7 +3,6 @@ package fakes
 import (
 	"encoding/json"
 	"net/http"
-	"regexp"
 	"strings"
 
 	"github.com/backstage/backstage-client/backstage"
@@ -38,16 +37,9 @@ func (fake *BackstageServer) CreateClient(w http.ResponseWriter, req *http.Reque
 }
 
 func (fake *BackstageServer) UpdateClient(w http.ResponseWriter, req *http.Request) {
-	r := regexp.MustCompile(`^/api/teams/(.*)/clients/(.*)$`)
-	matches := r.FindStringSubmatch(req.URL.Path)
+	cliendId := strings.TrimPrefix(req.URL.Path, "/api/clients/")
 
-	_, ok := fake.Teams.Get(matches[1])
-	if !ok {
-		fake.notFound(w, "Team not found.")
-		return
-	}
-
-	clientFound, ok := fake.Clients.Get(matches[2])
+	clientFound, ok := fake.Clients.Get(cliendId)
 	if !ok {
 		fake.notFound(w, "Client not found.")
 		return
@@ -73,7 +65,7 @@ func (fake *BackstageServer) UpdateClient(w http.ResponseWriter, req *http.Reque
 }
 
 func (fake *BackstageServer) ClientInfo(w http.ResponseWriter, req *http.Request) {
-	id := strings.TrimPrefix(req.URL.Path, "/api/teams/clients/")
+	id := strings.TrimPrefix(req.URL.Path, "/api/clients/")
 
 	client, ok := fake.Clients.Get(id)
 	if !ok {
@@ -91,10 +83,9 @@ func (fake *BackstageServer) ClientInfo(w http.ResponseWriter, req *http.Request
 }
 
 func (fake *BackstageServer) DeleteClient(w http.ResponseWriter, req *http.Request) {
-	r := regexp.MustCompile(`^/api/teams/.*/clients/(.*)$`)
-	matches := r.FindStringSubmatch(req.URL.Path)
+	cliendId := strings.TrimPrefix(req.URL.Path, "/api/clients/")
 
-	fake.Clients.Delete(matches[1])
+	fake.Clients.Delete(cliendId)
 
 	w.WriteHeader(http.StatusOK)
 }

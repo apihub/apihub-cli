@@ -20,7 +20,7 @@ func (s ServiceService) Create(subdomain string, disabled bool, description stri
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusCreated,
 		Method:         "POST",
-		Path:           fmt.Sprintf("/api/teams/%s/services", team),
+		Path:           "/api/services",
 		Body: Service{
 			Subdomain:     subdomain,
 			Disabled:      disabled,
@@ -50,7 +50,7 @@ func (s ServiceService) Update(subdomain string, disabled bool, description stri
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "PUT",
-		Path:           fmt.Sprintf("/api/teams/%s/services/%s", team, subdomain),
+		Path:           fmt.Sprintf("/api/services/%s", subdomain),
 		Body: Service{
 			Subdomain:     subdomain,
 			Disabled:      disabled,
@@ -80,7 +80,7 @@ func (s ServiceService) Delete(subdomain string, team string) error {
 	_, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "DELETE",
-		Path:           fmt.Sprintf("/api/teams/%s/services/%s", team, subdomain),
+		Path:           fmt.Sprintf("/api/services/%s", subdomain),
 	})
 
 	return err

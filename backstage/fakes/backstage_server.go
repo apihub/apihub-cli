@@ -33,6 +33,7 @@ func NewBackstageServer() *BackstageServer {
 	router.HandleFunc("/api/logout", fake.Logout).Methods("DELETE")
 	router.HandleFunc("/api/users", fake.CreateUser).Methods("POST")
 	router.HandleFunc("/api/users", fake.DeleteUser).Methods("DELETE")
+
 	router.HandleFunc("/api/teams", fake.CreateTeam).Methods("POST")
 	router.HandleFunc("/api/teams", fake.GetTeams).Methods("GET")
 	router.HandleFunc("/api/teams/{alias}", fake.UpdateTeam).Methods("PUT")
@@ -40,13 +41,15 @@ func NewBackstageServer() *BackstageServer {
 	router.HandleFunc("/api/teams/{alias}", fake.DeleteTeam).Methods("DELETE")
 	router.HandleFunc("/api/teams/{alias}/users", fake.AddUsersToTeam).Methods("POST")
 	router.HandleFunc("/api/teams/{alias}/users", fake.RemoveUserFromTeam).Methods("DELETE")
-	router.HandleFunc("/api/teams/{alias}/clients", fake.CreateClient).Methods("POST")
-	router.HandleFunc("/api/teams/{alias}/clients/{id}", fake.UpdateClient).Methods("PUT")
-	router.HandleFunc("/api/teams/{alias}/clients/{id}", fake.DeleteClient).Methods("DELETE")
-	router.HandleFunc("/api/teams/clients/{id}", fake.ClientInfo).Methods("GET")
-	router.HandleFunc("/api/teams/{team}/services", fake.CreateService).Methods("POST")
-	router.HandleFunc("/api/teams/{team}/services/{subdomain}", fake.UpdateService).Methods("PUT")
-	router.HandleFunc("/api/teams/{team}/services/{subdomain}", fake.DeleteService).Methods("DELETE")
+
+	router.HandleFunc("/api/clients", fake.CreateClient).Methods("POST")
+	router.HandleFunc("/api/clients/{id}", fake.UpdateClient).Methods("PUT")
+	router.HandleFunc("/api/clients/{id}", fake.DeleteClient).Methods("DELETE")
+	router.HandleFunc("/api/clients/{id}", fake.ClientInfo).Methods("GET")
+
+	router.HandleFunc("/api/services", fake.CreateService).Methods("POST")
+	router.HandleFunc("/api/services/{subdomain}", fake.UpdateService).Methods("PUT")
+	router.HandleFunc("/api/services/{subdomain}", fake.DeleteService).Methods("DELETE")
 	fake.server = httptest.NewServer(router)
 	return fake
 }

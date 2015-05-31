@@ -20,7 +20,7 @@ func (s ClientService) Create(team, clientId, name, redirectUri, secret string) 
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusCreated,
 		Method:         "POST",
-		Path:           fmt.Sprintf("/api/teams/%s/clients", team),
+		Path:           "/api/clients",
 		Body: Client{
 			Team:        team,
 			Id:          clientId,
@@ -47,7 +47,7 @@ func (s ClientService) Update(team, clientId, name, redirectUri, secret string) 
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "PUT",
-		Path:           fmt.Sprintf("/api/teams/%s/clients/%s", team, clientId),
+		Path:           fmt.Sprintf("/api/clients/%s", clientId),
 		Body: Client{
 			Team:        team,
 			Name:        name,
@@ -73,7 +73,7 @@ func (s ClientService) Info(clientId string) (Client, error) {
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "GET",
-		Path:           fmt.Sprintf("/api/teams/clients/%s", clientId),
+		Path:           fmt.Sprintf("/api/clients/%s", clientId),
 	})
 
 	if err != nil {
@@ -93,7 +93,7 @@ func (s ClientService) Delete(team, clientId string) error {
 	_, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "DELETE",
-		Path:           fmt.Sprintf("/api/teams/%s/clients/%s", team, clientId),
+		Path:           fmt.Sprintf("/api/clients/%s", clientId),
 	})
 
 	return err

@@ -3,26 +3,23 @@ package fakes
 import (
 	"encoding/json"
 	"net/http"
-	"regexp"
+	"strings"
 
 	"github.com/backstage/backstage-client/backstage"
 )
 
 func (fake *BackstageServer) CreateService(w http.ResponseWriter, req *http.Request) {
-	r := regexp.MustCompile(`^/api/teams/(.*)/services$`)
-	matches := r.FindStringSubmatch(req.URL.Path)
-
-	_, ok := fake.Teams.Get(matches[1])
-	if !ok {
-		fake.notFound(w, "Team not found.")
-		return
-	}
-
 	var service backstage.Service
 	err := json.NewDecoder(req.Body).Decode(&service)
 	if err != nil {
 
 		panic(err)
+	}
+
+	_, ok := fake.Teams.Get(service.Team)
+	if !ok {
+		fake.notFound(w, "Team not found.")
+		return
 	}
 
 	if service.Subdomain == "" || service.Endpoint == "" {
@@ -47,15 +44,9 @@ func (fake *BackstageServer) CreateService(w http.ResponseWriter, req *http.Requ
 }
 
 func (fake *BackstageServer) UpdateService(w http.ResponseWriter, req *http.Request) {
-	r := regexp.MustCompile(`^/api/teams/(.*)/services/(.*)$`)
-	matches := r.FindStringSubmatch(req.URL.Path)
+	subdomain := strings.TrimPrefix(req.URL.Path, "/api/services/")
 
-	_, ok := fake.Teams.Get(matches[1])
-	if !ok {
-		fake.notFound(w, "Team not found.")
-		return
-	}
-	_, ok = fake.Services.Get(matches[2])
+	_, ok := fake.Services.Get(subdomain)
 	if !ok {
 		fake.notFound(w, "Service not found.")
 		return
@@ -90,21 +81,15 @@ func (fake *BackstageServer) UpdateService(w http.ResponseWriter, req *http.Requ
 }
 
 func (fake *BackstageServer) DeleteService(w http.ResponseWriter, req *http.Request) {
-	r := regexp.MustCompile(`^/api/teams/(.*)/services/(.*)$`)
-	matches := r.FindStringSubmatch(req.URL.Path)
+	subdomain := strings.TrimPrefix(req.URL.Path, "/api/services/")
 
-	team, ok := fake.Teams.Get(matches[1])
-	if !ok {
-		fake.notFound(w, "Team not found.")
-		return
-	}
-	service, ok := fake.Services.Get(matches[2])
+	service, ok := fake.Services.Get(subdomain)
 	if !ok {
 		fake.notFound(w, "Service not found.")
 		return
 	}
 
-	response, err := json.Marshal(team)
+	response, err := json.Marshal(service)
 	if err != nil {
 		panic(err)
 	}
