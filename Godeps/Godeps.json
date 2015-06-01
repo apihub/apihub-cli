@@ -16,13 +16,16 @@
 			"Rev": "fbda1ce02d5dabcee952040e5f4025753b6c9ce0"
 		},
 		{
-			"ImportPath": "github.com/olekukonko/tablewriter",
-			"Rev": "37f85ed61c00a85092550bf43fc51087a10475fd"
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "14f550f51af52180c2eefed15e5fd18d63c0a64a"
 		},
 		{
-			"ImportPath": "github.com/tsuru/tsuru/cmd/cmdtest",
-			"Comment": "0.10.0-465-g8266b52",
-			"Rev": "8266b5259fd716b83fa929ba4bca7a9f4d4cea62"
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "e444e69cbd2e2e3e0749a2f3c717cec491552bbf"
+		},
+		{
+			"ImportPath": "github.com/olekukonko/tablewriter",
+			"Rev": "37f85ed61c00a85092550bf43fc51087a10475fd"
 		},
 		{
 			"ImportPath": "github.com/tsuru/tsuru/fs",
