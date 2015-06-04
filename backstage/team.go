@@ -5,7 +5,7 @@ import (
 )
 
 type Team struct {
-	Id       bson.ObjectId `bson:"_id,omitempty" json:"id,omitempty""`
+	Id       bson.ObjectId `bson:"_id,omitempty" json:"id,omitempty"`
 	Name     string        `json:"name"`
 	Alias    string        `json:"alias"`
 	Users    []string      `json:"users"`
