@@ -206,9 +206,9 @@ func (cmd *Team) teamInfo(c *cli.Context) {
 			}
 			for _, client := range team.Clients {
 				line := []string{}
-				line = append(line, client.Id)
+				line = append(line, client.ID)
 				line = append(line, client.Name)
-				line = append(line, client.RedirectUri)
+				line = append(line, client.RedirectURI)
 				clientsTable.Content = append(clientsTable.Content, line)
 			}
 			tables = append(tables, clientsTable)

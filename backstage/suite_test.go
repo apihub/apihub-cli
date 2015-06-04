@@ -9,7 +9,7 @@ import (
 )
 
 var backstageServer *fakes.BackstageServer
-var httpClient backstage.HttpClient
+var httpClient backstage.HTTPClient
 
 var unsupportedPayload = func() {}
 
@@ -32,7 +32,7 @@ func (s *S) SetUpSuite(c *C) {
 func (s *S) SetUpTest(c *C) {
 	backstageServer.Reset()
 
-	httpClient = backstage.NewHttpClient(backstageServer.URL())
+	httpClient = backstage.NewHTTPClient(backstageServer.URL())
 	authService = backstage.NewAuthService(httpClient)
 	clientService = backstage.NewClientService(httpClient)
 	serviceService = backstage.NewServiceService(httpClient)

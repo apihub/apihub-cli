@@ -51,7 +51,7 @@ func (fake *BackstageServer) UpdateClient(w http.ResponseWriter, req *http.Reque
 		panic(err)
 	}
 
-	client.Id = clientFound.Id
+	client.ID = clientFound.ID
 	client.Team = clientFound.Team
 	fake.Clients.Add(client)
 

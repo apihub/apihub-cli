@@ -7,10 +7,10 @@ import (
 )
 
 type ServiceService struct {
-	client HttpClient
+	client HTTPClient
 }
 
-func NewServiceService(client HttpClient) *ServiceService {
+func NewServiceService(client HTTPClient) *ServiceService {
 	return &ServiceService{
 		client: client,
 	}

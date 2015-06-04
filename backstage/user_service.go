@@ -6,10 +6,10 @@ import (
 )
 
 type UserService struct {
-	client HttpClient
+	client HTTPClient
 }
 
-func NewUserService(client HttpClient) *UserService {
+func NewUserService(client HTTPClient) *UserService {
 	return &UserService{
 		client: client,
 	}

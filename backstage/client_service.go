@@ -7,10 +7,10 @@ import (
 )
 
 type ClientService struct {
-	client HttpClient
+	client HTTPClient
 }
 
-func NewClientService(client HttpClient) *ClientService {
+func NewClientService(client HTTPClient) *ClientService {
 	return &ClientService{
 		client: client,
 	}
@@ -23,9 +23,9 @@ func (s ClientService) Create(team, clientId, name, redirectUri, secret string) 
 		Path:           "/api/clients",
 		Body: Client{
 			Team:        team,
-			Id:          clientId,
+			ID:          clientId,
 			Name:        name,
-			RedirectUri: redirectUri,
+			RedirectURI: redirectUri,
 			Secret:      secret,
 		},
 	})
@@ -51,7 +51,7 @@ func (s ClientService) Update(team, clientId, name, redirectUri, secret string) 
 		Body: Client{
 			Team:        team,
 			Name:        name,
-			RedirectUri: redirectUri,
+			RedirectURI: redirectUri,
 			Secret:      secret,
 		},
 	})

@@ -123,8 +123,8 @@ func (cmd *Client) clientInfo(c *cli.Context) {
 		}
 		line := []string{}
 		line = append(line, client.Name)
-		line = append(line, client.RedirectUri)
-		line = append(line, client.Id)
+		line = append(line, client.RedirectURI)
+		line = append(line, client.ID)
 		line = append(line, client.Secret)
 		clientTable.Content = append(clientTable.Content, line)
 

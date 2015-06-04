@@ -10,9 +10,9 @@ func (s *S) TestCreateClient(c *C) {
 
 	c.Check(err, IsNil)
 	c.Assert(cli.Team, Equals, "backstage")
-	c.Assert(cli.Id, Equals, "123")
+	c.Assert(cli.ID, Equals, "123")
 	c.Assert(cli.Name, Equals, "Documents")
-	c.Assert(cli.RedirectUri, Equals, "http://example.org/auth")
+	c.Assert(cli.RedirectURI, Equals, "http://example.org/auth")
 	c.Assert(cli.Secret, Equals, "super-secret")
 }
 
@@ -26,14 +26,14 @@ func (s *S) TestUpdateClient(c *C) {
 	t, err := teamService.Create("Backstage Team", "backstage")
 	cli, _ := clientService.Create(t.Alias, "123", "Documents", "http://example.org/auth", "super-secret")
 
-	_, err = clientService.Update(t.Alias, cli.Id, "New Name", "http://example.org/v2/auth", "amazing")
+	_, err = clientService.Update(t.Alias, cli.ID, "New Name", "http://example.org/v2/auth", "amazing")
 	c.Check(err, IsNil)
 
 	cli, _ = clientService.Info("123")
 	c.Assert(cli.Team, Equals, t.Alias)
-	c.Assert(cli.Id, Equals, "123")
+	c.Assert(cli.ID, Equals, "123")
 	c.Assert(cli.Name, Equals, "New Name")
-	c.Assert(cli.RedirectUri, Equals, "http://example.org/v2/auth")
+	c.Assert(cli.RedirectURI, Equals, "http://example.org/v2/auth")
 	c.Assert(cli.Secret, Equals, "amazing")
 }
 
@@ -51,8 +51,8 @@ func (s *S) TestClientInfo(c *C) {
 	cli, err := clientService.Info("123")
 	c.Check(err, IsNil)
 	c.Assert(cli.Team, Equals, "backstage")
-	c.Assert(cli.Id, Equals, "123")
-	c.Assert(cli.RedirectUri, Equals, "http://example.org/auth")
+	c.Assert(cli.ID, Equals, "123")
+	c.Assert(cli.RedirectURI, Equals, "http://example.org/auth")
 	c.Assert(cli.Secret, Equals, "super-secret")
 }
 
@@ -64,11 +64,11 @@ func (s *S) TestClientInfoNotFound(c *C) {
 
 func (s *S) TestDeleteClient(c *C) {
 	cli, err := clientService.Create("backstage", "123", "Documents", "http://example.org/auth", "super-secret")
-	found, err := clientService.Info(cli.Id)
+	found, err := clientService.Info(cli.ID)
 	c.Assert(found.Name, Equals, cli.Name)
 
-	err = clientService.Delete(cli.Team, cli.Id)
+	err = clientService.Delete(cli.Team, cli.ID)
 	c.Check(err, IsNil)
-	cli, _ = clientService.Info(cli.Id)
+	cli, _ = clientService.Info(cli.ID)
 	c.Assert(cli.Name, Equals, "")
 }

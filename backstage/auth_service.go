@@ -7,10 +7,10 @@ import (
 )
 
 type AuthService struct {
-	client HttpClient
+	client HTTPClient
 }
 
-func NewAuthService(client HttpClient) *AuthService {
+func NewAuthService(client HTTPClient) *AuthService {
 	return &AuthService{
 		client: client,
 	}

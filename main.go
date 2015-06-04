@@ -23,7 +23,7 @@ func main() {
 		panic("Your target file is corrupted. Please delete it and add your target. Sorry about that.")
 	}
 
-	httpClient := backstage.NewHttpClient(currentTarget)
+	httpClient := backstage.NewHTTPClient(currentTarget)
 
 	m := NewManager(app)
 	m.Register(&commands.Auth{Service: backstage.NewAuthService(httpClient)})

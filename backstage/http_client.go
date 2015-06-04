@@ -10,13 +10,13 @@ import (
 
 var BackstageClientVersion = "0.0.9"
 
-type HttpClient struct {
+type HTTPClient struct {
 	Host   string
 	client *http.Client
 }
 
-func NewHttpClient(host string) HttpClient {
-	return HttpClient{
+func NewHTTPClient(host string) HTTPClient {
+	return HTTPClient{
 		Host:   host,
 		client: &http.Client{},
 	}
@@ -29,7 +29,7 @@ type RequestArgs struct {
 	Method         string
 }
 
-func (c *HttpClient) MakeRequest(requestArgs RequestArgs) ([]byte, error) {
+func (c *HTTPClient) MakeRequest(requestArgs RequestArgs) ([]byte, error) {
 	body, err := json.Marshal(requestArgs.Body)
 	if err != nil {
 		return []byte{}, newInvalidBodyError(err)

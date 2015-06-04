@@ -15,7 +15,7 @@ func NewClients() *Clients {
 }
 
 func (clients *Clients) Add(client backstage.Client) {
-	clients.storage[client.Id] = client
+	clients.storage[client.ID] = client
 }
 
 func (clients *Clients) Get(id string) (backstage.Client, bool) {

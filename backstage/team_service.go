@@ -7,10 +7,10 @@ import (
 )
 
 type TeamService struct {
-	client HttpClient
+	client HTTPClient
 }
 
-func NewTeamService(client HttpClient) *TeamService {
+func NewTeamService(client HTTPClient) *TeamService {
 	return &TeamService{
 		client: client,
 	}
