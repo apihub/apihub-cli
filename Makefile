@@ -1,13 +1,21 @@
+include go.mk
+
+.PHONY: help
 help:
-	@echo '    build .................... builds the binary'
-	@echo '    save-deps ................ generates the Godeps folder'
-	@echo '    test ..................... runs tests'
+	$(info | build ........... builds the binary                                  |)
+	$(info | clean ........... remove all untracked and temporary files           |)
+	$(info | test ............ run all tests                                      |)
+	$(info | race ............ run all tests with race detection enabled          |)
+	$(info | cover ........... run all tests with coverage enabled                |)
+	$(info | vet ............. run the go vet tool                                |)
+	$(info | lint ............ run the golint tool                                |)
+	$(info | save-deps ....... generates the Godeps folder                        |)
 
-build:
-	go build -o bin/backstage .
+build: gomkbuild
 
-save-deps:
-	$(GOPATH)/bin/godep save ./...
+# Kept for backwards compatibility. User can call `make savegodeps` directly
+.PHONY: save-deps
+save-deps: savegodeps
 
-test:
-	go test ./...
+.PHONY: clean
+clean: gomkclean

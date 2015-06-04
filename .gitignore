@@ -1,4 +1,5 @@
 .DS_Store
 backstage/backstage
 bin
-backstage-client
+backstage-client*
+backstage-client_*
