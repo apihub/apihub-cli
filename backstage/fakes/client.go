@@ -37,9 +37,9 @@ func (fake *BackstageServer) CreateClient(w http.ResponseWriter, req *http.Reque
 }
 
 func (fake *BackstageServer) UpdateClient(w http.ResponseWriter, req *http.Request) {
-	cliendId := strings.TrimPrefix(req.URL.Path, "/api/clients/")
+	clientID := strings.TrimPrefix(req.URL.Path, "/api/clients/")
 
-	clientFound, ok := fake.Clients.Get(cliendId)
+	clientFound, ok := fake.Clients.Get(clientID)
 	if !ok {
 		fake.notFound(w, "Client not found.")
 		return
@@ -83,9 +83,9 @@ func (fake *BackstageServer) ClientInfo(w http.ResponseWriter, req *http.Request
 }
 
 func (fake *BackstageServer) DeleteClient(w http.ResponseWriter, req *http.Request) {
-	cliendId := strings.TrimPrefix(req.URL.Path, "/api/clients/")
+	clientID := strings.TrimPrefix(req.URL.Path, "/api/clients/")
 
-	fake.Clients.Delete(cliendId)
+	fake.Clients.Delete(clientID)
 
 	w.WriteHeader(http.StatusOK)
 }

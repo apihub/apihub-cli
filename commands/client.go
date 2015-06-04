@@ -106,11 +106,11 @@ func (cmd *Client) clientRemove(c *cli.Context) {
 func (cmd *Client) clientInfo(c *cli.Context) {
 	defer RecoverStrategy("client-info")()
 
-	client_id := c.String("client_id")
-	if client_id == "" {
-		client_id = c.Args().First()
+	clientID := c.String("client_id")
+	if clientID == "" {
+		clientID = c.Args().First()
 	}
-	client, err := cmd.Service.Info(client_id)
+	client, err := cmd.Service.Info(clientID)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {

@@ -16,16 +16,16 @@ func NewClientService(client HTTPClient) *ClientService {
 	}
 }
 
-func (s ClientService) Create(team, clientId, name, redirectUri, secret string) (Client, error) {
+func (s ClientService) Create(team, clientID, name, redirectURI, secret string) (Client, error) {
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusCreated,
 		Method:         "POST",
 		Path:           "/api/clients",
 		Body: Client{
 			Team:        team,
-			ID:          clientId,
+			ID:          clientID,
 			Name:        name,
-			RedirectURI: redirectUri,
+			RedirectURI: redirectURI,
 			Secret:      secret,
 		},
 	})
@@ -43,15 +43,15 @@ func (s ClientService) Create(team, clientId, name, redirectUri, secret string) 
 	return client, nil
 }
 
-func (s ClientService) Update(team, clientId, name, redirectUri, secret string) (Client, error) {
+func (s ClientService) Update(team, clientID, name, redirectURI, secret string) (Client, error) {
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "PUT",
-		Path:           fmt.Sprintf("/api/clients/%s", clientId),
+		Path:           fmt.Sprintf("/api/clients/%s", clientID),
 		Body: Client{
 			Team:        team,
 			Name:        name,
-			RedirectURI: redirectUri,
+			RedirectURI: redirectURI,
 			Secret:      secret,
 		},
 	})
@@ -69,11 +69,11 @@ func (s ClientService) Update(team, clientId, name, redirectUri, secret string) 
 	return client, nil
 }
 
-func (s ClientService) Info(clientId string) (Client, error) {
+func (s ClientService) Info(clientID string) (Client, error) {
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "GET",
-		Path:           fmt.Sprintf("/api/clients/%s", clientId),
+		Path:           fmt.Sprintf("/api/clients/%s", clientID),
 	})
 
 	if err != nil {
@@ -89,11 +89,11 @@ func (s ClientService) Info(clientId string) (Client, error) {
 	return client, nil
 }
 
-func (s ClientService) Delete(team, clientId string) error {
+func (s ClientService) Delete(team, clientID string) error {
 	_, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "DELETE",
-		Path:           fmt.Sprintf("/api/clients/%s", clientId),
+		Path:           fmt.Sprintf("/api/clients/%s", clientID),
 	})
 
 	return err
