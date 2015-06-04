@@ -218,7 +218,7 @@ func (cmd *Team) teamInfo(c *cli.Context) {
 		for _, table := range tables {
 			context = &Context{Stdout: os.Stdout, Stdin: os.Stdin}
 			table.Render(context)
-			fmt.Println("\n")
+			fmt.Println()
 		}
 	}
 }

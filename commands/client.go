@@ -130,6 +130,6 @@ func (cmd *Client) clientInfo(c *cli.Context) {
 
 		context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
 		clientTable.Render(context)
-		fmt.Println("\n")
+		fmt.Println()
 	}
 }
