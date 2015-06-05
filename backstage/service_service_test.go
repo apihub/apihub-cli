@@ -41,3 +41,11 @@ func (s *S) TestUpdateServiceNotFound(c *C) {
 	e := err.(backstage.ResponseError)
 	c.Assert(e.Error(), Equals, "Service not found.")
 }
+
+func (s *S) TestDeleteService(c *C) {
+	team, err := teamService.Create("Backstage Team", "backstage")
+	service, err := serviceService.Create("subdomain", false, "description", "documentation", "http://example.org", team.Alias, 10, []string{"XMLTOJSON"})
+
+	err = serviceService.Delete(service.Subdomain, service.Team)
+	c.Check(err, IsNil)
+}
