@@ -59,7 +59,7 @@ func (s AuthService) ChangePassword(email, password, newPassword, confirmationPa
 	_, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusNoContent,
 		Method:         "PUT",
-		Path:           "/api/password",
+		Path:           "/auth/password",
 		Body: User{
 			Email:                email,
 			Password:             password,

@@ -29,7 +29,7 @@ func NewBackstageServer() *BackstageServer {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/auth/login", fake.Login).Methods("POST")
-	router.HandleFunc("/api/password", fake.ChangePassword).Methods("PUT")
+	router.HandleFunc("/auth/password", fake.ChangePassword).Methods("PUT")
 	router.HandleFunc("/auth/login", fake.Logout).Methods("DELETE")
 	router.HandleFunc("/auth/signup", fake.CreateUser).Methods("POST")
 	router.HandleFunc("/auth/signup", fake.DeleteUser).Methods("DELETE")
