@@ -1,7 +1,7 @@
 package backstage_test
 
 import (
-	"github.com/backstage/backstage-client/backstage"
+	"github.com/backstage/backstage-cli/backstage"
 	. "gopkg.in/check.v1"
 )
 

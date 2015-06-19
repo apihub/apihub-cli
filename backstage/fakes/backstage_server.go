@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/backstage/backstage-client/backstage"
+	"github.com/backstage/backstage-cli/backstage"
 	"github.com/gorilla/mux"
 )
 

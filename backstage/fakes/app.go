@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/backstage/backstage-client/backstage"
+	"github.com/backstage/backstage-cli/backstage"
 )
 
 func (fake *BackstageServer) CreateApp(w http.ResponseWriter, req *http.Request) {

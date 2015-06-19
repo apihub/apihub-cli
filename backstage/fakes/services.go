@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/backstage/backstage-client/backstage"
+	"github.com/backstage/backstage-cli/backstage"
 )
 
 type Services struct {

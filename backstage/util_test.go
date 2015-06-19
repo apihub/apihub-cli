@@ -3,7 +3,7 @@ package backstage_test
 import (
 	"os"
 
-	"github.com/backstage/backstage-client/backstage"
+	"github.com/backstage/backstage-cli/backstage"
 	. "gopkg.in/check.v1"
 )
 

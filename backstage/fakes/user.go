@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/backstage/backstage-client/backstage"
+	"github.com/backstage/backstage-cli/backstage"
 )
 
 func (fake *BackstageServer) CreateUser(w http.ResponseWriter, req *http.Request) {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/backstage/backstage-client/backstage"
+	"github.com/backstage/backstage-cli/backstage"
 	"github.com/codegangsta/cli"
 )
 
