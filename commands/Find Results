@@ -1,0 +1,52 @@
+Searching 137 files for "app.ID" (case sensitive)
+
+/Users/alberto/Copy/Code/golang/src/github.com/backstage/backstage-client/backstage/app_service_test.go:
+   11  	c.Check(err, IsNil)
+   12  	c.Assert(app.Team, Equals, "backstage")
+   13: 	c.Assert(app.ID, Equals, "123")
+   14  	c.Assert(app.Name, Equals, "Documents")
+   15  	c.Assert(app.RedirectURI, Equals, "http://example.org/auth")
+   ..
+   27  	app, _ := appService.Create(t.Alias, "123", "Documents", "http://example.org/auth", "super-secret")
+   28
+   29: 	_, err = appService.Update(t.Alias, app.ID, "New Name", "http://example.org/v2/auth", "amazing")
+   30  	c.Check(err, IsNil)
+   31
+   32  	app, _ = appService.Info("123")
+   33  	c.Assert(app.Team, Equals, t.Alias)
+   34: 	c.Assert(app.ID, Equals, "123")
+   35  	c.Assert(app.Name, Equals, "New Name")
+   36  	c.Assert(app.RedirectURI, Equals, "http://example.org/v2/auth")
+   ..
+   52  	c.Check(err, IsNil)
+   53  	c.Assert(app.Team, Equals, "backstage")
+   54: 	c.Assert(app.ID, Equals, "123")
+   55  	c.Assert(app.RedirectURI, Equals, "http://example.org/auth")
+   56  	c.Assert(app.Secret, Equals, "super-secret")
+   ..
+   65  func (s *S) TestDeleteApp(c *C) {
+   66  	app, err := appService.Create("backstage", "123", "Documents", "http://example.org/auth", "super-secret")
+   67: 	found, err := appService.Info(app.ID)
+   68  	c.Assert(found.Name, Equals, app.Name)
+   69
+   70: 	err = appService.Delete(app.Team, app.ID)
+   71  	c.Check(err, IsNil)
+   72: 	app, _ = appService.Info(app.ID)
+   73  	c.Assert(app.Name, Equals, "")
+   74  }
+
+/Users/alberto/Copy/Code/golang/src/github.com/backstage/backstage-client/backstage/fakes/app.go:
+   52  	}
+   53
+   54: 	app.ID = appFound.ID
+   55  	app.Team = appFound.Team
+   56  	fake.Apps.Add(app)
+
+/Users/alberto/Copy/Code/golang/src/github.com/backstage/backstage-client/commands/app.go:
+  125  		line = append(line, app.Name)
+  126  		line = append(line, app.RedirectURI)
+  127: 		line = append(line, app.ID)
+  128  		line = append(line, app.Secret)
+  129  		appTable.Content = append(appTable.Content, line)
+
+9 matches across 3 files

@@ -11,7 +11,7 @@ import (
 type BackstageServer struct {
 	server *httptest.Server
 
-	Clients  *Clients
+	Apps     *Apps
 	Services *Services
 	Teams    *Teams
 	Tokens   *Tokens
@@ -20,7 +20,7 @@ type BackstageServer struct {
 
 func NewBackstageServer() *BackstageServer {
 	fake := &BackstageServer{
-		Clients:  NewClients(),
+		Apps:     NewApps(),
 		Services: NewServices(),
 		Teams:    NewTeams(),
 		Tokens:   NewTokens(),
@@ -28,11 +28,11 @@ func NewBackstageServer() *BackstageServer {
 	}
 
 	router := mux.NewRouter()
-	router.HandleFunc("/api/login", fake.Login).Methods("POST")
+	router.HandleFunc("/auth/login", fake.Login).Methods("POST")
 	router.HandleFunc("/api/password", fake.ChangePassword).Methods("PUT")
-	router.HandleFunc("/api/logout", fake.Logout).Methods("DELETE")
-	router.HandleFunc("/api/users", fake.CreateUser).Methods("POST")
-	router.HandleFunc("/api/users", fake.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/auth/login", fake.Logout).Methods("DELETE")
+	router.HandleFunc("/auth/signup", fake.CreateUser).Methods("POST")
+	router.HandleFunc("/auth/signup", fake.DeleteUser).Methods("DELETE")
 
 	router.HandleFunc("/api/teams", fake.CreateTeam).Methods("POST")
 	router.HandleFunc("/api/teams", fake.GetTeams).Methods("GET")
@@ -42,10 +42,10 @@ func NewBackstageServer() *BackstageServer {
 	router.HandleFunc("/api/teams/{alias}/users", fake.AddUsersToTeam).Methods("POST")
 	router.HandleFunc("/api/teams/{alias}/users", fake.RemoveUserFromTeam).Methods("DELETE")
 
-	router.HandleFunc("/api/clients", fake.CreateClient).Methods("POST")
-	router.HandleFunc("/api/clients/{id}", fake.UpdateClient).Methods("PUT")
-	router.HandleFunc("/api/clients/{id}", fake.DeleteClient).Methods("DELETE")
-	router.HandleFunc("/api/clients/{id}", fake.ClientInfo).Methods("GET")
+	router.HandleFunc("/api/apps", fake.CreateApp).Methods("POST")
+	router.HandleFunc("/api/apps/{id}", fake.UpdateApp).Methods("PUT")
+	router.HandleFunc("/api/apps/{id}", fake.DeleteApp).Methods("DELETE")
+	router.HandleFunc("/api/apps/{id}", fake.AppInfo).Methods("GET")
 
 	router.HandleFunc("/api/services", fake.CreateService).Methods("POST")
 	router.HandleFunc("/api/services/{subdomain}", fake.UpdateService).Methods("PUT")
@@ -63,7 +63,7 @@ func (fake *BackstageServer) URL() string {
 }
 
 func (fake *BackstageServer) Reset() {
-	fake.Clients.Reset()
+	fake.Apps.Reset()
 	fake.Services.Reset()
 	fake.Teams.Reset()
 	fake.Tokens.Reset()

@@ -27,7 +27,7 @@ func main() {
 
 	m := NewManager(app)
 	m.Register(&commands.Auth{Service: backstage.NewAuthService(httpClient)})
-	m.Register(&commands.Client{Service: backstage.NewClientService(httpClient)})
+	m.Register(&commands.App{Service: backstage.NewAppService(httpClient)})
 	m.Register(&commands.Service{Service: backstage.NewServiceService(httpClient)})
 	m.Register(&commands.Target{})
 	m.Register(&commands.Team{Service: backstage.NewTeamService(httpClient)})

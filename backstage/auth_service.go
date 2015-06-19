@@ -20,7 +20,7 @@ func (s AuthService) Login(email, password string) (TokenInfo, error) {
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "POST",
-		Path:           "/api/login",
+		Path:           "/auth/login",
 		Body: User{
 			Email:    email,
 			Password: password,
@@ -48,7 +48,7 @@ func (s AuthService) Logout() error {
 	_, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusNoContent,
 		Method:         "DELETE",
-		Path:           "/api/logout",
+		Path:           "/auth/login",
 	})
 
 	filesystem().Remove(TokenFileName)

@@ -19,7 +19,7 @@ func (s UserService) Create(name, username, email, password string) (User, error
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusCreated,
 		Method:         "POST",
-		Path:           "/api/users",
+		Path:           "/auth/signup",
 		Body: User{
 			Name:     name,
 			Username: username,
@@ -45,7 +45,7 @@ func (s UserService) Delete() error {
 	_, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "DELETE",
-		Path:           "/api/users",
+		Path:           "/auth/signup",
 	})
 
 	DeleteToken()

@@ -197,21 +197,21 @@ func (cmd *Team) teamInfo(c *cli.Context) {
 			tables = append(tables, servicesTable)
 		}
 
-		// Clients table
-		if len(team.Clients) > 0 {
-			clientsTable := &Table{
-				Title:   "Available Clients:",
+		// Apps table
+		if len(team.Apps) > 0 {
+			appsTable := &Table{
+				Title:   "Available Apps:",
 				Content: [][]string{},
 				Header:  []string{"Id", "Name", "Redirect Uri"},
 			}
-			for _, client := range team.Clients {
+			for _, app := range team.Apps {
 				line := []string{}
-				line = append(line, client.ID)
-				line = append(line, client.Name)
-				line = append(line, client.RedirectURI)
-				clientsTable.Content = append(clientsTable.Content, line)
+				line = append(line, app.ClientID)
+				line = append(line, app.Name)
+				line = append(line, app.RedirectURI)
+				appsTable.Content = append(appsTable.Content, line)
 			}
-			tables = append(tables, clientsTable)
+			tables = append(tables, appsTable)
 		}
 
 		var context *Context

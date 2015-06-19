@@ -14,7 +14,7 @@ var httpClient backstage.HTTPClient
 var unsupportedPayload = func() {}
 
 var authService *backstage.AuthService
-var clientService *backstage.ClientService
+var appService *backstage.AppService
 var serviceService *backstage.ServiceService
 var teamService *backstage.TeamService
 var userService *backstage.UserService
@@ -34,7 +34,7 @@ func (s *S) SetUpTest(c *C) {
 
 	httpClient = backstage.NewHTTPClient(backstageServer.URL())
 	authService = backstage.NewAuthService(httpClient)
-	clientService = backstage.NewClientService(httpClient)
+	appService = backstage.NewAppService(httpClient)
 	serviceService = backstage.NewServiceService(httpClient)
 	teamService = backstage.NewTeamService(httpClient)
 	userService = backstage.NewUserService(httpClient)
