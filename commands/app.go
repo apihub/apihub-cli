@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/backstage/backstage-client/backstage"
 	"github.com/codegangsta/cli"
@@ -16,13 +17,13 @@ func (cmd *App) GetCommands() []cli.Command {
 	return []cli.Command{
 		{
 			Name:        "app-create",
-			Usage:       "app-create --team <team> --client_id <client_id> --client_secret <client_secret> --name <name> --redirect_uri <redirect_uri>",
+			Usage:       "app-create --team <team> --client_id <client_id> --client_secret <client_secret> --name <name> --redirect_uris <redirect_uris>",
 			Description: "Create a new app.",
 			Flags: []cli.Flag{
 				cli.StringFlag{Name: "client_id, i", Value: "", Usage: "App id (used by oAuth 2.0)"},
 				cli.StringFlag{Name: "client_secret, s", Value: "", Usage: "Secret Key (used by oAuth 2.0)"},
 				cli.StringFlag{Name: "name, n", Value: "", Usage: "App name"},
-				cli.StringFlag{Name: "redirect_uri, r", Value: "", Usage: "App Redirect Uri (used by oAuth 2.0)"},
+				cli.StringFlag{Name: "redirect_uris, r", Value: "", Usage: "App Redirect Uris, comma separated (used by oAuth 2.0)"},
 				cli.StringFlag{Name: "team, t", Value: "", Usage: "Team"},
 			},
 			Action: cmd.appCreate,
@@ -30,13 +31,13 @@ func (cmd *App) GetCommands() []cli.Command {
 
 		{
 			Name:        "app-update",
-			Usage:       "app-update --team <team> --client_id <client_id> --client_secret <client_secret>  --name <name> --redirect_uri <redirect_uri>",
+			Usage:       "app-update --team <team> --client_id <client_id> --client_secret <client_secret>  --name <name> --redirect_uris <redirect_uris>",
 			Description: "Update an existing app.",
 			Flags: []cli.Flag{
 				cli.StringFlag{Name: "client_id, i", Value: "", Usage: "App id (used by oAuth 2.0)"},
 				cli.StringFlag{Name: "client_secret, s", Value: "", Usage: "Secret Key (used by oAuth 2.0)"},
 				cli.StringFlag{Name: "name, n", Value: "", Usage: "App name"},
-				cli.StringFlag{Name: "redirect_uri, r", Value: "", Usage: "App Redirect Uri (used by oAuth 2.0)"},
+				cli.StringFlag{Name: "redirect_uris, r", Value: "", Usage: "App Redirect Uri (used by oAuth 2.0)"},
 				cli.StringFlag{Name: "team, t", Value: "", Usage: "Team"},
 			},
 			Action: cmd.appUpdate,
@@ -67,8 +68,8 @@ func (cmd *App) GetCommands() []cli.Command {
 
 func (cmd *App) appCreate(c *cli.Context) {
 	defer RecoverStrategy("app-create")()
-
-	_, err := cmd.Service.Create(c.String("team"), c.String("client_id"), c.String("name"), c.String("redirect_uri"), c.String("client_secret"))
+	uris := strings.Split(c.String("redirect_uris"), ",")
+	_, err := cmd.Service.Create(c.String("team"), c.String("client_id"), c.String("name"), uris, c.String("client_secret"))
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -78,8 +79,8 @@ func (cmd *App) appCreate(c *cli.Context) {
 
 func (cmd *App) appUpdate(c *cli.Context) {
 	defer RecoverStrategy("app-update")()
-
-	_, err := cmd.Service.Update(c.String("team"), c.String("client_id"), c.String("name"), c.String("redirect_uri"), c.String("client_secret"))
+	uris := strings.Split(c.String("redirect_uris"), ",")
+	_, err := cmd.Service.Update(c.String("team"), c.String("client_id"), c.String("name"), uris, c.String("client_secret"))
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -121,9 +122,10 @@ func (cmd *App) appInfo(c *cli.Context) {
 			Content: [][]string{},
 			Header:  []string{"Name", "Redirect Uri", "Id", "Secret"},
 		}
+
 		line := []string{}
 		line = append(line, app.Name)
-		line = append(line, app.RedirectURI)
+		line = append(line, strings.Join(app.RedirectURIs, ", "))
 		line = append(line, app.ClientID)
 		line = append(line, app.ClientSecret)
 		appTable.Content = append(appTable.Content, line)

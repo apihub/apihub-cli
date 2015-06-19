@@ -16,7 +16,7 @@ func NewAppService(client HTTPClient) *AppService {
 	}
 }
 
-func (s AppService) Create(team, clientID, name, redirectURI, secret string) (App, error) {
+func (s AppService) Create(team string, clientID string, name string, redirectURIs []string, secret string) (App, error) {
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusCreated,
 		Method:         "POST",
@@ -25,7 +25,7 @@ func (s AppService) Create(team, clientID, name, redirectURI, secret string) (Ap
 			Team:         team,
 			ClientID:     clientID,
 			Name:         name,
-			RedirectURI:  redirectURI,
+			RedirectURIs: redirectURIs,
 			ClientSecret: secret,
 		},
 	})
@@ -43,7 +43,7 @@ func (s AppService) Create(team, clientID, name, redirectURI, secret string) (Ap
 	return app, nil
 }
 
-func (s AppService) Update(team, clientID, name, redirectURI, secret string) (App, error) {
+func (s AppService) Update(team string, clientID string, name string, redirectURIs []string, secret string) (App, error) {
 	body, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
 		Method:         "PUT",
@@ -51,7 +51,7 @@ func (s AppService) Update(team, clientID, name, redirectURI, secret string) (Ap
 		Body: App{
 			Team:         team,
 			Name:         name,
-			RedirectURI:  redirectURI,
+			RedirectURIs: redirectURIs,
 			ClientSecret: secret,
 		},
 	})

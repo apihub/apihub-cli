@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/backstage/backstage-client/backstage"
 	"github.com/codegangsta/cli"
@@ -208,7 +209,7 @@ func (cmd *Team) teamInfo(c *cli.Context) {
 				line := []string{}
 				line = append(line, app.ClientID)
 				line = append(line, app.Name)
-				line = append(line, app.RedirectURI)
+				line = append(line, strings.Join(app.RedirectURIs, ", "))
 				appsTable.Content = append(appsTable.Content, line)
 			}
 			tables = append(tables, appsTable)
