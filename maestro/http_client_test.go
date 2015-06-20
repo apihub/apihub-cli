@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/backstage/backstage-cli/backstage"
+	"github.com/backstage/backstage-cli/maestro"
 	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )

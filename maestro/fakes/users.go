@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/backstage/backstage-cli/backstage"
+	"github.com/backstage/backstage-cli/maestro"
 )
 
 type Users struct {

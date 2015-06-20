@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/backstage/backstage-cli/backstage"
+	"github.com/backstage/backstage-cli/maestro"
 	"github.com/codegangsta/cli"
 )
 

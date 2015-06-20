@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/backstage/backstage-cli/backstage"
+	"github.com/backstage/backstage-cli/maestro"
 )
 
 func (fake *BackstageServer) CreateTeam(w http.ResponseWriter, req *http.Request) {

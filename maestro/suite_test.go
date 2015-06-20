@@ -3,8 +3,8 @@ package backstage_test
 import (
 	"testing"
 
-	"github.com/backstage/backstage-cli/backstage"
-	"github.com/backstage/backstage-cli/backstage/fakes"
+	"github.com/backstage/backstage-cli/maestro"
+	"github.com/backstage/backstage-cli/maestro/fakes"
 	. "gopkg.in/check.v1"
 )
 

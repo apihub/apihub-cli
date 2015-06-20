@@ -1,7 +1,7 @@
 package backstage_test
 
 import (
-	"github.com/backstage/backstage-cli/backstage"
+	"github.com/backstage/backstage-cli/maestro"
 	. "gopkg.in/check.v1"
 )
 

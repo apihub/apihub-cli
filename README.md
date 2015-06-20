@@ -1,13 +1,13 @@
-[![Build Status](https://travis-ci.org/backstage/backstage-client.png?branch=master)](https://travis-ci.org/backstage/backstage-client)
+[![Build Status](https://travis-ci.org/backstage/backstage-cli.png?branch=master)](https://travis-ci.org/backstage/backstage-cli)
 
-#backstage-client
+#backstage-cli
 
-An open source command line solution for publishing APIs on [Backstage](https://github.com/backstage/backstage).
+An open source command line solution for publishing APIs on [Maestro](https://github.com/backstage/maestro).
 
 ##reporting issues
 
 Please report issues to the
-[backstage/backstage](https://github.com/backstage/backstage/issues) repository.
+[backstage/maestro](https://github.com/backstage/maestro/issues) repository.
 
 This project's inspired by [Tsuru](https://github.com/tsuru/tsuru).
 

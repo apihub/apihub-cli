@@ -1,7 +1,7 @@
 package backstage_test
 
 import (
-	"github.com/backstage/backstage-cli/backstage"
+	"github.com/backstage/backstage-cli/maestro"
 	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
