@@ -2,14 +2,12 @@
 
 #apihub-cli
 
-An open source command line solution for publishing APIs on [Maestro](https://github.com/apihub/maestro).
+An open source command line solution for publishing APIs on [ApiHub - Api Gateway](https://github.com/apihub/apigateway).
 
 ##reporting issues
 
 Please report issues to the
-[apihub/maestro](https://github.com/apihub/maestro/issues) repository.
-
-This project's inspired by [Tsuru](https://github.com/tsuru/tsuru).
+[apihub/apigateway](https://github.com/apihub/apigateway/issues) repository.
 
 ##License
 
