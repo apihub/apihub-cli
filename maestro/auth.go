@@ -1,4 +1,4 @@
-package backstage
+package apihub
 
 import (
 	"io/ioutil"
@@ -12,7 +12,7 @@ type TokenInfo struct {
 	Type      string `json:"token_type"`
 }
 
-var TokenFileName = JoinHomePath(".backstage_token")
+var TokenFileName = JoinHomePath(".apihub_token")
 
 func WriteToken(token string) error {
 	tokenFile, err := filesystem().OpenFile(TokenFileName, syscall.O_RDWR|syscall.O_CREAT|syscall.O_TRUNC, 0600)

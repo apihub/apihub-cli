@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
-func (fake *BackstageServer) CreateUser(w http.ResponseWriter, req *http.Request) {
-	var user backstage.User
+func (fake *ApiHubServer) CreateUser(w http.ResponseWriter, req *http.Request) {
+	var user apihub.User
 	err := json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {
 		panic(err)
 	}
 
 	if user.Name == "" || user.Email == "" || user.Username == "" || user.Password == "" {
-		errorResponse := backstage.ErrorResponse{
+		errorResponse := apihub.ErrorResponse{
 			Type:        "bad_request",
 			Description: "Name/Email/Username/Password cannot be empty.",
 		}
@@ -35,6 +35,6 @@ func (fake *BackstageServer) CreateUser(w http.ResponseWriter, req *http.Request
 	w.Write(response)
 }
 
-func (fake *BackstageServer) DeleteUser(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) DeleteUser(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }

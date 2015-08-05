@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/codegangsta/cli"
 )
 
 type Target struct {
-	backstage.Target
+	apihub.Target
 }
 
 func (cmd *Target) GetCommands() []cli.Command {
@@ -47,7 +47,7 @@ func (cmd *Target) GetCommands() []cli.Command {
 func (cmd *Target) targetAdd(c *cli.Context) {
 	defer RecoverStrategy("target-add")()
 
-	targets, err := backstage.LoadTargets()
+	targets, err := apihub.LoadTargets()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -66,7 +66,7 @@ func (cmd *Target) targetAdd(c *cli.Context) {
 func (cmd *Target) targetList(c *cli.Context) {
 	defer RecoverStrategy("target-list")()
 
-	targets, err := backstage.LoadTargets()
+	targets, err := apihub.LoadTargets()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -76,7 +76,7 @@ func (cmd *Target) targetList(c *cli.Context) {
 
 	table := &Table{
 		Content: [][]string{},
-		Header:  []string{"Default", "Label", "Backstage Server"},
+		Header:  []string{"Default", "Label", "ApiHub Server"},
 	}
 
 	for _, label := range sortedMapKeys {
@@ -99,9 +99,9 @@ func (cmd *Target) targetRemove(c *cli.Context) {
 
 	context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
 	if Confirm(context, "Are you sure you want to remove this target? This action cannot be undone.") != true {
-		fmt.Println(backstage.ErrCommandCancelled)
+		fmt.Println(apihub.ErrCommandCancelled)
 	} else {
-		targets, err := backstage.LoadTargets()
+		targets, err := apihub.LoadTargets()
 		if err != nil {
 			fmt.Println(err.Error())
 			return
@@ -121,7 +121,7 @@ func (cmd *Target) targetRemove(c *cli.Context) {
 func (cmd *Target) targetSet(c *cli.Context) {
 	defer RecoverStrategy("target-set")()
 
-	targets, err := backstage.LoadTargets()
+	targets, err := apihub.LoadTargets()
 	if err != nil {
 		fmt.Println(err.Error())
 		return

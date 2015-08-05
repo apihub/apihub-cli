@@ -1,13 +1,13 @@
 /*
 
-backstage-client is an open source command line solution for publishing APIs on Backstage Servers.
+apihub-client is an open source command line solution for publishing APIs on ApiHub Servers.
 
 Usage:
-  % backstage command [command options] [arguments...]
+  % apihub command [command options] [arguments...]
 
 The currently available commands are:
 
-  login               Login in with your Backstage credentials.
+  login               Login in with your ApiHub credentials.
   logout              Clear local credentials.
 
   service-add         Create a new service.
@@ -31,35 +31,35 @@ The currently available commands are:
   GLOBAL OPTIONS:
    --version, -v   print the version
 
-Use "backstage <command> --help, or -h" for more information about a command.
+Use "apihub <command> --help, or -h" for more information about a command.
 
 
-Authentication on Backstage server
+Authentication on ApiHub server
 
 Usage:
 
-  % backstage login <email>
+  % apihub login <email>
 
 The email address and password are used by the client to obtain an API token. This token is used for authentication in the following api requests, for the elected target.
-The backstage-client stores the token in the standard Unix file ~/.backstage_token and the content looks like:
-  % cat ~/.backstage_token
+The apihub-client stores the token in the standard Unix file ~/.apihub_token and the content looks like:
+  % cat ~/.apihub_token
   % Token iBnD0Epiz4pX1zNDYGLhUpjnF33mvElvfIGTzSFuuVc=
 
 
-Logout from Backstage server
+Logout from ApiHub server
 
 Usage:
 
-  % backstage logout
+  % apihub logout
 
-Clear local token (the file file ~/.backstage_token).
+Clear local token (the file file ~/.apihub_token).
 
 
 Create a new service
 
 USAGE:
 
-  % backstage service-add --team <team> --subdomain <subdomain> --endpoint <api_endpoint>
+  % apihub service-add --team <team> --subdomain <subdomain> --endpoint <api_endpoint>
 
 OPTIONS
 
@@ -70,7 +70,7 @@ OPTIONS
 
   --keyless,       -k     Indicate if it's allowed to make requests without authentication.
 
-  --subdomain,     -s     The subdomain will be used by the proxy: http://ratings.backstageserver.org. (where `ratings` is the chosen subdomain).
+  --subdomain,     -s     The subdomain will be used by the proxy: http://ratings.apihubserver.org. (where `ratings` is the chosen subdomain).
 
   --team,           -t    Team responsible for the service
   --timeout         Timeout Default: 0 (Do nothing. Wait the api server to return timeout.)
@@ -80,7 +80,7 @@ Remove an existing service
 
 USAGE:
 
-  % backstage service-remove --subdomain <subdomain>
+  % apihub service-remove --subdomain <subdomain>
 
 OPTIONS:
    --subdomain, -s  Subdomain
@@ -88,16 +88,16 @@ OPTIONS:
 This action cannot be undone. Once a service is deleted, it's needed to add and configure it again.
 
 
-Manage Backstage server endpoints
+Manage ApiHub server endpoints
 
 USAGE:
 
-  % backstage target-list
-  % backstage target-add <label> <endpoint>
-  % backstage target-set <label>
-  % backstage target-remove <label>
+  % apihub target-list
+  % apihub target-add <label> <endpoint>
+  % apihub target-set <label>
+  % apihub target-remove <label>
 
-Target is the Backstage server endpoint. It's possible to have multiple instances runnning and still use the same backstage-client. You just need to add a new target and mark it as default, by using the commands `target-add` and `target-set` respectively.
+Target is the ApiHub server endpoint. It's possible to have multiple instances runnning and still use the same apihub-client. You just need to add a new target and mark it as default, by using the commands `target-add` and `target-set` respectively.
 Requests operations will be directed to the elected target. It's possible to check the current target by using the command `target-list`.
 
 File format
@@ -107,14 +107,14 @@ The file contains a list of all targets and a flag indicating what is the curren
   current: home
   options:
     home: http://api.example.com
-    backstage: http://github.com/backstage
+    apihub: http://github.com/apihub
 
 
 Create a new team
 
 USAGE:
 
-  % backstage team-create --name <name>
+  % apihub team-create --name <name>
 
 OPTIONS:
    --name, -n   Name of the team
@@ -127,14 +127,14 @@ Return team info and lists of members and services
 
 USAGE:
 
-  % backstage team-info --alias <alias>
+  % apihub team-info --alias <alias>
 
 OPTIONS:
    --alias, -a  Team alias
 
-The `alias` is a slug version of the team name. If you do not know it, run `backstage team-list` for more details.
-  Name: Backstage
-  Alias: backstage
+The `alias` is a slug version of the team name. If you do not know it, run `apihub team-list` for more details.
+  Name: ApiHub
+  Alias: apihub
   Owner: bob@sample.org
 
   +----------------+
@@ -148,13 +148,13 @@ Return a list of all teams
 
 USAGE:
 
-  % backstage team-list
+  % apihub team-list
 
 Return a list containing all the teams you belong to and the owner for each of them.
   +-----------+-----------+----------------+
   | TEAM NAME |   ALIAS   |     OWNER      |
   +-----------+-----------+----------------+
-  | Backstage | backstage | bob@sample.org |
+  | ApiHub | apihub | bob@sample.org |
   +-----------+-----------+----------------+
 
 
@@ -162,19 +162,19 @@ Delete a team
 
 USAGE:
 
-  % backstage team-remove --alias <alias>
+  % apihub team-remove --alias <alias>
 
 OPTIONS:
    --alias, -a  Team alias
 
-The `alias` is a slug version of the team name. If you do not know it, run `backstage team-list` for more details.
+The `alias` is a slug version of the team name. If you do not know it, run `apihub team-list` for more details.
 
 
 Add a user to a team
 
 USAGE:
 
-  % backstage team-user-add --team <team-alias> --email <email>
+  % apihub team-user-add --team <team-alias> --email <email>
 
 OPTIONS:
    --team, -t   Name of the team
@@ -187,7 +187,7 @@ Remove a user from a team
 
 USAGE:
 
-  % backstage team-user-add --team <team-alias> --email <email>
+  % apihub team-user-add --team <team-alias> --email <email>
 
 OPTIONS:
    --team,  -t  Name of the team
@@ -200,13 +200,13 @@ Create a user account
 
 USAGE:
 
-  % backstage  user-create --name <name> --email <email>
+  % apihub  user-create --name <name> --email <email>
 
 OPTIONS:
    --name, -n   The user's real life name
    --email, -e  User's email
 
-Creates a new account on the Backstage server. It's important to notice that the account is created only on the current target.
+Creates a new account on the ApiHub server. It's important to notice that the account is created only on the current target.
 If you use multiple server instances, you need to create one account for each of them.
 
 
@@ -214,18 +214,18 @@ Delete a user account
 
 USAGE:
 
-  % backstage  user-remove
+  % apihub  user-remove
 
-Delete current logged in account from Backstage server and deletes the file `~/.backstage_token`, which contain the token.
+Delete current logged in account from ApiHub server and deletes the file `~/.apihub_token`, which contain the token.
 
 
-Return the current backstage-client version
+Return the current apihub-client version
 
 USAGE:
 
-  % backstage  --version, -v
+  % apihub  --version, -v
 
-Return the current version of the client. This version will be sent via header `BackstageClient-Version` to all API requests.
+Return the current version of the client. This version will be sent via header `ApiHubClient-Version` to all API requests.
 
 */
-package backstage
+package apihub

@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
-func (fake *BackstageServer) CreateService(w http.ResponseWriter, req *http.Request) {
-	var service backstage.Service
+func (fake *ApiHubServer) CreateService(w http.ResponseWriter, req *http.Request) {
+	var service apihub.Service
 	err := json.NewDecoder(req.Body).Decode(&service)
 	if err != nil {
 
@@ -23,7 +23,7 @@ func (fake *BackstageServer) CreateService(w http.ResponseWriter, req *http.Requ
 	}
 
 	if service.Subdomain == "" || service.Endpoint == "" {
-		errorResponse := backstage.ErrorResponse{
+		errorResponse := apihub.ErrorResponse{
 			Type:        "bad_request",
 			Description: "Subdomain/Endpoint cannot be empty.",
 		}
@@ -43,7 +43,7 @@ func (fake *BackstageServer) CreateService(w http.ResponseWriter, req *http.Requ
 	w.Write(response)
 }
 
-func (fake *BackstageServer) UpdateService(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) UpdateService(w http.ResponseWriter, req *http.Request) {
 	subdomain := strings.TrimPrefix(req.URL.Path, "/api/services/")
 
 	_, ok := fake.Services.Get(subdomain)
@@ -52,14 +52,14 @@ func (fake *BackstageServer) UpdateService(w http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	var service backstage.Service
+	var service apihub.Service
 	err := json.NewDecoder(req.Body).Decode(&service)
 	if err != nil {
 		panic(err)
 	}
 
 	if service.Subdomain == "" || service.Endpoint == "" {
-		errorResponse := backstage.ErrorResponse{
+		errorResponse := apihub.ErrorResponse{
 			Type:        "bad_request",
 			Description: "Subdomain/Endpoint cannot be empty.",
 		}
@@ -80,7 +80,7 @@ func (fake *BackstageServer) UpdateService(w http.ResponseWriter, req *http.Requ
 	w.Write(response)
 }
 
-func (fake *BackstageServer) DeleteService(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) DeleteService(w http.ResponseWriter, req *http.Request) {
 	subdomain := strings.TrimPrefix(req.URL.Path, "/api/services/")
 
 	service, ok := fake.Services.Get(subdomain)

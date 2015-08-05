@@ -1,4 +1,4 @@
-package backstage
+package apihub
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-var BackstageClientVersion = "0.0.9"
+var ApiHubClientVersion = "0.0.9"
 
 type HTTPClient struct {
 	Host   string
@@ -49,7 +49,7 @@ func (c *HTTPClient) MakeRequest(requestArgs RequestArgs) ([]byte, error) {
 	if token, err := ReadToken(); err == nil {
 		req.Header.Set("Authorization", token)
 	}
-	req.Header.Set("BackstageClient-Version", BackstageClientVersion)
+	req.Header.Set("ApiHubClient-Version", ApiHubClientVersion)
 
 	resp, err := c.client.Do(req)
 	if err != nil {

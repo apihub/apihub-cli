@@ -1,12 +1,12 @@
-package backstage_test
+package apihub_test
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestContainsUserByEmail(c *C) {
-	team := backstage.Team{
+	team := apihub.Team{
 		Users: []string{"alice@example.org"},
 	}
 
@@ -16,7 +16,7 @@ func (s *S) TestContainsUserByEmail(c *C) {
 }
 
 func (s *S) TestContainsUserByEmailWithNotFound(c *C) {
-	team := backstage.Team{
+	team := apihub.Team{
 		Users: []string{},
 	}
 

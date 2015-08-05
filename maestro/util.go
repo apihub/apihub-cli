@@ -1,4 +1,4 @@
-package backstage
+package apihub
 
 import (
 	"os"

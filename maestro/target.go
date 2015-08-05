@@ -1,4 +1,4 @@
-package backstage
+package apihub
 
 import (
 	"io/ioutil"
@@ -10,7 +10,7 @@ import (
 
 var (
 	Fsystem        fs.Fs
-	TargetFileName = JoinHomePath(".backstage_targets")
+	TargetFileName = JoinHomePath(".apihub_targets")
 )
 
 func filesystem() fs.Fs {

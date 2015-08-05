@@ -1,7 +1,7 @@
-package backstage_test
+package apihub_test
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
@@ -19,21 +19,21 @@ func (s *S) TestLoginWithValidCredentials(c *C) {
 
 func (s *S) TestLoginWithInvalidCredentials(c *C) {
 	_, err := authService.Login("invalid-email", "invalid-password")
-	e := err.(backstage.ResponseError)
+	e := err.(apihub.ResponseError)
 	c.Check(err, Not(IsNil))
 	c.Assert(e.Error(), Equals, "Authentication failed.")
 }
 
 func (s *S) TestLogout(c *C) {
 	rfs := &fstest.RecordingFs{}
-	backstage.Fsystem = rfs
+	apihub.Fsystem = rfs
 	defer func() {
-		backstage.Fsystem = nil
+		apihub.Fsystem = nil
 	}()
 
 	err := authService.Logout()
 	c.Check(err, IsNil)
-	c.Assert(rfs.HasAction("remove "+backstage.TokenFileName), Equals, true)
+	c.Assert(rfs.HasAction("remove "+apihub.TokenFileName), Equals, true)
 }
 
 func (s *S) TestChangePassword(c *C) {
@@ -47,7 +47,7 @@ func (s *S) TestChangePasswordWithInvalidConfirmation(c *C) {
 	u, err := userService.Create("Alice", "alice", "alice@example.org", "123")
 	c.Check(err, IsNil)
 	err = authService.ChangePassword(u.Email, u.Password, "abc", "def")
-	e := err.(backstage.ResponseError)
+	e := err.(apihub.ResponseError)
 	c.Check(err, Not(IsNil))
 	c.Assert(e.Error(), Equals, "Your new password and confirmation password do not match.")
 }

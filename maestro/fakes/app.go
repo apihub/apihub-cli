@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
-func (fake *BackstageServer) CreateApp(w http.ResponseWriter, req *http.Request) {
-	var app backstage.App
+func (fake *ApiHubServer) CreateApp(w http.ResponseWriter, req *http.Request) {
+	var app apihub.App
 	err := json.NewDecoder(req.Body).Decode(&app)
 	if err != nil {
 		panic(err)
 	}
 
 	if app.Name == "" {
-		errorResponse := backstage.ErrorResponse{
+		errorResponse := apihub.ErrorResponse{
 			Type:        "bad_request",
 			Description: "Name cannot be empty.",
 		}
@@ -36,7 +36,7 @@ func (fake *BackstageServer) CreateApp(w http.ResponseWriter, req *http.Request)
 	w.Write(response)
 }
 
-func (fake *BackstageServer) UpdateApp(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) UpdateApp(w http.ResponseWriter, req *http.Request) {
 	appID := strings.TrimPrefix(req.URL.Path, "/api/apps/")
 
 	appFound, ok := fake.Apps.Get(appID)
@@ -45,7 +45,7 @@ func (fake *BackstageServer) UpdateApp(w http.ResponseWriter, req *http.Request)
 		return
 	}
 
-	var app backstage.App
+	var app apihub.App
 	err := json.NewDecoder(req.Body).Decode(&app)
 	if err != nil {
 		panic(err)
@@ -64,7 +64,7 @@ func (fake *BackstageServer) UpdateApp(w http.ResponseWriter, req *http.Request)
 	w.Write(response)
 }
 
-func (fake *BackstageServer) AppInfo(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) AppInfo(w http.ResponseWriter, req *http.Request) {
 	id := strings.TrimPrefix(req.URL.Path, "/api/apps/")
 
 	app, ok := fake.Apps.Get(id)
@@ -82,7 +82,7 @@ func (fake *BackstageServer) AppInfo(w http.ResponseWriter, req *http.Request) {
 	w.Write(response)
 }
 
-func (fake *BackstageServer) DeleteApp(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) DeleteApp(w http.ResponseWriter, req *http.Request) {
 	appID := strings.TrimPrefix(req.URL.Path, "/api/apps/")
 
 	fake.Apps.Delete(appID)

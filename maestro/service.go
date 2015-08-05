@@ -1,4 +1,4 @@
-package backstage
+package apihub
 
 type Service struct {
 	Description   string   `json:"description,omitempty"`

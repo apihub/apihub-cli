@@ -5,12 +5,12 @@ import (
 	"os"
 
 	"code.google.com/p/go.crypto/ssh/terminal"
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/codegangsta/cli"
 )
 
 type User struct {
-	Service *backstage.UserService
+	Service *apihub.UserService
 }
 
 func (cmd *User) GetCommands() []cli.Command {
@@ -53,7 +53,7 @@ func (cmd *User) userDelete(c *cli.Context) {
 
 	context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
 	if Confirm(context, "Are you sure you want to delete your account? If deleted, you can't restore it.") != true {
-		fmt.Println(backstage.ErrCommandCancelled.Error())
+		fmt.Println(apihub.ErrCommandCancelled.Error())
 		return
 	}
 

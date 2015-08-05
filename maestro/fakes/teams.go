@@ -1,30 +1,30 @@
 package fakes
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
 type Teams struct {
-	storage map[string]backstage.Team
+	storage map[string]apihub.Team
 }
 
 func NewTeams() *Teams {
 	return &Teams{
-		storage: make(map[string]backstage.Team),
+		storage: make(map[string]apihub.Team),
 	}
 }
 
-func (teams *Teams) Add(team backstage.Team) {
+func (teams *Teams) Add(team apihub.Team) {
 	teams.storage[team.Alias] = team
 }
 
-func (teams *Teams) Get(alias string) (backstage.Team, bool) {
+func (teams *Teams) Get(alias string) (apihub.Team, bool) {
 	team, ok := teams.storage[alias]
 	return team, ok
 }
 
-func (teams *Teams) List() []backstage.Team {
-	var ts []backstage.Team
+func (teams *Teams) List() []apihub.Team {
+	var ts []apihub.Team
 	for _, t := range teams.storage {
 		ts = append(ts, t)
 	}
@@ -36,5 +36,5 @@ func (teams *Teams) Delete(alias string) {
 }
 
 func (teams *Teams) Reset() {
-	teams.storage = make(map[string]backstage.Team)
+	teams.storage = make(map[string]apihub.Team)
 }

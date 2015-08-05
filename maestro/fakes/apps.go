@@ -1,24 +1,24 @@
 package fakes
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
 type Apps struct {
-	storage map[string]backstage.App
+	storage map[string]apihub.App
 }
 
 func NewApps() *Apps {
 	return &Apps{
-		storage: make(map[string]backstage.App),
+		storage: make(map[string]apihub.App),
 	}
 }
 
-func (apps *Apps) Add(app backstage.App) {
+func (apps *Apps) Add(app apihub.App) {
 	apps.storage[app.ClientID] = app
 }
 
-func (apps *Apps) Get(id string) (backstage.App, bool) {
+func (apps *Apps) Get(id string) (apihub.App, bool) {
 	app, ok := apps.storage[id]
 	return app, ok
 }
@@ -28,5 +28,5 @@ func (apps *Apps) Delete(id string) {
 }
 
 func (apps *Apps) Reset() {
-	apps.storage = make(map[string]backstage.App)
+	apps.storage = make(map[string]apihub.App)
 }

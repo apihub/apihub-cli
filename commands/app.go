@@ -5,12 +5,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/codegangsta/cli"
 )
 
 type App struct {
-	Service *backstage.AppService
+	Service *apihub.AppService
 }
 
 func (cmd *App) GetCommands() []cli.Command {
@@ -93,7 +93,7 @@ func (cmd *App) appRemove(c *cli.Context) {
 
 	context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
 	if Confirm(context, "Are you sure you want to delete this app? This action cannot be undone.") != true {
-		fmt.Println(backstage.ErrCommandCancelled)
+		fmt.Println(apihub.ErrCommandCancelled)
 	} else {
 		err := cmd.Service.Delete(c.String("team"), c.String("client_id"))
 		if err != nil {

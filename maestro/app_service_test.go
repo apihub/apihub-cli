@@ -1,15 +1,15 @@
-package backstage_test
+package apihub_test
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestCreateApp(c *C) {
-	app, err := appService.Create("backstage", "123", "Documents", []string{"http://example.org/auth"}, "super-secret")
+	app, err := appService.Create("apihub", "123", "Documents", []string{"http://example.org/auth"}, "super-secret")
 
 	c.Check(err, IsNil)
-	c.Assert(app.Team, Equals, "backstage")
+	c.Assert(app.Team, Equals, "apihub")
 	c.Assert(app.ClientID, Equals, "123")
 	c.Assert(app.Name, Equals, "Documents")
 	c.Assert(app.RedirectURIs, DeepEquals, []string{"http://example.org/auth"})
@@ -17,13 +17,13 @@ func (s *S) TestCreateApp(c *C) {
 }
 
 func (s *S) TestCreateAppMissingRequiredFields(c *C) {
-	_, err := appService.Create("backstage", "123", "", []string{"http://example.org/auth"}, "super-secret")
-	e := err.(backstage.ResponseError)
+	_, err := appService.Create("apihub", "123", "", []string{"http://example.org/auth"}, "super-secret")
+	e := err.(apihub.ResponseError)
 	c.Assert(e.Error(), Equals, "Name cannot be empty.")
 }
 
 func (s *S) TestUpdateApp(c *C) {
-	t, err := teamService.Create("Backstage Team", "backstage")
+	t, err := teamService.Create("ApiHub Team", "apihub")
 	app, _ := appService.Create(t.Alias, "123", "Documents", []string{"http://example.org/auth"}, "super-secret")
 
 	_, err = appService.Update(t.Alias, app.ClientID, "New Name", []string{"http://example.org/v2/auth"}, "amazing")
@@ -38,19 +38,19 @@ func (s *S) TestUpdateApp(c *C) {
 }
 
 func (s *S) TestUpdateAppNotFound(c *C) {
-	t, err := teamService.Create("Backstage Team", "backstage")
+	t, err := teamService.Create("ApiHub Team", "apihub")
 	_, err = appService.Update(t.Alias, "123", "New Name", []string{"http://example.org/v2/auth"}, "amazing")
-	e := err.(backstage.ResponseError)
+	e := err.(apihub.ResponseError)
 	c.Assert(e.Error(), Equals, "App not found.")
 }
 
 func (s *S) TestAppInfo(c *C) {
-	_, err := appService.Create("backstage", "123", "Documents", []string{"http://example.org/auth"}, "super-secret")
+	_, err := appService.Create("apihub", "123", "Documents", []string{"http://example.org/auth"}, "super-secret")
 	c.Check(err, IsNil)
 
 	app, err := appService.Info("123")
 	c.Check(err, IsNil)
-	c.Assert(app.Team, Equals, "backstage")
+	c.Assert(app.Team, Equals, "apihub")
 	c.Assert(app.ClientID, Equals, "123")
 	c.Assert(app.RedirectURIs, DeepEquals, []string{"http://example.org/auth"})
 	c.Assert(app.ClientSecret, Equals, "super-secret")
@@ -58,12 +58,12 @@ func (s *S) TestAppInfo(c *C) {
 
 func (s *S) TestAppInfoNotFound(c *C) {
 	_, err := appService.Info("not-found")
-	e := err.(backstage.ResponseError)
+	e := err.(apihub.ResponseError)
 	c.Assert(e.Error(), Equals, "App not found.")
 }
 
 func (s *S) TestDeleteApp(c *C) {
-	app, err := appService.Create("backstage", "123", "Documents", []string{"http://example.org/auth"}, "super-secret")
+	app, err := appService.Create("apihub", "123", "Documents", []string{"http://example.org/auth"}, "super-secret")
 	found, err := appService.Info(app.ClientID)
 	c.Assert(found.Name, Equals, app.Name)
 

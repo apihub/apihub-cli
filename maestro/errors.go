@@ -1,12 +1,12 @@
-package backstage
+package apihub
 
 import "errors"
 
 var (
-	ErrLoginRequired           = errors.New("Invalid or expired token. Please log in with your Backstage credentials.")
+	ErrLoginRequired           = errors.New("Invalid or expired token. Please log in with your ApiHub credentials.")
 	ErrBadResponse             = errors.New("The response was invalid or cannot be served. For more details, execute the command with `-h`.")
 	ErrTargetNotFound          = errors.New("Target not found.")
-	ErrEndpointNotFound        = errors.New("You have not selected any target as default. For more details, please run `backstage target-set -h`.")
+	ErrEndpointNotFound        = errors.New("You have not selected any target as default. For more details, please run `apihub target-set -h`.")
 	ErrLabelExists             = errors.New("Sorry, that label has been used by another user.")
 	ErrBadFormattedFile        = errors.New("Bad target data.")
 	ErrCommandCancelled        = errors.New("Command Cancelled.")
@@ -59,7 +59,7 @@ func newRequestError(err error) RequestError {
 }
 
 func (err RequestError) Error() string {
-	return "Failed to connect to Backstage server: " + err.description.Error()
+	return "Failed to connect to ApiHub server: " + err.description.Error()
 }
 
 type ResponseError struct {

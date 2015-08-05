@@ -1,23 +1,23 @@
 package fakes
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
 type Tokens struct {
-	storage map[string]backstage.User
+	storage map[string]apihub.User
 }
 
 func NewTokens() *Tokens {
 	return &Tokens{
-		storage: make(map[string]backstage.User),
+		storage: make(map[string]apihub.User),
 	}
 }
 
-func (tokens *Tokens) Add(token string, user backstage.User) {
+func (tokens *Tokens) Add(token string, user apihub.User) {
 	tokens.storage[token] = user
 }
 
 func (tokens *Tokens) Reset() {
-	tokens.storage = make(map[string]backstage.User)
+	tokens.storage = make(map[string]apihub.User)
 }

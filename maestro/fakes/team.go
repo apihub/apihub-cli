@@ -6,11 +6,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
-func (fake *BackstageServer) CreateTeam(w http.ResponseWriter, req *http.Request) {
-	var team backstage.Team
+func (fake *ApiHubServer) CreateTeam(w http.ResponseWriter, req *http.Request) {
+	var team apihub.Team
 	err := json.NewDecoder(req.Body).Decode(&team)
 	if err != nil {
 		panic(err)
@@ -20,7 +20,7 @@ func (fake *BackstageServer) CreateTeam(w http.ResponseWriter, req *http.Request
 	team.Users = []string{team.Owner}
 
 	if team.Name == "" {
-		errorResponse := backstage.ErrorResponse{
+		errorResponse := apihub.ErrorResponse{
 			Type:        "bad_request",
 			Description: "Name cannot be empty.",
 		}
@@ -38,7 +38,7 @@ func (fake *BackstageServer) CreateTeam(w http.ResponseWriter, req *http.Request
 	w.Write(response)
 }
 
-func (fake *BackstageServer) UpdateTeam(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) UpdateTeam(w http.ResponseWriter, req *http.Request) {
 	teamAlias := strings.TrimPrefix(req.URL.Path, "/api/teams/")
 
 	teamFound, ok := fake.Teams.Get(teamAlias)
@@ -47,7 +47,7 @@ func (fake *BackstageServer) UpdateTeam(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	var team backstage.Team
+	var team apihub.Team
 	err := json.NewDecoder(req.Body).Decode(&team)
 	if err != nil {
 		panic(err)
@@ -64,7 +64,7 @@ func (fake *BackstageServer) UpdateTeam(w http.ResponseWriter, req *http.Request
 	w.Write(response)
 }
 
-func (fake *BackstageServer) TeamInfo(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) TeamInfo(w http.ResponseWriter, req *http.Request) {
 	teamAlias := strings.TrimPrefix(req.URL.Path, "/api/teams/")
 
 	team, ok := fake.Teams.Get(teamAlias)
@@ -82,12 +82,12 @@ func (fake *BackstageServer) TeamInfo(w http.ResponseWriter, req *http.Request) 
 	w.Write(response)
 }
 
-func (fake *BackstageServer) GetTeams(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) GetTeams(w http.ResponseWriter, req *http.Request) {
 	teams := fake.Teams.List()
 
 	collection := struct {
-		Items []backstage.Team `json:"items"`
-		Count int              `json:"item_count"`
+		Items []apihub.Team `json:"items"`
+		Count int           `json:"item_count"`
 	}{}
 	collection.Items = teams
 	collection.Count = len(teams)
@@ -101,7 +101,7 @@ func (fake *BackstageServer) GetTeams(w http.ResponseWriter, req *http.Request) 
 	w.Write(response)
 }
 
-func (fake *BackstageServer) DeleteTeam(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) DeleteTeam(w http.ResponseWriter, req *http.Request) {
 	teamAlias := strings.TrimPrefix(req.URL.Path, "/api/teams/")
 
 	team, ok := fake.Teams.Get(teamAlias)
@@ -121,7 +121,7 @@ func (fake *BackstageServer) DeleteTeam(w http.ResponseWriter, req *http.Request
 	w.Write(response)
 }
 
-func (fake *BackstageServer) AddUsersToTeam(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) AddUsersToTeam(w http.ResponseWriter, req *http.Request) {
 	r := regexp.MustCompile(`^/api/teams/(.*)/users$`)
 	matches := r.FindStringSubmatch(req.URL.Path)
 
@@ -153,7 +153,7 @@ func (fake *BackstageServer) AddUsersToTeam(w http.ResponseWriter, req *http.Req
 	w.Write(response)
 }
 
-func (fake *BackstageServer) RemoveUserFromTeam(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) RemoveUserFromTeam(w http.ResponseWriter, req *http.Request) {
 	r := regexp.MustCompile(`^/api/teams/(.*)/users$`)
 	matches := r.FindStringSubmatch(req.URL.Path)
 

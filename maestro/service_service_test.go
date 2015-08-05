@@ -1,12 +1,12 @@
-package backstage_test
+package apihub_test
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestCreateService(c *C) {
-	team, err := teamService.Create("Backstage Team", "backstage")
+	team, err := teamService.Create("ApiHub Team", "apihub")
 	service, err := serviceService.Create("subdomain", false, "description", "documentation", "http://example.org", team.Alias, 10, []string{"XMLTOJSON"})
 
 	c.Check(err, IsNil)
@@ -22,12 +22,12 @@ func (s *S) TestCreateService(c *C) {
 
 func (s *S) TestCreateServiceMissingRequiredFields(c *C) {
 	_, err := serviceService.Create("", false, "", "", "", "team", 10, []string{""})
-	e := err.(backstage.ResponseError)
+	e := err.(apihub.ResponseError)
 	c.Assert(e.Error(), Equals, "Team not found.")
 }
 
 func (s *S) TestUpdateService(c *C) {
-	team, err := teamService.Create("Backstage Team", "backstage")
+	team, err := teamService.Create("ApiHub Team", "apihub")
 	service, err := serviceService.Create("subdomain", false, "description", "documentation", "http://example.org", team.Alias, 10, []string{"XMLTOJSON"})
 
 	service, err = serviceService.Update("subdomain", true, "new description", "new documentation", "http://example.org/v2", team.Alias, 1, []string{"XMLTOJSON"})
@@ -36,14 +36,14 @@ func (s *S) TestUpdateService(c *C) {
 }
 
 func (s *S) TestUpdateServiceNotFound(c *C) {
-	team, err := teamService.Create("Backstage Team", "backstage")
+	team, err := teamService.Create("ApiHub Team", "apihub")
 	_, err = serviceService.Update("not-found", true, "new description", "new documentation", "http://example.org/v2", team.Alias, 1, []string{"XMLTOJSON"})
-	e := err.(backstage.ResponseError)
+	e := err.(apihub.ResponseError)
 	c.Assert(e.Error(), Equals, "Service not found.")
 }
 
 func (s *S) TestDeleteService(c *C) {
-	team, err := teamService.Create("Backstage Team", "backstage")
+	team, err := teamService.Create("ApiHub Team", "apihub")
 	service, err := serviceService.Create("subdomain", false, "description", "documentation", "http://example.org", team.Alias, 10, []string{"XMLTOJSON"})
 
 	err = serviceService.Delete(service.Subdomain, service.Team)

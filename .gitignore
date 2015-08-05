@@ -1,5 +1,5 @@
 .DS_Store
-backstage/backstage
+apihub/apihub
 bin
-backstage-client*
-backstage-client_*
+apihub-cli*
+apihub-cli_*

@@ -1,4 +1,4 @@
-package backstage
+package apihub
 
 type Team struct {
 	Name     string     `json:"name"`

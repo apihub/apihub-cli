@@ -5,12 +5,12 @@ import (
 	"os"
 
 	"code.google.com/p/go.crypto/ssh/terminal"
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/codegangsta/cli"
 )
 
 type Auth struct {
-	Service *backstage.AuthService
+	Service *apihub.AuthService
 }
 
 func (cmd *Auth) GetCommands() []cli.Command {
@@ -18,7 +18,7 @@ func (cmd *Auth) GetCommands() []cli.Command {
 		{
 			Name:        "login",
 			Usage:       "login <email>",
-			Description: "Login in with your Backstage credentials.",
+			Description: "Login in with your ApiHub credentials.",
 			Action:      cmd.login,
 		},
 

@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/gorilla/mux"
 )
 
-type BackstageServer struct {
+type ApiHubServer struct {
 	server *httptest.Server
 
 	Apps     *Apps
@@ -18,8 +18,8 @@ type BackstageServer struct {
 	Users    *Users
 }
 
-func NewBackstageServer() *BackstageServer {
-	fake := &BackstageServer{
+func NewApiHubServer() *ApiHubServer {
+	fake := &ApiHubServer{
 		Apps:     NewApps(),
 		Services: NewServices(),
 		Teams:    NewTeams(),
@@ -54,15 +54,15 @@ func NewBackstageServer() *BackstageServer {
 	return fake
 }
 
-func (fake *BackstageServer) Stop() {
+func (fake *ApiHubServer) Stop() {
 	fake.server.Close()
 }
 
-func (fake *BackstageServer) URL() string {
+func (fake *ApiHubServer) URL() string {
 	return fake.server.URL
 }
 
-func (fake *BackstageServer) Reset() {
+func (fake *ApiHubServer) Reset() {
 	fake.Apps.Reset()
 	fake.Services.Reset()
 	fake.Teams.Reset()
@@ -70,8 +70,8 @@ func (fake *BackstageServer) Reset() {
 	fake.Users.Reset()
 }
 
-func (fake *BackstageServer) notFound(w http.ResponseWriter, message string) {
-	errorResponse := backstage.ErrorResponse{
+func (fake *ApiHubServer) notFound(w http.ResponseWriter, message string) {
+	errorResponse := apihub.ErrorResponse{
 		Type:        "not_found",
 		Description: message,
 	}

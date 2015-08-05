@@ -1,61 +1,61 @@
-package backstage_test
+package apihub_test
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/tsuru/tsuru/fs/fstest"
 	. "gopkg.in/check.v1"
 )
 
 func (s *S) TestWriteToken(c *C) {
 	rfs := &fstest.RecordingFs{}
-	backstage.Fsystem = rfs
+	apihub.Fsystem = rfs
 	defer func() {
-		backstage.Fsystem = nil
+		apihub.Fsystem = nil
 	}()
-	err := backstage.WriteToken("Token xyz")
+	err := apihub.WriteToken("Token xyz")
 	c.Assert(err, IsNil)
-	c.Assert(rfs.HasAction("openfile "+backstage.TokenFileName+" with mode 0600"), Equals, true)
+	c.Assert(rfs.HasAction("openfile "+apihub.TokenFileName+" with mode 0600"), Equals, true)
 }
 
 func (s *S) TestReadToken(c *C) {
 	rfs := &fstest.RecordingFs{FileContent: "Token xyz"}
-	backstage.Fsystem = rfs
+	apihub.Fsystem = rfs
 	defer func() {
-		backstage.Fsystem = nil
+		apihub.Fsystem = nil
 	}()
-	token, err := backstage.ReadToken()
+	token, err := apihub.ReadToken()
 	c.Assert(err, IsNil)
 	c.Assert(token, Equals, "Token xyz")
-	c.Assert(rfs.HasAction("openfile "+backstage.TokenFileName+" with mode 0600"), Equals, true)
+	c.Assert(rfs.HasAction("openfile "+apihub.TokenFileName+" with mode 0600"), Equals, true)
 }
 
 func (s *S) TestReadTokenWhenFileNotFound(c *C) {
 	rfs := &fstest.FileNotFoundFs{}
-	backstage.Fsystem = rfs
+	apihub.Fsystem = rfs
 	defer func() {
-		backstage.Fsystem = nil
+		apihub.Fsystem = nil
 	}()
-	_, err := backstage.ReadToken()
+	_, err := apihub.ReadToken()
 	c.Assert(err, Not(IsNil))
 }
 
 func (s *S) TestDeleteToken(c *C) {
 	rfs := &fstest.RecordingFs{}
-	backstage.Fsystem = rfs
+	apihub.Fsystem = rfs
 	defer func() {
-		backstage.Fsystem = nil
+		apihub.Fsystem = nil
 	}()
-	err := backstage.DeleteToken()
+	err := apihub.DeleteToken()
 	c.Assert(err, IsNil)
-	c.Assert(rfs.HasAction("remove "+backstage.TokenFileName), Equals, true)
+	c.Assert(rfs.HasAction("remove "+apihub.TokenFileName), Equals, true)
 }
 
 func (s *S) TestDeleteTokenWhenFileNotFound(c *C) {
 	rfs := &fstest.FileNotFoundFs{}
-	backstage.Fsystem = rfs
+	apihub.Fsystem = rfs
 	defer func() {
-		backstage.Fsystem = nil
+		apihub.Fsystem = nil
 	}()
-	err := backstage.DeleteToken()
+	err := apihub.DeleteToken()
 	c.Assert(err, Not(IsNil))
 }

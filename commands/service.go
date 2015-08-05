@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/codegangsta/cli"
 )
 
 type Service struct {
-	Service *backstage.ServiceService
+	Service *apihub.ServiceService
 }
 
 func (cmd *Service) GetCommands() []cli.Command {
@@ -92,7 +92,7 @@ func (cmd *Service) serviceRemove(c *cli.Context) {
 
 	context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
 	if Confirm(context, "Are you sure you want to delete this service? This action cannot be undone.") != true {
-		fmt.Println(backstage.ErrCommandCancelled)
+		fmt.Println(apihub.ErrCommandCancelled)
 	} else {
 		err := cmd.Service.Delete(c.String("subdomain"), c.String("team"))
 		if err != nil {

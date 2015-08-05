@@ -1,4 +1,4 @@
-package backstage
+package apihub
 
 type App struct {
 	ClientID     string   `json:"client_id,omitempty"`

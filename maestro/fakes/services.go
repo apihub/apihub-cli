@@ -1,30 +1,30 @@
 package fakes
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
 type Services struct {
-	storage map[string]backstage.Service
+	storage map[string]apihub.Service
 }
 
 func NewServices() *Services {
 	return &Services{
-		storage: make(map[string]backstage.Service),
+		storage: make(map[string]apihub.Service),
 	}
 }
 
-func (services *Services) Add(service backstage.Service) {
+func (services *Services) Add(service apihub.Service) {
 	services.storage[service.Subdomain] = service
 }
 
-func (services *Services) Get(subdomain string) (backstage.Service, bool) {
+func (services *Services) Get(subdomain string) (apihub.Service, bool) {
 	service, ok := services.storage[subdomain]
 	return service, ok
 }
 
-func (services *Services) List() []backstage.Service {
-	var ts []backstage.Service
+func (services *Services) List() []apihub.Service {
+	var ts []apihub.Service
 	for _, t := range services.storage {
 		ts = append(ts, t)
 	}
@@ -36,5 +36,5 @@ func (services *Services) Delete(subdomain string) {
 }
 
 func (services *Services) Reset() {
-	services.storage = make(map[string]backstage.Service)
+	services.storage = make(map[string]apihub.Service)
 }

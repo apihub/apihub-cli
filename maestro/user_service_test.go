@@ -1,7 +1,7 @@
-package backstage_test
+package apihub_test
 
 import (
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	. "gopkg.in/check.v1"
 )
 
@@ -17,7 +17,7 @@ func (s *S) TestCreateUser(c *C) {
 
 func (s *S) TestCreateUserMissingRequiredFields(c *C) {
 	_, err := userService.Create("", "", "", "")
-	e := err.(backstage.ResponseError)
+	e := err.(apihub.ResponseError)
 	c.Assert(e.Error(), Equals, "Name/Email/Username/Password cannot be empty.")
 }
 

@@ -5,12 +5,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 	"github.com/codegangsta/cli"
 )
 
 type Team struct {
-	Service *backstage.TeamService
+	Service *apihub.TeamService
 }
 
 func (cmd *Team) GetCommands() []cli.Command {
@@ -117,7 +117,7 @@ func (cmd *Team) teamRemove(c *cli.Context) {
 
 	context := &Context{Stdout: os.Stdout, Stdin: os.Stdin}
 	if Confirm(context, "Are you sure you want to delete this team? This action cannot be undone.") != true {
-		fmt.Println(backstage.ErrCommandCancelled)
+		fmt.Println(apihub.ErrCommandCancelled)
 	} else {
 		alias := c.String("alias")
 		if alias == "" {

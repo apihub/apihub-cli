@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/backstage/backstage-cli/maestro"
+	"github.com/apihub/apihub-cli/maestro"
 )
 
-func (fake *BackstageServer) Login(w http.ResponseWriter, req *http.Request) {
-	var user backstage.User
+func (fake *ApiHubServer) Login(w http.ResponseWriter, req *http.Request) {
+	var user apihub.User
 	var j []byte
 	err := json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {
@@ -17,7 +17,7 @@ func (fake *BackstageServer) Login(w http.ResponseWriter, req *http.Request) {
 
 	_, found := fake.Users.Get(user.Email)
 	if !found {
-		errorResponse := backstage.ErrorResponse{
+		errorResponse := apihub.ErrorResponse{
 			Type:        "bad_request",
 			Description: "Authentication failed.",
 		}
@@ -27,7 +27,7 @@ func (fake *BackstageServer) Login(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	token := backstage.TokenInfo{
+	token := apihub.TokenInfo{
 		Type:      "Token",
 		Token:     "RpOMQwiTMtxH6abgwonjBrVhBlrE1jbOxsk86UD_trI=",
 		Expires:   86400,
@@ -40,12 +40,12 @@ func (fake *BackstageServer) Login(w http.ResponseWriter, req *http.Request) {
 	w.Write(j)
 }
 
-func (fake *BackstageServer) Logout(w http.ResponseWriter, req *http.Request) {
+func (fake *ApiHubServer) Logout(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (fake *BackstageServer) ChangePassword(w http.ResponseWriter, req *http.Request) {
-	var user backstage.User
+func (fake *ApiHubServer) ChangePassword(w http.ResponseWriter, req *http.Request) {
+	var user apihub.User
 	var j []byte
 	err := json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {
@@ -53,7 +53,7 @@ func (fake *BackstageServer) ChangePassword(w http.ResponseWriter, req *http.Req
 	}
 
 	if user.NewPassword != user.ConfirmationPassword {
-		errorResponse := backstage.ErrorResponse{
+		errorResponse := apihub.ErrorResponse{
 			Type:        "bad_request",
 			Description: "Your new password and confirmation password do not match.",
 		}
