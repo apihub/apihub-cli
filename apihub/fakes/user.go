@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/apihub/apihub-cli/maestro"
+	"github.com/apihub/apihub-cli/apihub"
 )
 
 func (fake *ApiHubServer) CreateUser(w http.ResponseWriter, req *http.Request) {

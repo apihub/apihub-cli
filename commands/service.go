@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/apihub/apihub-cli/maestro"
+	"github.com/apihub/apihub-cli/apihub"
 	"github.com/codegangsta/cli"
 )
 

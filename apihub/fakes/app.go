@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/apihub/apihub-cli/maestro"
+	"github.com/apihub/apihub-cli/apihub"
 )
 
 func (fake *ApiHubServer) CreateApp(w http.ResponseWriter, req *http.Request) {

@@ -3,8 +3,8 @@ package apihub_test
 import (
 	"testing"
 
-	"github.com/apihub/apihub-cli/maestro"
-	"github.com/apihub/apihub-cli/maestro/fakes"
+	"github.com/apihub/apihub-cli/apihub"
+	"github.com/apihub/apihub-cli/apihub/fakes"
 	. "gopkg.in/check.v1"
 )
 

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/apihub/apihub-cli/maestro"
+	"github.com/apihub/apihub-cli/apihub"
 )
 
 func (fake *ApiHubServer) CreateTeam(w http.ResponseWriter, req *http.Request) {

@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
+	"github.com/apihub/apihub-cli/apihub"
 	"github.com/apihub/apihub-cli/commands"
-	"github.com/apihub/apihub-cli/maestro"
 	"github.com/codegangsta/cli"
 )
 

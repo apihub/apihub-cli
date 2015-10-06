@@ -1,7 +1,7 @@
 package apihub_test
 
 import (
-	"github.com/apihub/apihub-cli/maestro"
+	"github.com/apihub/apihub-cli/apihub"
 	. "gopkg.in/check.v1"
 )
 

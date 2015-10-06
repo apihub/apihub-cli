@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/apihub/apihub-cli/maestro"
+	"github.com/apihub/apihub-cli/apihub"
 )
 
 type Services struct {

@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"code.google.com/p/go.crypto/ssh/terminal"
-	"github.com/apihub/apihub-cli/maestro"
+	"github.com/apihub/apihub-cli/apihub"
 	"github.com/codegangsta/cli"
 )
 
