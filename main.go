@@ -18,11 +18,7 @@ func main() {
 	app.HideHelp = true
 	app.EnableBashCompletion = true
 
-	currentTarget, err := apihub.GetCurrentTarget()
-	if err != nil {
-		panic("Your target file is corrupted. Please delete it and add your target. Sorry about that.")
-	}
-
+	currentTarget, _ := apihub.GetCurrentTarget()
 	httpClient := apihub.NewHTTPClient(currentTarget)
 
 	m := NewManager(app)
