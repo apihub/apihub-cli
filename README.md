@@ -2,12 +2,12 @@
 
 #apihub-cli
 
-An open source command line solution for publishing APIs on [ApiHub - Api Gateway](https://github.com/apihub/apigateway).
+An open source command line solution for publishing APIs on [ApiHub - Api Gateway](https://github.com/apihub/apihub).
 
 ##reporting issues
 
 Please report issues to the
-[apihub/apigateway](https://github.com/apihub/apigateway/issues) repository.
+[apihub/apihub](https://github.com/apihub/apihub/issues) repository.
 
 ##License
 
