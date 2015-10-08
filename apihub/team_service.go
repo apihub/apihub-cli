@@ -125,7 +125,7 @@ func (s TeamService) AddUser(alias, email string) (bool, error) {
 
 	_, err := s.client.MakeRequest(RequestArgs{
 		AcceptableCode: http.StatusOK,
-		Method:         "POST",
+		Method:         "PUT",
 		Path:           fmt.Sprintf("/api/teams/%s/users", alias),
 		Body:           users,
 	})

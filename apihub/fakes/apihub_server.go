@@ -39,7 +39,7 @@ func NewApiHubServer() *ApiHubServer {
 	router.HandleFunc("/api/teams/{alias}", fake.UpdateTeam).Methods("PUT")
 	router.HandleFunc("/api/teams/{alias}", fake.TeamInfo).Methods("GET")
 	router.HandleFunc("/api/teams/{alias}", fake.DeleteTeam).Methods("DELETE")
-	router.HandleFunc("/api/teams/{alias}/users", fake.AddUsersToTeam).Methods("POST")
+	router.HandleFunc("/api/teams/{alias}/users", fake.AddUsersToTeam).Methods("PUT")
 	router.HandleFunc("/api/teams/{alias}/users", fake.RemoveUserFromTeam).Methods("DELETE")
 
 	router.HandleFunc("/api/apps", fake.CreateApp).Methods("POST")
