@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-var ApiHubClientVersion = "0.0.10"
+var ApiHubClientVersion = "0.0.11"
 
 type HTTPClient struct {
 	Host   string
